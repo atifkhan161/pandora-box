@@ -1,0 +1,41 @@
+# Node modules
+node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Environment variables
+.env
+.env.*
+
+# Data files
+data
+
+# Download directory
+downloads
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git files
+.git
+.gitignore
+
+# IDE files
+.vscode
+.idea
+
+# Test files
+test
+coverage
+
+# Build files
+dist
+
+# Misc
+.DS_Store
+Thumbs.db

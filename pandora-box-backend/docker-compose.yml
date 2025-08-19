@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # Main backend API service
+  pandora-box-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pandora-box-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./downloads:/app/downloads
+    env_file:
+      - .env
+    networks:
+      - pandora-network
+    depends_on:
+      - qbittorrent
+      - jellyfin
+      - jackett
+      - portainer
+      - cloud-commander
+
+  # qBittorrent service
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - ./config/qbittorrent:/config
+      - ./downloads:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - WEBUI_PORT=8080
+    networks:
+      - pandora-network
+
+  # Jellyfin media server
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+      - "8920:8920"
+    volumes:
+      - ./config/jellyfin:/config
+      - ./downloads:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    networks:
+      - pandora-network
+
+  # Jackett torrent proxy
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    restart: unless-stopped
+    ports:
+      - "9117:9117"
+    volumes:
+      - ./config/jackett:/config
+      - ./downloads:/downloads
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    networks:
+      - pandora-network
+
+  # Portainer for Docker management
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/portainer:/data
+    networks:
+      - pandora-network
+
+  # Cloud Commander for file management
+  cloud-commander:
+    image: coderaiser/cloudcmd:latest
+    container_name: cloud-commander
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./downloads:/root
+    environment:
+      - CLOUDCMD_AUTH=true
+      - CLOUDCMD_USERNAME=admin
+      - CLOUDCMD_PASSWORD=admin
+    networks:
+      - pandora-network
+
+networks:
+  pandora-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
+  downloads:

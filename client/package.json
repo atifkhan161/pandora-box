@@ -1,5 +1,5 @@
 {
-  "name": "pandora-box-frontend",
+  "name": "client",
   "version": "1.0.0",
   "description": "Pandora Box PWA - Media Management System",
   "main": "public/index.html",

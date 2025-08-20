@@ -9,20 +9,20 @@ const fs = require('fs');
 
 // Configuration
 const config = {
-  frontend: {
-    dir: path.join(__dirname, 'pandora-box-frontend'),
+  client: {
+    dir: path.join(__dirname, 'client'),
     buildCmd: 'npm run build',
     startCmd: 'npx http-server dist -p 8082'
   },
-  backend: {
-    dir: path.join(__dirname, 'pandora-box-backend'),
-    buildCmd: 'npx tsc --skipLibCheck --noEmitOnError',
+  server: {
+    dir: path.join(__dirname, 'server'),
+    buildCmd: 'npm run build',
     startCmd: 'npm start'
   },
   // Default port configuration
   ports: {
-    frontend: 8082,
-    backend: 3000
+    client: 8082,
+    server: 3000
   }
 };
 
@@ -75,8 +75,8 @@ function installDependencies(projectConfig, projectName) {
       stdio: 'inherit' 
     });
     
-    // Install additional dependencies for backend
-    if (projectName === 'Backend') {
+    // Install additional dependencies for server
+    if (projectName === 'Server') {
       log(`${colors.cyan}Installing additional dependencies for ${projectName}...${colors.reset}`);
       execSync('npm install axios express-validator jsonwebtoken bcrypt cors dotenv express', { 
         cwd: projectConfig.dir, 
@@ -99,8 +99,8 @@ function installDependencies(projectConfig, projectName) {
 function buildProject(projectConfig, projectName) {
   log(`\n${colors.bright}${colors.cyan}Building ${projectName}...${colors.reset}`);
   try {
-    // Normal build for frontend
-    if (projectName === 'Frontend') {
+    // Build for client using Vite
+    if (projectName === 'Client') {
       execSync(projectConfig.buildCmd, { 
         cwd: projectConfig.dir, 
         stdio: 'inherit' 
@@ -108,9 +108,13 @@ function buildProject(projectConfig, projectName) {
       log(`${colors.green}✓ ${projectName} built successfully${colors.reset}`);
       return true;
     } 
-    // Skip backend build for now
-    else if (projectName === 'Backend') {
-      log(`${colors.yellow}⚠ Skipping ${projectName} build due to TypeScript errors${colors.reset}`);
+    // Build for server using TypeScript
+    else if (projectName === 'Server') {
+      execSync(projectConfig.buildCmd, { 
+        cwd: projectConfig.dir, 
+        stdio: 'inherit' 
+      });
+      log(`${colors.green}✓ ${projectName} built successfully${colors.reset}`);
       return true;
     }
   } catch (error) {
@@ -191,28 +195,28 @@ async function main() {
   log(`\n${colors.bright}${colors.magenta}=== Pandora Box - Unified Build Script ===${colors.reset}\n`);
   
   // Validate project directories
-  const frontendValid = validateProjectDir(config.frontend.dir, 'Frontend');
-  const backendValid = validateProjectDir(config.backend.dir, 'Backend');
+  const clientValid = validateProjectDir(config.client.dir, 'Client');
+  const serverValid = validateProjectDir(config.server.dir, 'Server');
   
-  if (!frontendValid || !backendValid) {
+  if (!clientValid || !serverValid) {
     log('Aborting due to missing project directories', colors.red);
     process.exit(1);
   }
   
   // Install dependencies
-  const frontendDepsOk = installDependencies(config.frontend, 'Frontend');
-  const backendDepsOk = installDependencies(config.backend, 'Backend');
+  const clientDepsOk = installDependencies(config.client, 'Client');
+  const serverDepsOk = installDependencies(config.server, 'Server');
   
-  if (!frontendDepsOk || !backendDepsOk) {
+  if (!clientDepsOk || !serverDepsOk) {
     log('Aborting due to dependency installation failures', colors.red);
     process.exit(1);
   }
   
   // Build projects
-  const frontendBuildOk = buildProject(config.frontend, 'Frontend');
-  const backendBuildOk = buildProject(config.backend, 'Backend');
+  const clientBuildOk = buildProject(config.client, 'Client');
+  const serverBuildOk = buildProject(config.server, 'Server');
   
-  if (!frontendBuildOk || !backendBuildOk) {
+  if (!clientBuildOk || !serverBuildOk) {
     log('Aborting due to build failures', colors.red);
     process.exit(1);
   }
@@ -226,22 +230,20 @@ async function main() {
   // Start projects
   log(`\n${colors.bright}${colors.magenta}Starting services...${colors.reset}`);
   
-  // Only start frontend for now
-  const frontendProcess = startProject(config.frontend, 'Frontend');
-  let backendProcess = null;
+  // Start both client and server
+  const clientProcess = startProject(config.client, 'Client');
+  const serverProcess = startProject(config.server, 'Server');
   
   log(`\n${colors.green}${colors.bright}Services started!${colors.reset}`);
-  log(`${colors.green}Frontend: http://localhost:${config.ports.frontend}${colors.reset}`);
-  log(`${colors.yellow}Note: Backend service is not running due to build issues${colors.reset}`);
+  log(`${colors.green}Client: http://localhost:${config.ports.client}${colors.reset}`);
+  log(`${colors.green}Server: http://localhost:${config.ports.server}${colors.reset}`);
   log(`\n${colors.yellow}Press Ctrl+C to stop all services${colors.reset}\n`);
   
   // Handle process termination
   process.on('SIGINT', () => {
     log(`\n${colors.yellow}Shutting down services...${colors.reset}`);
-    frontendProcess.kill();
-    if (backendProcess) {
-      backendProcess.kill();
-    }
+    clientProcess.kill();
+    serverProcess.kill();
     log(`${colors.green}Services stopped${colors.reset}`);
     process.exit(0);
   });

@@ -139,11 +139,11 @@ docker-compose up -d
 node build.js
 
 # Or individually:
-# Frontend development
-cd pandora-box-frontend && npm run dev
+# Client development
+cd client && npm run dev
 
-# Backend development  
-cd pandora-box-backend && npm run dev
+# Server development  
+cd server && npm run dev
 ```
 
 **Development Servers:**
@@ -230,7 +230,7 @@ The included `docker-compose.yml` orchestrates:
 
 ```
 pandora-box/
-├── pandora-box-frontend/          # PWA Frontend
+├── client/                        # PWA Frontend
 │   ├── public/
 │   │   ├── index.html            # Main HTML file
 │   │   ├── manifest.json         # PWA manifest
@@ -245,7 +245,7 @@ pandora-box/
 │       ├── auth.js              # Authentication
 │       └── router.js            # Client-side routing
 │
-├── pandora-box-backend/           # TypeScript Backend
+├── server/                        # TypeScript Backend
 │   ├── src/
 │   │   ├── controllers/         # Route controllers
 │   │   ├── services/            # External API services
@@ -266,9 +266,9 @@ pandora-box/
 
 ### **Development Workflow**
 
-#### **Frontend Development**
+#### **Client Development**
 ```bash
-cd pandora-box-frontend
+cd client
 npm install
 npm run dev        # Start dev server with hot reload
 npm run build      # Production build
@@ -276,9 +276,9 @@ npm run test       # Run tests
 npm run lint       # ESLint check
 ```
 
-#### **Backend Development**
+#### **Server Development**
 ```bash
-cd pandora-box-backend  
+cd server  
 npm install
 npm run dev        # Start with nodemon + ts-node
 npm run build      # Compile TypeScript

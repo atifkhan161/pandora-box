@@ -1,0 +1,26 @@
+{
+  "name": "pandora-box",
+  "version": "1.0.0",
+  "description": "Self-hosted media management PWA for your home server ecosystem",
+  "main": "build.js",
+  "scripts": {
+    "dev": "node build.js",
+    "build": "node build.js --build-only",
+    "start": "node build.js",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "clean": "rimraf client/dist server/dist client/node_modules server/node_modules node_modules",
+    "test": "cd client && npm test && cd ../server && npm test"
+  },
+  "keywords": [
+    "pwa",
+    "media",
+    "docker",
+    "file-manager",
+    "self-hosted"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^5.0.0"
+  }
+}

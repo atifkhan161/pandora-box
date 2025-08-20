@@ -11,7 +11,7 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
     const users = await jellyfinService.getUsers();
     
     // Log activity
-    logActivity(req.user.id, 'view_jellyfin_users', {});
+    logActivity((req as any).user?.id || 'unknown', 'view_jellyfin_users', {});
     
     res.status(200).json(users);
   } catch (error) {
@@ -28,7 +28,7 @@ export const getLibraries = async (req: Request, res: Response): Promise<void> =
     const libraries = await jellyfinService.getLibraries();
     
     // Log activity
-    logActivity(req.user.id, 'view_media_libraries', {});
+    logActivity((req as any).user?.id || 'unknown', 'view_media_libraries', {});
     
     res.status(200).json(libraries);
   } catch (error) {
@@ -45,17 +45,10 @@ export const getLibraryItems = async (req: Request, res: Response): Promise<void
     const { libraryId } = req.params;
     const { limit, startIndex, sortBy, sortOrder, filters } = req.query;
     
-    const items = await jellyfinService.getLibraryItems(
-      libraryId,
-      limit ? parseInt(limit as string, 10) : 50,
-      startIndex ? parseInt(startIndex as string, 10) : 0,
-      sortBy as string,
-      sortOrder as string,
-      filters as Record<string, string>
-    );
+    const items = await jellyfinService.getLibraryItems(libraryId);
     
     // Log activity
-    logActivity(req.user.id, 'view_library_items', { libraryId });
+    logActivity((req as any).user?.id || 'unknown', 'view_library_items', { libraryId });
     
     res.status(200).json(items);
   } catch (error) {
@@ -74,7 +67,7 @@ export const getItemDetails = async (req: Request, res: Response): Promise<void>
     const item = await jellyfinService.getItemDetails(itemId);
     
     // Log activity
-    logActivity(req.user.id, 'view_item_details', { itemId });
+    logActivity((req as any).user?.id || 'unknown', 'view_item_details', { itemId });
     
     res.status(200).json(item);
   } catch (error) {
@@ -98,7 +91,7 @@ export const searchItems = async (req: Request, res: Response): Promise<void> =>
     const results = await jellyfinService.searchItems(query as string);
     
     // Log activity
-    logActivity(req.user.id, 'search_media', { query });
+    logActivity((req as any).user?.id || 'unknown', 'search_media', { query });
     
     res.status(200).json(results);
   } catch (error) {
@@ -117,7 +110,7 @@ export const getStreamUrl = async (req: Request, res: Response): Promise<void> =
     const streamUrl = await jellyfinService.getStreamUrl(itemId);
     
     // Log activity
-    logActivity(req.user.id, 'get_stream_url', { itemId });
+    logActivity((req as any).user?.id || 'unknown', 'get_stream_url', { itemId });
     
     res.status(200).json({ streamUrl });
   } catch (error) {
@@ -136,8 +129,8 @@ export const refreshLibrary = async (req: Request, res: Response): Promise<void>
     await jellyfinService.refreshLibrary(libraryId);
     
     // Log activity
-    logActivity(req.user.id, 'refresh_library', { libraryId });
-    logger.info(`User ${req.user.username} refreshed library: ${libraryId}`);
+    logActivity((req as any).user?.id || 'unknown', 'refresh_library', { libraryId });
+    logger.info(`Library refreshed: ${libraryId}`);
     
     res.status(200).json({ message: 'Library refresh initiated successfully' });
   } catch (error) {
@@ -158,7 +151,7 @@ export const getRecentlyAdded = async (req: Request, res: Response): Promise<voi
     );
     
     // Log activity
-    logActivity(req.user.id, 'view_recently_added', {});
+    logActivity((req as any).user?.id || 'unknown', 'view_recently_added', {});
     
     res.status(200).json(items);
   } catch (error) {

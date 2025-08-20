@@ -23,9 +23,7 @@ export const searchTorrents = async (req: Request, res: Response): Promise<void>
     const results = await jackettService.searchTorrents(query as string, category as string);
     
     // Log search activity
-    if (req.user) {
-      logActivity(req.user.id, 'search_torrents', { query, category });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'search_torrents', { query, category });
 
     res.status(200).json(results);
   } catch (error) {
@@ -90,8 +88,9 @@ export const addTorrent = async (req: Request, res: Response): Promise<void> => 
       url,
       mediaId: mediaId || null,
       mediaType: mediaType || null,
-      status: 'downloading',
-      addedBy: req.user.id,
+      status: 'downloading' as const,
+      addedBy: (req as any).user?.id || 'unknown',
+      createdAt: new Date(),
       addedAt: new Date(),
       completedAt: null
     };
@@ -99,8 +98,8 @@ export const addTorrent = async (req: Request, res: Response): Promise<void> => 
     downloads.insert(download);
     
     // Log activity
-    logActivity(req.user.id, 'add_torrent', { title, url });
-    logger.info(`User ${req.user.username} added torrent: ${title || url}`);
+    logActivity((req as any).user?.id || 'unknown', 'add_torrent', { title, url });
+    logger.info(`Torrent added: ${title || url}`);
 
     res.status(201).json({ message: 'Torrent added successfully', download });
   } catch (error) {
@@ -153,7 +152,7 @@ export const pauseTorrent = async (req: Request, res: Response): Promise<void> =
     
     if (success) {
       // Log activity
-      logActivity(req.user.id, 'pause_torrent', { hash });
+      logActivity((req as any).user?.id || 'unknown', 'pause_torrent', { hash });
       res.status(200).json({ message: 'Torrent paused successfully' });
     } else {
       res.status(500).json({ error: 'Failed to pause torrent' });
@@ -174,7 +173,7 @@ export const resumeTorrent = async (req: Request, res: Response): Promise<void> 
     
     if (success) {
       // Log activity
-      logActivity(req.user.id, 'resume_torrent', { hash });
+      logActivity((req as any).user?.id || 'unknown', 'resume_torrent', { hash });
       res.status(200).json({ message: 'Torrent resumed successfully' });
     } else {
       res.status(500).json({ error: 'Failed to resume torrent' });
@@ -207,7 +206,7 @@ export const deleteTorrent = async (req: Request, res: Response): Promise<void> 
       }
       
       // Log activity
-      logActivity(req.user.id, 'delete_torrent', { hash, deleteFiles: shouldDeleteFiles });
+      logActivity((req as any).user?.id || 'unknown', 'delete_torrent', { hash, deleteFiles: shouldDeleteFiles });
       res.status(200).json({ message: 'Torrent deleted successfully' });
     } else {
       res.status(500).json({ error: 'Failed to delete torrent' });

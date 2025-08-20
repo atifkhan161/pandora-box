@@ -17,7 +17,7 @@ const config = {
   server: {
     dir: path.join(__dirname, 'server'),
     buildCmd: 'npm run build',
-    startCmd: 'npm run dev'
+    startCmd: 'npm start'
   },
   // Default port configuration
   ports: {
@@ -108,9 +108,13 @@ function buildProject(projectConfig, projectName) {
       log(`${colors.green}✓ ${projectName} built successfully${colors.reset}`);
       return true;
     } 
-    // Skip server build for now due to TypeScript errors
+    // Build for server using TypeScript
     else if (projectName === 'Server') {
-      log(`${colors.yellow}⚠ Skipping ${projectName} TypeScript build - running from source${colors.reset}`);
+      execSync(projectConfig.buildCmd, { 
+        cwd: projectConfig.dir, 
+        stdio: 'inherit' 
+      });
+      log(`${colors.green}✓ ${projectName} built successfully${colors.reset}`);
       return true;
     }
   } catch (error) {

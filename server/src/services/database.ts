@@ -1,4 +1,4 @@
-import Loki from 'lokijs';
+import Loki, { Collection } from 'lokijs';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,17 +15,23 @@ export interface User {
 
 export interface Download {
   id: string;
-  hash: string;
-  name: string;
-  status: 'downloading' | 'seeding' | 'completed' | 'error' | 'paused';
-  progress: number;
-  size: number;
-  downloadSpeed: number;
-  uploadSpeed: number;
+  hash?: string;
+  name?: string;
+  title?: string;
+  url?: string;
+  mediaId?: string;
+  mediaType?: string;
+  status: 'downloading' | 'seeding' | 'completed' | 'error' | 'paused' | 'deleted';
+  progress?: number;
+  size?: number;
+  downloadSpeed?: number;
+  uploadSpeed?: number;
   eta?: number;
   path?: string;
-  userId: string;
+  userId?: string;
+  addedBy?: string;
   createdAt: Date;
+  addedAt?: Date;
   completedAt?: Date;
 }
 
@@ -46,11 +52,15 @@ export interface ActivityLog {
 
 export interface MediaCacheItem {
   id: string;
+  tmdbId?: number;
   type: 'movie' | 'tv' | 'person';
+  mediaType?: string;
+  seasonNumber?: number;
   category: 'trending' | 'popular' | 'top_rated' | 'upcoming' | 'search';
   data: any;
   createdAt: Date;
   expiresAt: Date;
+  cachedAt?: Date;
 }
 
 // Database and collections
@@ -205,6 +215,50 @@ export function cleanupMediaCache(): void {
   
   expiredItems.forEach(item => mediaCache.remove(item));
   console.log(`Cleaned up ${expiredItems.length} expired media cache items`);
+}
+
+/**
+ * Get user by username
+ */
+export function getUserByUsername(username: string): User | null {
+  return users.findOne({ username });
+}
+
+/**
+ * Create a new user
+ */
+export function createUser(userData: Omit<User, 'id' | 'createdAt'>): User {
+  const user: User = {
+    id: uuidv4(),
+    ...userData,
+    createdAt: new Date()
+  };
+  return users.insert(user);
+}
+
+/**
+ * Update settings
+ */
+export function updateSettings(key: string, value: string): void {
+  const setting = settings.findOne({ key });
+  if (setting) {
+    setting.value = value;
+    settings.update(setting);
+  } else {
+    settings.insert({ key, value, category: 'general', encrypted: false });
+  }
+}
+
+/**
+ * Add download history
+ */
+export function addDownloadHistory(downloadData: Omit<Download, 'id' | 'createdAt'>): Download {
+  const download: Download = {
+    id: uuidv4(),
+    ...downloadData,
+    createdAt: new Date()
+  };
+  return downloads.insert(download);
 }
 
 // Set up a periodic cleanup task for media cache

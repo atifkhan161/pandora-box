@@ -27,7 +27,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
     const jwtSecret = process.env.JWT_SECRET || 'default_jwt_secret';
     
     // Verify token
-    const decoded = jwt.verify(token, jwtSecret);
+    const decoded = jwt.verify(token, jwtSecret) as any;
     req.user = decoded;
     
     next();

@@ -19,9 +19,7 @@ export const searchMovies = async (req: Request, res: Response): Promise<void> =
     const results = await tmdbService.searchMovies(query as string, pageNumber);
     
     // Log search activity
-    if (req.user) {
-      logActivity(req.user.id, 'search_movies', { query, page: pageNumber });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'search_movies', { query, page: pageNumber });
 
     res.status(200).json(results);
   } catch (error) {
@@ -46,9 +44,7 @@ export const searchTVShows = async (req: Request, res: Response): Promise<void> 
     const results = await tmdbService.searchTVShows(query as string, pageNumber);
     
     // Log search activity
-    if (req.user) {
-      logActivity(req.user.id, 'search_tv_shows', { query, page: pageNumber });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'search_tv_shows', { query, page: pageNumber });
 
     res.status(200).json(results);
   } catch (error) {
@@ -72,7 +68,7 @@ export const getMovieDetails = async (req: Request, res: Response): Promise<void
 
     // Check cache first
     const mediaCache = getMediaCache();
-    const cachedMovie = mediaCache.findOne({ tmdbId: movieId, mediaType: 'movie' });
+    const cachedMovie = mediaCache.findOne({ tmdbId: movieId, type: 'movie' });
     
     let movieDetails;
     if (cachedMovie && cachedMovie.data) {
@@ -84,18 +80,20 @@ export const getMovieDetails = async (req: Request, res: Response): Promise<void
       // Cache the results
       if (movieDetails) {
         mediaCache.insert({
+          id: `movie_${movieId}`,
           tmdbId: movieId,
-          mediaType: 'movie',
+          type: 'movie',
+          category: 'search',
           data: movieDetails,
+          createdAt: new Date(),
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
           cachedAt: new Date()
         });
       }
     }
     
     // Log activity
-    if (req.user) {
-      logActivity(req.user.id, 'view_movie_details', { movieId });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'view_movie_details', { movieId });
 
     res.status(200).json(movieDetails);
   } catch (error) {
@@ -119,7 +117,7 @@ export const getTVShowDetails = async (req: Request, res: Response): Promise<voi
 
     // Check cache first
     const mediaCache = getMediaCache();
-    const cachedTVShow = mediaCache.findOne({ tmdbId: tvId, mediaType: 'tv' });
+    const cachedTVShow = mediaCache.findOne({ tmdbId: tvId, type: 'tv' });
     
     let tvDetails;
     if (cachedTVShow && cachedTVShow.data) {
@@ -131,18 +129,20 @@ export const getTVShowDetails = async (req: Request, res: Response): Promise<voi
       // Cache the results
       if (tvDetails) {
         mediaCache.insert({
+          id: `tv_${tvId}`,
           tmdbId: tvId,
-          mediaType: 'tv',
+          type: 'tv',
+          category: 'search',
           data: tvDetails,
+          createdAt: new Date(),
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
           cachedAt: new Date()
         });
       }
     }
     
     // Log activity
-    if (req.user) {
-      logActivity(req.user.id, 'view_tv_show_details', { tvId });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'view_tv_show_details', { tvId });
 
     res.status(200).json(tvDetails);
   } catch (error) {
@@ -169,7 +169,7 @@ export const getTVSeasonDetails = async (req: Request, res: Response): Promise<v
     const mediaCache = getMediaCache();
     const cachedSeason = mediaCache.findOne({ 
       tmdbId: tvId, 
-      mediaType: 'tv_season',
+      type: 'tv',
       seasonNumber: season 
     });
     
@@ -183,19 +183,21 @@ export const getTVSeasonDetails = async (req: Request, res: Response): Promise<v
       // Cache the results
       if (seasonDetails) {
         mediaCache.insert({
+          id: `tv_season_${tvId}_${season}`,
           tmdbId: tvId,
-          mediaType: 'tv_season',
+          type: 'tv',
           seasonNumber: season,
+          category: 'search',
           data: seasonDetails,
+          createdAt: new Date(),
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
           cachedAt: new Date()
         });
       }
     }
     
     // Log activity
-    if (req.user) {
-      logActivity(req.user.id, 'view_tv_season_details', { tvId, seasonNumber: season });
-    }
+    logActivity((req as any).user?.id || 'unknown', 'view_tv_season_details', { tvId, seasonNumber: season });
 
     res.status(200).json(seasonDetails);
   } catch (error) {

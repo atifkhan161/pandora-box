@@ -19,18 +19,18 @@ router.get('/', authenticate, getDirectoryContents);
 router.post('/directory', authenticate, createDirectory);
 
 /**
- * @route   DELETE /api/v1/files/:path
+ * @route   DELETE /api/v1/files/remove
  * @desc    Remove file or directory
  * @access  Private
  */
-router.delete('/:path', authenticate, removeFileOrDirectory);
+router.delete('/remove', authenticate, removeFileOrDirectory);
 
 /**
- * @route   PUT /api/v1/files/:oldPath
+ * @route   PUT /api/v1/files/rename
  * @desc    Rename file or directory
  * @access  Private
  */
-router.put('/:oldPath', authenticate, renameFileOrDirectory);
+router.put('/rename', authenticate, renameFileOrDirectory);
 
 /**
  * @route   POST /api/v1/files/copy
@@ -40,17 +40,17 @@ router.put('/:oldPath', authenticate, renameFileOrDirectory);
 router.post('/copy', authenticate, copyFileOrDirectory);
 
 /**
- * @route   GET /api/v1/files/content/:path
+ * @route   GET /api/v1/files/content
  * @desc    Get file content
  * @access  Private
  */
-router.get('/content/:path', authenticate, getFileContent);
+router.get('/content', authenticate, getFileContent);
 
 /**
- * @route   PUT /api/v1/files/content/:path
+ * @route   PUT /api/v1/files/content
  * @desc    Update file content
  * @access  Private
  */
-router.put('/content/:path', authenticate, updateFileContent);
+router.put('/content', authenticate, updateFileContent);
 
 export default router;

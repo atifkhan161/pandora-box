@@ -12,16 +12,18 @@ const config = {
   client: {
     dir: path.join(__dirname, 'client'),
     buildCmd: 'npm run build',
-    startCmd: 'npx http-server dist -p 8082'
+    startCmd: 'npx http-server dist -p 8082',
+    devCmd: 'npm run dev'
   },
   server: {
     dir: path.join(__dirname, 'server'),
     buildCmd: 'npm run build',
-    startCmd: 'npm start'
+    startCmd: 'npm start',
+    devCmd: 'npm run dev'
   },
   // Default port configuration
   ports: {
-    client: 8082,
+    client: 8080,
     server: 3000
   }
 };
@@ -186,11 +188,81 @@ function startProject(projectConfig, projectName) {
 }
 
 /**
+ * Start development servers
+ */
+function startDev() {
+  log(`\n${colors.bright}${colors.magenta}=== Pandora Box - Development Mode ===${colors.reset}\n`);
+  
+  // Validate project directories
+  const clientValid = validateProjectDir(config.client.dir, 'Client');
+  const serverValid = validateProjectDir(config.server.dir, 'Server');
+  
+  if (!clientValid || !serverValid) {
+    log('Aborting due to missing project directories', colors.red);
+    process.exit(1);
+  }
+  
+  log(`${colors.bright}${colors.magenta}Starting development servers...${colors.reset}`);
+  
+  // Start server first
+  const serverProcess = spawn('npm', ['run', 'dev'], {
+    cwd: config.server.dir,
+    shell: true
+  });
+  
+  serverProcess.stdout.on('data', (data) => {
+    console.log(`${colors.blue}[Server]${colors.reset} ${data.toString().trim()}`);
+  });
+  
+  serverProcess.stderr.on('data', (data) => {
+    console.error(`${colors.red}[Server ERROR]${colors.reset} ${data.toString().trim()}`);
+  });
+  
+  // Start client after a short delay
+  setTimeout(() => {
+    const clientProcess = spawn('npm', ['run', 'dev'], {
+      cwd: config.client.dir,
+      shell: true
+    });
+    
+    clientProcess.stdout.on('data', (data) => {
+      console.log(`${colors.green}[Client]${colors.reset} ${data.toString().trim()}`);
+    });
+    
+    clientProcess.stderr.on('data', (data) => {
+      console.error(`${colors.red}[Client ERROR]${colors.reset} ${data.toString().trim()}`);
+    });
+    
+    // Handle process termination
+    process.on('SIGINT', () => {
+      log(`\n${colors.yellow}Shutting down development servers...${colors.reset}`);
+      clientProcess.kill();
+      serverProcess.kill();
+      log(`${colors.green}Development servers stopped${colors.reset}`);
+      process.exit(0);
+    });
+    
+    log(`\n${colors.green}${colors.bright}Development servers started!${colors.reset}`);
+    log(`${colors.green}Client: http://localhost:${config.ports.client}${colors.reset}`);
+    log(`${colors.green}Server: http://localhost:${config.ports.server}${colors.reset}`);
+    log(`\n${colors.yellow}Press Ctrl+C to stop all services${colors.reset}\n`);
+    
+  }, 2000);
+}
+
+/**
  * Main function
  */
 async function main() {
   const args = process.argv.slice(2);
   const buildOnly = args.includes('--build-only');
+  const devMode = args.includes('--dev') || args.includes('dev');
+  
+  // Handle dev mode
+  if (devMode) {
+    startDev();
+    return;
+  }
   
   log(`\n${colors.bright}${colors.magenta}=== Pandora Box - Unified Build Script ===${colors.reset}\n`);
   
@@ -247,6 +319,20 @@ async function main() {
     log(`${colors.green}Services stopped${colors.reset}`);
     process.exit(0);
   });
+}
+
+// Show usage if no arguments provided
+if (process.argv.length === 2) {
+  log(`\n${colors.bright}${colors.magenta}Pandora Box - Build Script${colors.reset}\n`);
+  log(`${colors.cyan}Usage:${colors.reset}`);
+  log(`  node build.js                 - Build and start production servers`);
+  log(`  node build.js --build-only    - Build only, don't start servers`);
+  log(`  node build.js --dev           - Start development servers with hot reload`);
+  log(`  node build.js dev             - Start development servers with hot reload`);
+  log(`\n${colors.cyan}Development servers:${colors.reset}`);
+  log(`  Client: http://localhost:${config.ports.client}`);
+  log(`  Server: http://localhost:${config.ports.server}\n`);
+  process.exit(0);
 }
 
 // Run the main function

@@ -80,9 +80,9 @@ app.use('/api/v1/system', systemRoutes);
 app.use('/api/v1/library', libraryRoutes);
 
 // Serve PWA for any other route
-app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+// app.get('*', (req: Request, res: Response) => {
+//   res.sendFile(path.join(__dirname, '../public/index.html'));
+// });
 
 // Global error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

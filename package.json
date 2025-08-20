@@ -4,7 +4,7 @@
   "description": "Self-hosted media management PWA for your home server ecosystem",
   "main": "build.js",
   "scripts": {
-    "dev": "node build.js",
+    "dev": "node build.js --dev",
     "build": "node build.js --build-only",
     "start": "node build.js",
     "install:all": "npm install && cd client && npm install && cd ../server && npm install",

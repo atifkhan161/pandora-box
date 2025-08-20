@@ -894,23 +894,3 @@ input:checked + .switch-slider:before {
 .theme-toggle:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
-/* Light Theme Variables */
-[data-theme="light"] {
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
-  --color-surface-variant: #f1f3f5;
-  --color-primary: #e50096;
-  --color-primary-variant: #c4008c;
-  --color-secondary: #018786;
-  --color-secondary-variant: #03dac6;
-  --color-error: #b00020;
-  
-  --color-on-background: rgba(0, 0, 0, 0.87);
-  --color-on-surface: rgba(0, 0, 0, 0.87);
-  --color-on-primary: #ffffff;
-  --color-on-secondary: #000000;
-  
-  --color-border: rgba(0, 0, 0, 0.12);
-  --color-divider: rgba(0, 0, 0, 0.12);
-}

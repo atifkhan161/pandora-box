@@ -67,4 +67,13 @@ router.get('/containers/:id/logs', authenticate, authorize(['admin']), getContai
  */
 router.get('/logs', authenticate, authorize(['admin']), getActivityLogs);
 
+/**
+ * @route   GET /api/v1/system/stats
+ * @desc    Get system statistics
+ * @access  Private
+ */
+router.get('/stats', authenticate, (req, res) => {
+  res.json({ cpu: 0, memory: 0, disk: 0 });
+});
+
 export default router;

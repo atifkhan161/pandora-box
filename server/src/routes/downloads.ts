@@ -81,4 +81,13 @@ router.get('/transfer-info', authenticate, getTransferInfo);
  */
 router.get('/history', authenticate, getDownloadHistory);
 
+/**
+ * @route   GET /api/v1/downloads/stats
+ * @desc    Get download statistics
+ * @access  Private
+ */
+router.get('/stats', authenticate, (req, res) => {
+  res.json({ active: 0, completed: 0, paused: 0 });
+});
+
 export default router;

@@ -39,4 +39,13 @@ router.post('/register', authenticate, authorize(['admin']), registerUser);
  */
 router.post('/change-password', authenticate, changePassword);
 
+/**
+ * @route   POST /api/v1/auth/validate
+ * @desc    Validate JWT token
+ * @access  Private
+ */
+router.post('/validate', authenticate, (req, res) => {
+  res.json({ valid: true, user: req.user });
+});
+
 export default router;

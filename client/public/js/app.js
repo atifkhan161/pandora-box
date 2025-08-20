@@ -564,8 +564,10 @@ export class PandoraBoxApp {
       
       // Set up event listeners for navigation buttons
       dashboardPage.querySelectorAll('[data-page]').forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (e) => {
+          e.preventDefault();
           const page = button.getAttribute('data-page');
+          console.log('Dashboard button clicked:', page);
           this.navigateTo(page);
         });
       });

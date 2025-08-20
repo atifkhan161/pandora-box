@@ -60,4 +60,13 @@ router.post('/libraries/:libraryId/refresh', authenticate, refreshLibrary);
  */
 router.get('/recent', authenticate, getRecentlyAdded);
 
+/**
+ * @route   GET /api/v1/library/stats
+ * @desc    Get library statistics
+ * @access  Private
+ */
+router.get('/stats', authenticate, (req, res) => {
+  res.json({ movies: 0, shows: 0, episodes: 0, recent: [] });
+});
+
 export default router;

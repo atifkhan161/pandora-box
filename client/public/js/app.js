@@ -4,7 +4,7 @@
 
 export class PandoraBoxApp {
   constructor() {
-    this.apiBaseUrl = '/api';
+    this.apiBaseUrl = '/api/v1';
     this.currentPage = null;
     this.isAuthenticated = false;
     this.currentUser = null;
@@ -264,7 +264,10 @@ export class PandoraBoxApp {
       }
     } else {
       console.error(`Page not found: ${page}`);
-      this.navigateTo('dashboard');
+      // Prevent infinite recursion by not calling navigateTo again
+      if (page !== 'dashboard') {
+        this.navigateTo('dashboard');
+      }
     }
   }
   

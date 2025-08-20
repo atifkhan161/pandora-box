@@ -264,7 +264,10 @@ export class PandoraBoxApp {
       }
     } else {
       console.error(`Page not found: ${page}`);
-      this.navigateTo('dashboard');
+      // Prevent infinite recursion by checking if we're already trying to navigate to dashboard
+      if (page !== 'dashboard') {
+        this.navigateTo('dashboard');
+      }
     }
   }
   

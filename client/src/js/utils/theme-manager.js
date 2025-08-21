@@ -14,7 +14,7 @@ class ThemeManager {
     this.ACCENT_ATTRIBUTE = 'data-accent-color';
     
     // Available themes
-    this.themes = ['light', 'dark', 'system'];
+    this.themes = ['netflix', 'prime-video'];
     this.accentColors = ['blue', 'purple', 'green', 'orange', 'red'];
     
     // Bind methods
@@ -32,7 +32,7 @@ class ThemeManager {
    */
   init() {
     // Get saved preferences
-    const savedTheme = localStorage.getItem(this.THEME_STORAGE_KEY) || 'system';
+    const savedTheme = localStorage.getItem(this.THEME_STORAGE_KEY) || 'netflix';
     const savedAccent = localStorage.getItem(this.ACCENT_STORAGE_KEY) || 'blue';
     
     // Set initial theme
@@ -166,13 +166,11 @@ class ThemeManager {
   toggleTheme() {
     const currentTheme = this.getCurrentTheme();
     let newTheme;
-    
-    if (currentTheme === 'system') {
-      // If system, toggle to the opposite of the system theme
-      newTheme = this.getSystemTheme() === 'dark' ? 'light' : 'dark';
+
+    if (currentTheme === 'netflix') {
+      newTheme = 'prime-video';
     } else {
-      // Otherwise toggle between light and dark
-      newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      newTheme = 'netflix';
     }
     
     this.setTheme(newTheme);

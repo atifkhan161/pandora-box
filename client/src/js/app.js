@@ -711,7 +711,7 @@ export class PandoraBoxApp {
   async applyTheme() {
     try {
       const themeSetting = await this.getFromDB('settings', 'theme');
-      const theme = themeSetting ? themeSetting.value : 'dark';
+    const theme = themeSetting ? themeSetting.value : 'netflix';
       
       document.documentElement.setAttribute('data-theme', theme);
       this.updateThemeToggleIcon(theme);

@@ -387,16 +387,12 @@ class PageComponents {
                 <label>Theme Mode</label>
                 <div class="radio-group">
                   <div class="radio">
-                    <input type="radio" id="theme-light" name="theme" value="light">
-                    <label for="theme-light">Light</label>
+                    <input type="radio" id="theme-netflix" name="theme" value="netflix">
+                    <label for="theme-netflix">Netflix</label>
                   </div>
                   <div class="radio">
-                    <input type="radio" id="theme-dark" name="theme" value="dark">
-                    <label for="theme-dark">Dark</label>
-                  </div>
-                  <div class="radio">
-                    <input type="radio" id="theme-system" name="theme" value="system">
-                    <label for="theme-system">System Default</label>
+                    <input type="radio" id="theme-prime-video" name="theme" value="prime-video">
+                    <label for="theme-prime-video">Prime Video</label>
                   </div>
                 </div>
               </div>

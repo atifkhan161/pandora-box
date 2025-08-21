@@ -1,0 +1,21 @@
+:root {
+    --pb-primary-color: #e50914; /* Netflix Red */
+    --pb-background-color: #141414; /* Dark Gray */
+    --pb-text-color: #ffffff; /* White */
+    --pb-secondary-text-color: #a3a3a3; /* Light Gray */
+    --pb-card-background: #222222; /* Slightly lighter dark gray */
+    --pb-border-color: #333333; /* Even lighter dark gray */
+    --pb-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: var(--pb-font-family);
+    background-color: var(--pb-background-color);
+    color: var(--pb-text-color);
+}
+
+h1 {
+    color: var(--pb-primary-color);
+}

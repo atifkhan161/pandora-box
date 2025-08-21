@@ -16,6 +16,8 @@ import downloadsRoutes from './routes/downloads';
 import filesRoutes from './routes/files';
 import systemRoutes from './routes/system';
 import libraryRoutes from './routes/library';
+import movieRoutes from './routes/movies';
+import tvshowRoutes from './routes/tvshows';
 
 // Import database initialization
 import { initializeDatabase } from './services/database';
@@ -78,6 +80,8 @@ app.use('/api/v1/downloads', downloadsRoutes);
 app.use('/api/v1/files', filesRoutes);
 app.use('/api/v1/system', systemRoutes);
 app.use('/api/v1/library', libraryRoutes);
+app.use('/api/v1/movies', movieRoutes);
+app.use('/api/v1/tvshows', tvshowRoutes);
 
 // Serve PWA for any other route
 // app.get('*', (req: Request, res: Response) => {

@@ -32,7 +32,7 @@
 
 /* Light Theme (Default) */
 body {
-  background-color: var(--light-bg);
+  background-color: var(--color-background);
   color: var(--light-text);
 }
 

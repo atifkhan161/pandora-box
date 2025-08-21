@@ -4,7 +4,7 @@
 
 export class PandoraBoxApp {
   constructor() {
-    this.apiBaseUrl = '/api';
+    this.apiBaseUrl = '/api/v1';
     this.currentPage = null;
     this.isAuthenticated = false;
     this.currentUser = null;
@@ -450,6 +450,7 @@ export class PandoraBoxApp {
    * Load dashboard content
    */
   async loadDashboard() {
+    console.log('loadDashboard function called');
     try {
       const dashboardPage = document.getElementById('dashboard-page');
       
@@ -457,11 +458,16 @@ export class PandoraBoxApp {
       dashboardPage.innerHTML = '<div class="text-center"><span class="loader loader-lg"></span><p>Loading dashboard...</p></div>';
       
       // Fetch data from API
-      const [mediaStats, downloadStats, systemStats] = await Promise.all([
+      const [mediaStats, downloadStats, systemStats, trendingMovies, trendingTvShows] = await Promise.all([
         this.apiRequest('/library/stats'),
         this.apiRequest('/downloads/stats'),
-        this.apiRequest('/system/stats')
+        this.apiRequest('/system/stats'),
+        this.apiRequest('/movies/trending'),
+        this.apiRequest('/tvshows/trending')
       ]);
+
+      console.log('Trending Movies:', trendingMovies);
+      console.log('Trending TV Shows:', trendingTvShows);
       
       // Build dashboard content
       let html = `
@@ -555,7 +561,23 @@ export class PandoraBoxApp {
         <div class="mt-lg">
           <h3 class="mb-md">Recently Added Media</h3>
           <div class="grid">
-            ${this.renderRecentMedia(mediaStats.recent || [])}
+            ${this.renderMediaGrid(mediaStats.recent || [])}
+          </div>
+        </div>
+
+        <!-- Trending Movies -->
+        <div class="mt-lg">
+          <h3 class="mb-md">Trending Movies</h3>
+          <div class="grid">
+            ${this.renderMediaGrid(trendingMovies || [])}
+          </div>
+        </div>
+
+        <!-- Trending TV Shows -->
+        <div class="mt-lg">
+          <h3 class="mb-md">Trending TV Shows</h3>
+          <div class="grid">
+            ${this.renderMediaGrid(trendingTvShows || [])}
           </div>
         </div>
       `;
@@ -583,9 +605,9 @@ export class PandoraBoxApp {
   }
   
   /**
-   * Render recent media items
+   * Render a grid of media items
    */
-  renderRecentMedia(items) {
+  renderMediaGrid(items) {
     if (!items || items.length === 0) {
       return '<p>No recent media found.</p>';
     }
@@ -595,7 +617,7 @@ export class PandoraBoxApp {
         <img src="${item.poster || '/assets/images/placeholder-poster.jpg'}" alt="${item.title}" class="media-card-image">
         <div class="media-card-overlay">
           <h4 class="media-card-title">${item.title}</h4>
-          <div class="media-card-info">${item.year || ''} ${item.type === 'show' ? '• TV Show' : '• Movie'}</div>
+          <div class="media-card-info">${item.year || ''} ${item.media_type === 'tv' ? '• TV Show' : '• Movie'}</div>
         </div>
         <div class="media-card-actions">
           <button class="media-card-action" data-id="${item.id}" data-action="play">
@@ -870,7 +892,9 @@ export class PandoraBoxApp {
       }
       
       // Make the request
-      const response = await fetch(`${this.apiBaseUrl}${endpoint}`, {
+      const requestUrl = `${this.apiBaseUrl}${endpoint}`;
+      console.log('API Request URL:', requestUrl);
+      const response = await fetch(requestUrl, {
         method: options.method || 'GET',
         headers,
         body: options.body

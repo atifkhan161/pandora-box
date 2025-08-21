@@ -1,0 +1,13 @@
+.docker-page {
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.docker-page h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.docker-page p {
+    line-height: 1.6;
+}

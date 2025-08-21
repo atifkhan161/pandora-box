@@ -30,7 +30,7 @@ export class PandoraBoxApp {
     this.initUI();
     
     // Set up event listeners
-    this.setupEventListeners();
+
     
     // Load settings
     await this.loadSettings();
@@ -130,77 +130,75 @@ export class PandoraBoxApp {
    */
   initUI() {
     // Initialize UI components
-    this.loginPage = document.getElementById('login-page');
-    this.mainApp = document.getElementById('main-app');
     this.navSidebar = document.getElementById('nav-sidebar');
     this.pageContainer = document.getElementById('page-container');
     this.pageTitle = document.getElementById('page-title');
-    
-    // Initialize component libraries if needed
     this.initToastSystem();
+
+    // Initialize component libraries if needed
   }
   
   /**
    * Set up event listeners
    */
   setupEventListeners() {
-    // Login form submission
+    // Check if login form exists (means we are on the login page)
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
       loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         this.handleLogin();
       });
-    }
-    
-    // Navigation menu toggle
-    const menuToggle = document.getElementById('menu-toggle');
-    if (menuToggle) {
-      menuToggle.addEventListener('click', () => {
-        this.toggleNavSidebar();
+    } else { // Assume we are on the main app page
+      // Navigation menu toggle
+      const menuToggle = document.getElementById('menu-toggle');
+      if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+          this.toggleNavSidebar();
+        });
+      }
+      
+      // Theme toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          this.toggleTheme();
+        });
+      }
+      
+      // Logout button
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          this.handleLogout();
+        });
+      }
+      
+      // Navigation links
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const page = link.getAttribute('data-page');
+          this.navigateTo(page);
+          
+          // Close sidebar on mobile
+          if (window.innerWidth < 768) {
+            this.toggleNavSidebar(false);
+          }
+        });
       });
-    }
     
-    // Theme toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('click', () => {
-        this.toggleTheme();
-      });
-    }
-    
-    // Logout button
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        this.handleLogout();
-      });
-    }
-    
-    // Navigation links
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const page = link.getAttribute('data-page');
-        this.navigateTo(page);
-        
-        // Close sidebar on mobile
-        if (window.innerWidth < 768) {
-          this.toggleNavSidebar(false);
-        }
-      });
-    });
-    
-    // Search input
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-      searchInput.addEventListener('input', this.debounce(() => {
-        const query = searchInput.value.trim();
-        if (query.length >= 2) {
-          this.handleSearch(query);
-        }
-      }, 300));
+      // Search input
+      const searchInput = document.getElementById('search-input');
+      if (searchInput) {
+        searchInput.addEventListener('input', this.debounce(() => {
+          const query = searchInput.value.trim();
+          if (query.length >= 2) {
+            this.handleSearch(query);
+          }
+        }, 300));
+      }
     }
   }
   
@@ -238,36 +236,21 @@ export class PandoraBoxApp {
       return;
     }
     
-    // Hide all pages
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
-    
-    // Show the requested page
-    const targetPage = document.getElementById(`${page}-page`);
-    if (targetPage) {
-      targetPage.classList.add('active');
-      this.currentPage = page;
-      
-      // Update page title
-      this.updatePageTitle(page);
-      
-      // Update active nav link
-      this.updateActiveNavLink(page);
-      
-      // Load page content if needed
-      this.loadPageContent(page);
-      
-      // Update URL if not triggered by popstate
-      if (!skipPushState) {
-        const url = page === 'dashboard' ? '/' : `/${page}`;
-        window.history.pushState({ page }, '', url);
-      }
-    } else {
-      console.error(`Page not found: ${page}`);
-      // Prevent infinite recursion by checking if we're already trying to navigate to dashboard
-      if (page !== 'dashboard') {
-        this.navigateTo('dashboard');
-      }
+    this.currentPage = page;
+
+    // Update page title
+    this.updatePageTitle(page);
+
+    // Update active nav link
+    this.updateActiveNavLink(page);
+
+    // Load page content
+    this.loadPage(page);
+
+    // Update URL if not triggered by popstate
+    if (!skipPushState) {
+      const url = page === 'dashboard' ? '/' : `/${page}`;
+      window.history.pushState({ page }, '', url);
     }
   }
   
@@ -305,51 +288,105 @@ export class PandoraBoxApp {
     });
   }
   
-  /**
-   * Load content for the current page
-   */
-  async loadPageContent(page) {
-    switch (page) {
-      case 'dashboard':
-        await this.loadDashboard();
-        break;
-      case 'media':
-        await this.loadMediaLibrary();
-        break;
-      case 'downloads':
-        await this.loadDownloads();
-        break;
-      case 'files':
-        await this.loadFileManager();
-        break;
-      case 'docker':
-        await this.loadDockerContainers();
-        break;
-      case 'jellyfin':
-        await this.loadJellyfin();
-        break;
-      case 'settings':
-        await this.loadSettings();
-        break;
-      default:
-        break;
+  async loadPage(page) {
+    try {
+      const pageContainer = document.getElementById('page-container');
+      if (!pageContainer) {
+        console.error('Page container not found');
+        return;
+      }
+
+      // Load HTML
+      const htmlContent = await this.loadPageContent(`pages/${page}.html`);
+      pageContainer.innerHTML = htmlContent;
+
+      // Load CSS
+      let oldLink = document.getElementById('page-css');
+      if (oldLink) {
+        oldLink.remove();
+      }
+      const link = document.createElement('link');
+      link.id = 'page-css';
+      link.rel = 'stylesheet';
+      link.href = `/pages/${page}.css`;
+      document.head.appendChild(link);
+
+      // Load JavaScript
+      let oldScript = document.getElementById('page-script');
+      if (oldScript) {
+        oldScript.remove();
+      }
+      const script = document.createElement('script');
+      script.id = 'page-script';
+      script.type = 'module';
+      script.src = `/pages/${page}.js`;
+      document.body.appendChild(script);
+
+      // Wait for script to load and then call init function if it exists
+      await new Promise(resolve => {
+        script.onload = resolve;
+        script.onerror = () => {
+          console.warn(`Failed to load script: /pages/${page}.js`);
+          resolve(); // Resolve anyway to not block the app
+        };
+      });
+
+      // Call init function if it exists in the loaded module
+      const module = await import(`/pages/${page}.js`);
+      const initFunctionName = `init${page.charAt(0).toUpperCase() + page.slice(1)}`;
+      if (module[initFunctionName]) {
+        module[initFunctionName]();
+      } else {
+        console.warn(`Init function ${initFunctionName} not found in /pages/${page}.js`);
+      }
+
+    } catch (error) {
+      console.error(`Failed to load ${page} page:`, error);
+      // Fallback to dashboard if a page fails to load
+      if (page !== 'dashboard') {
+        this.navigateTo('dashboard');
+      }
     }
+  }
+
+  async loadPageContent(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.text();
   }
   
   /**
    * Show login page
    */
-  showLogin() {
-    this.loginPage.style.display = 'flex';
-    this.mainApp.style.display = 'none';
+  async showLogin() {
+    try {
+      const response = await fetch('/pages/login.html');
+      const html = await response.text();
+      document.getElementById('login-page').innerHTML = html;
+      document.getElementById('login-page').classList.add('active');
+      document.getElementById('main-app').classList.remove('active');
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Failed to load login page:', error);
+    }
   }
   
   /**
    * Show main application
    */
-  showApp() {
-    this.loginPage.style.display = 'none';
-    this.mainApp.style.display = 'block';
+  async showApp() {
+    try {
+      const response = await fetch('/pages/main-app.html');
+      const html = await response.text();
+      document.getElementById('main-app').innerHTML = html;
+      document.getElementById('login-page').classList.remove('active');
+      document.getElementById('main-app').classList.add('active');
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('Failed to load main app:', error);
+    }
   }
   
   /**
@@ -446,242 +483,9 @@ export class PandoraBoxApp {
     }
   }
   
-  /**
-   * Load dashboard content
-   */
-  async loadDashboard() {
-    console.log('loadDashboard function called');
-    try {
-      const dashboardPage = document.getElementById('dashboard-page');
-      
-      // Show loading state
-      dashboardPage.innerHTML = '<div class="text-center"><span class="loader loader-lg"></span><p>Loading dashboard...</p></div>';
-      
-      // Fetch data from API
-      const [mediaStats, downloadStats, systemStats, trendingMovies, trendingTvShows] = await Promise.all([
-        this.apiRequest('/library/stats'),
-        this.apiRequest('/downloads/stats'),
-        this.apiRequest('/system/stats'),
-        this.apiRequest('/movies/trending'),
-        this.apiRequest('/tvshows/trending')
-      ]);
 
-      console.log('Trending Movies:', trendingMovies);
-      console.log('Trending TV Shows:', trendingTvShows);
-      
-      // Build dashboard content
-      let html = `
-        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--spacing-lg);">
-          <!-- Media Stats Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Media Library</h3>
-            </div>
-            <div class="card-body">
-              <div class="flex justify-between mb-md">
-                <div>
-                  <div class="text-xl">${mediaStats.movies || 0}</div>
-                  <div>Movies</div>
-                </div>
-                <div>
-                  <div class="text-xl">${mediaStats.shows || 0}</div>
-                  <div>TV Shows</div>
-                </div>
-                <div>
-                  <div class="text-xl">${mediaStats.episodes || 0}</div>
-                  <div>Episodes</div>
-                </div>
-              </div>
-              <button class="btn btn-primary btn-sm" data-page="media">Browse Library</button>
-            </div>
-          </div>
-          
-          <!-- Downloads Stats Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Downloads</h3>
-            </div>
-            <div class="card-body">
-              <div class="flex justify-between mb-md">
-                <div>
-                  <div class="text-xl">${downloadStats.active || 0}</div>
-                  <div>Active</div>
-                </div>
-                <div>
-                  <div class="text-xl">${downloadStats.completed || 0}</div>
-                  <div>Completed</div>
-                </div>
-                <div>
-                  <div class="text-xl">${downloadStats.paused || 0}</div>
-                  <div>Paused</div>
-                </div>
-              </div>
-              <button class="btn btn-primary btn-sm" data-page="downloads">Manage Downloads</button>
-            </div>
-          </div>
-          
-          <!-- System Stats Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">System</h3>
-            </div>
-            <div class="card-body">
-              <div class="mb-sm">
-                <div class="flex justify-between mb-xs">
-                  <span>CPU</span>
-                  <span>${systemStats.cpu || 0}%</span>
-                </div>
-                <div class="progress">
-                  <div class="progress-bar" style="width: ${systemStats.cpu || 0}%"></div>
-                </div>
-              </div>
-              <div class="mb-sm">
-                <div class="flex justify-between mb-xs">
-                  <span>Memory</span>
-                  <span>${systemStats.memory || 0}%</span>
-                </div>
-                <div class="progress">
-                  <div class="progress-bar" style="width: ${systemStats.memory || 0}%"></div>
-                </div>
-              </div>
-              <div class="mb-sm">
-                <div class="flex justify-between mb-xs">
-                  <span>Disk</span>
-                  <span>${systemStats.disk || 0}%</span>
-                </div>
-                <div class="progress">
-                  <div class="progress-bar" style="width: ${systemStats.disk || 0}%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Recent Media -->
-        <div class="mt-lg">
-          <h3 class="mb-md">Recently Added Media</h3>
-          <div class="grid">
-            ${this.renderMediaGrid(mediaStats.recent || [])}
-          </div>
-        </div>
+  
 
-        <!-- Trending Movies -->
-        <div class="mt-lg">
-          <h3 class="mb-md">Trending Movies</h3>
-          <div class="grid">
-            ${this.renderMediaGrid(trendingMovies || [])}
-          </div>
-        </div>
-
-        <!-- Trending TV Shows -->
-        <div class="mt-lg">
-          <h3 class="mb-md">Trending TV Shows</h3>
-          <div class="grid">
-            ${this.renderMediaGrid(trendingTvShows || [])}
-          </div>
-        </div>
-      `;
-      
-      dashboardPage.innerHTML = html;
-      
-      // Set up event listeners for navigation buttons
-      dashboardPage.querySelectorAll('[data-page]').forEach(button => {
-        button.addEventListener('click', () => {
-          const page = button.getAttribute('data-page');
-          this.navigateTo(page);
-        });
-      });
-    } catch (error) {
-      console.error('Error loading dashboard:', error);
-      document.getElementById('dashboard-page').innerHTML = `
-        <div class="alert alert-error">
-          <div class="alert-content">
-            <div class="alert-title">Error Loading Dashboard</div>
-            <p class="alert-message">Failed to load dashboard content. Please try again later.</p>
-          </div>
-        </div>
-      `;
-    }
-  }
-  
-  /**
-   * Render a grid of media items
-   */
-  renderMediaGrid(items) {
-    if (!items || items.length === 0) {
-      return '<p>No recent media found.</p>';
-    }
-    
-    return items.map(item => `
-      <div class="media-card">
-        <img src="${item.poster || '/assets/images/placeholder-poster.jpg'}" alt="${item.title}" class="media-card-image">
-        <div class="media-card-overlay">
-          <h4 class="media-card-title">${item.title}</h4>
-          <div class="media-card-info">${item.year || ''} ${item.media_type === 'tv' ? '• TV Show' : '• Movie'}</div>
-        </div>
-        <div class="media-card-actions">
-          <button class="media-card-action" data-id="${item.id}" data-action="play">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </button>
-          <button class="media-card-action" data-id="${item.id}" data-action="info">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-  
-  /**
-   * Load media library content
-   */
-  async loadMediaLibrary() {
-    // Implementation for media library page
-    // This would fetch media items from the API and render them
-  }
-  
-  /**
-   * Load downloads content
-   */
-  async loadDownloads() {
-    // Implementation for downloads page
-    // This would fetch active downloads and render them
-  }
-  
-  /**
-   * Load file manager content
-   */
-  async loadFileManager() {
-    // Implementation for file manager page
-    // This would fetch directory contents and render them
-  }
-  
-  /**
-   * Load docker containers content
-   */
-  async loadDockerContainers() {
-    // Implementation for docker containers page
-    // This would fetch container information and render it
-  }
-  
-  /**
-   * Load Jellyfin content
-   */
-  async loadJellyfin() {
-    // Implementation for Jellyfin page
-    // This would load the Jellyfin interface or redirect to it
-  }
-  
-  /**
-   * Load settings content
-   */
-  async loadSettings() {
-    // Implementation for settings page
-    // This would fetch user settings and render the form
-  }
   
   /**
    * Handle search input
@@ -726,27 +530,8 @@ export class PandoraBoxApp {
   updateThemeToggleIcon(theme) {
     const themeToggle = document.getElementById('theme-toggle');
     if (themeToggle) {
-      if (theme === 'dark') {
-        themeToggle.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        `;
-      } else {
-        themeToggle.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-          </svg>
-        `;
-      }
+      themeToggle.querySelector('.icon-sun').classList.toggle('hidden', theme === 'dark');
+      themeToggle.querySelector('.icon-moon').classList.toggle('hidden', theme === 'light');
     }
   }
   
@@ -781,31 +566,26 @@ export class PandoraBoxApp {
         let icon = '';
         switch (this.type) {
           case 'success':
-            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+            iconClass = 'icon-check-circle';
             break;
           case 'error':
-            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+            iconClass = 'icon-x-circle';
             break;
           case 'warning':
-            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
+            iconClass = 'icon-alert-triangle';
             break;
           default: // info
-            icon = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+            iconClass = 'icon-info';
         }
         
         // Build toast content
         let toastContent = `
-          <div class="toast-icon">${icon}</div>
+          <div class="toast-icon"><i class="${iconClass}"></i></div>
           <div class="toast-content">
             <p class="toast-message">${this.message}</p>
             ${this.action ? `<button class="btn btn-sm btn-primary mt-sm">${this.action.text}</button>` : ''}
           </div>
-          <button class="toast-close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
+          <button class="toast-close"><i class="icon-x"></i></button>
         `;
         
         toast.innerHTML = toastContent;

@@ -6,12 +6,12 @@ import rateLimit from 'express-rate-limit'
 import { config } from '@/config/config.js'
 import { logger } from '@/utils/logger.js'
 import { errorHandler } from '@/middleware/errorHandler.js'
-import { authMiddleware } from '@/middleware/auth.js'
+import { initAuthMiddleware, authenticate } from '@/middleware/auth.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
 
 // Import routes
-import authRoutes from '@/routes/auth.js'
+import { createAuthRoutes } from '@/routes/auth.js'
 import healthRoutes from '@/routes/health.js'
 import mediaRoutes from '@/routes/media.js'
 import downloadRoutes from '@/routes/downloads.js'
@@ -37,6 +37,9 @@ class PandoraBoxServer {
       // Initialize database
       await this.databaseService.init()
       logger.info('Database initialized successfully')
+
+      // Initialize authentication middleware
+      initAuthMiddleware(this.databaseService)
 
       // Initialize WebSocket service
       await this.wsService.init()
@@ -144,15 +147,15 @@ class PandoraBoxServer {
 
     // Public routes (no authentication required)
     router.use('/health', healthRoutes)
-    router.use('/auth', authRoutes)
+    router.use('/auth', createAuthRoutes(this.databaseService))
 
     // Protected routes (authentication required)
-    router.use('/media', authMiddleware, mediaRoutes)
-    router.use('/downloads', authMiddleware, downloadRoutes)
-    router.use('/files', authMiddleware, filesRoutes)
-    router.use('/docker', authMiddleware, dockerRoutes)
-    router.use('/jellyfin', authMiddleware, jellyfinRoutes)
-    router.use('/settings', authMiddleware, settingsRoutes)
+    router.use('/media', authenticate, mediaRoutes)
+    router.use('/downloads', authenticate, downloadRoutes)
+    router.use('/files', authenticate, filesRoutes)
+    router.use('/docker', authenticate, dockerRoutes)
+    router.use('/jellyfin', authenticate, jellyfinRoutes)
+    router.use('/settings', authenticate, settingsRoutes)
 
     return router
   }

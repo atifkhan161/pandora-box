@@ -19,7 +19,7 @@ import { createDownloadsRoutes } from '@/routes/downloads.js'
 import healthRoutes from '@/routes/health.js'
 import mediaRoutes from '@/routes/media.js'
 import downloadRoutes from '@/routes/downloads.js'
-import filesRoutes from '@/routes/files.js'
+import { createFilesRoutes } from '@/routes/files.js'
 import dockerRoutes from '@/routes/docker.js'
 import jellyfinRoutes from '@/routes/jellyfin.js'
 import settingsRoutes from '@/routes/settings.js'
@@ -162,8 +162,8 @@ class PandoraBoxServer {
     // Protected routes (authentication required)
     router.use('/media', authenticate, createMediaRoutes(this.apiProxyService, this.databaseService))
     router.use('/streaming', authenticate, createStreamingRoutes(this.apiProxyService, this.databaseService))
-    router.use('/downloads', authenticate, createDownloadsRoutes(this.apiProxyService, this.databaseService))
-    router.use('/files', authenticate, filesRoutes)
+    router.use('/downloads', authenticate, createDownloadsRoutes(this.apiProxyService, this.databaseService, this.wsService))
+    router.use('/files', authenticate, createFilesRoutes(this.apiProxyService, this.databaseService, this.wsService))
     router.use('/docker', authenticate, dockerRoutes)
     router.use('/jellyfin', authenticate, jellyfinRoutes)
     router.use('/settings', authenticate, settingsRoutes)

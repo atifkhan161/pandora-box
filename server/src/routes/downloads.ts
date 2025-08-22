@@ -1,19 +1,28 @@
 import { Router } from 'express'
 import TorrentController from '@/controllers/torrent.js'
+import { QBittorrentController } from '@/controllers/qbittorrent.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
+import { DatabaseService } from '@/services/database.js'
+import { WebSocketService } from '@/services/websocket.js'
+import { requireAuth } from '@/middleware/auth.js'
 
 const router = Router()
 
 // Create a function to initialize routes with services
-export const createDownloadsRoutes = (apiProxy: ApiProxyService, dbService: any) => {
+export const createDownloadsRoutes = (apiProxy: ApiProxyService, dbService: DatabaseService, wsService: WebSocketService) => {
   const torrentController = new TorrentController(apiProxy, dbService)
+  const qbController = new QBittorrentController(apiProxy, dbService, wsService)
+
+  // Apply authentication middleware to all routes
+  router.use(requireAuth)
 
   // Downloads management routes
-  router.get('/', (req, res) => {
-    res.status(501).json({ success: false, message: 'Downloads list endpoint not yet implemented' })
-  })
+  router.get('/', qbController.listTorrents)
+  router.get('/transfer-info', qbController.getTransferInfo)
+  router.get('/preferences', qbController.getPreferences)
+  router.get('/:hash/details', qbController.getTorrentDetails)
 
-  // Torrent search routes
+  // Torrent search routes (Jackett integration)
   router.get('/search-torrents', torrentController.searchTorrents)
   router.get('/indexers', torrentController.getIndexers)
   router.get('/categories', torrentController.getCategories)
@@ -22,18 +31,9 @@ export const createDownloadsRoutes = (apiProxy: ApiProxyService, dbService: any)
   router.get('/search-history', torrentController.getSearchHistory)
   router.delete('/search-history', torrentController.clearSearchHistory)
 
-  // Download management (placeholder for qBittorrent integration)
-  router.post('/add', (req, res) => {
-    res.status(501).json({ success: false, message: 'Add download endpoint not yet implemented' })
-  })
-
-  router.post('/:id/control', (req, res) => {
-    res.status(501).json({ success: false, message: 'Download control endpoint not yet implemented' })
-  })
-
-  router.delete('/:id', (req, res) => {
-    res.status(501).json({ success: false, message: 'Delete download endpoint not yet implemented' })
-  })
+  // Download management (qBittorrent integration)
+  router.post('/add', qbController.addTorrent)
+  router.post('/:hash/control', qbController.controlTorrent)
 
   return router
 }

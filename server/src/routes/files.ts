@@ -1,22 +1,30 @@
 import { Router } from 'express'
+import CloudCommanderController from '@/controllers/cloudcommander.js'
+import { ApiProxyService } from '@/services/apiProxy.js'
+import { DatabaseService } from '@/services/database.js'
+import { WebSocketService } from '@/services/websocket.js'
+import { requireAuth } from '@/middleware/auth.js'
 
 const router = Router()
 
-// File management routes - placeholder
-router.get('/browse', (req, res) => {
-  res.status(501).json({ success: false, message: 'File management endpoints not yet implemented' })
-})
+// Create a function to initialize routes with services
+export const createFilesRoutes = (apiProxy: ApiProxyService, dbService: DatabaseService, wsService: WebSocketService) => {
+  const cloudCmdController = new CloudCommanderController(apiProxy, dbService, wsService)
 
-router.post('/move', (req, res) => {
-  res.status(501).json({ success: false, message: 'File management endpoints not yet implemented' })
-})
+  // Apply authentication middleware to all routes
+  router.use(requireAuth)
 
-router.post('/copy', (req, res) => {
-  res.status(501).json({ success: false, message: 'File management endpoints not yet implemented' })
-})
+  // File browsing
+  router.get('/browse', cloudCmdController.browseDirectory)
+  
+  // File operations
+  router.post('/operation', cloudCmdController.performFileOperation)
+  router.post('/move-to-media', cloudCmdController.moveToMediaFolder)
+  
+  // Operation history
+  router.get('/operations', cloudCmdController.getFileOperationHistory)
 
-router.delete('/:path', (req, res) => {
-  res.status(501).json({ success: false, message: 'File management endpoints not yet implemented' })
-})
+  return router
+}
 
 export default router

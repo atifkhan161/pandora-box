@@ -6,6 +6,7 @@ import { WebSocketService } from '@/services/websocket.js'
 import { asyncHandler, ValidationError, ExternalServiceError } from '@/middleware/errorHandler.js'
 import { logger, logHelpers } from '@/utils/logger.js'
 import { getPathsConfig } from '@/config/config.js'
+import JellyfinController from '@/controllers/jellyfin.js'
 
 export class CloudCommanderController {
   private apiProxy: ApiProxyService
@@ -149,7 +150,7 @@ export class CloudCommanderController {
 
       // Check if we need to trigger Jellyfin scan
       if ((operation === 'move' || operation === 'copy') && this.isMediaFolder(targetPath!)) {
-        this.triggerJellyfinScan(targetPath!)
+        await this.triggerJellyfinScan(targetPath!)
       }
 
       res.json({
@@ -384,9 +385,8 @@ export class CloudCommanderController {
 
   private async triggerJellyfinScan(path: string): Promise<void> {
     try {
-      // This would integrate with Jellyfin controller to trigger library scan
-      logger.info(`File moved to media folder, triggering Jellyfin scan for: ${path}`)
-      // TODO: Implement Jellyfin scan trigger
+      await JellyfinController.triggerAutoScan(path, this.apiProxy, this.dbService)
+      logger.info(`Jellyfin auto-scan triggered for path: ${path}`)
     } catch (error) {
       logger.error('Error triggering Jellyfin scan:', error)
     }

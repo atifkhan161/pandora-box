@@ -2,7 +2,7 @@
 export const routes = [
   {
     path: '/',
-    component: () => import('./pages/home.js'),
+    component: () => import('./pages/dashboard.js'),
     options: {
       transition: 'f7-cover'
     }
@@ -16,68 +16,19 @@ export const routes = [
   },
   {
     path: '/downloads/',
-    component: () => import('./pages/downloads.js'),
-    tabs: [
-      {
-        path: '/',
-        id: 'active-downloads'
-      },
-      {
-        path: '/history/',
-        id: 'download-history'
-      }
-    ]
+    component: () => import('./pages/downloads.js')
   },
   {
     path: '/files/',
-    component: () => import('./pages/files.js'),
-    master: true,
-    detailRoutes: [
-      {
-        path: '/files/folder/*/',
-        component: () => import('./pages/folder-details.js')
-      }
-    ]
+    component: () => import('./pages/files.js')
   },
   {
     path: '/docker/',
-    component: () => import('./pages/docker.js'),
-    tabs: [
-      {
-        path: '/',
-        id: 'containers'
-      },
-      {
-        path: '/stacks/',
-        id: 'stacks'
-      }
-    ]
+    component: () => import('./pages/docker.js')
   },
   {
     path: '/settings/',
-    component: () => import('./pages/settings.js'),
-    routes: [
-      {
-        path: '/profile/',
-        component: () => import('./pages/settings/profile.js')
-      },
-      {
-        path: '/api-tokens/',
-        component: () => import('./pages/settings/api-tokens.js')
-      },
-      {
-        path: '/team/',
-        component: () => import('./pages/settings/team.js')
-      },
-      {
-        path: '/theme/',
-        component: () => import('./pages/settings/theme.js')
-      },
-      {
-        path: '/notifications/',
-        component: () => import('./pages/settings/notifications.js')
-      }
-    ]
+    component: () => import('./pages/settings.js')
   },
   {
     path: '/media/:type/:id/',

@@ -20,8 +20,8 @@ import healthRoutes from '@/routes/health.js'
 import mediaRoutes from '@/routes/media.js'
 import downloadRoutes from '@/routes/downloads.js'
 import { createFilesRoutes } from '@/routes/files.js'
-import dockerRoutes from '@/routes/docker.js'
-import jellyfinRoutes from '@/routes/jellyfin.js'
+import { createDockerRoutes } from '@/routes/docker.js'
+import { createJellyfinRoutes } from '@/routes/jellyfin.js'
 import settingsRoutes from '@/routes/settings.js'
 
 class PandoraBoxServer {
@@ -164,8 +164,8 @@ class PandoraBoxServer {
     router.use('/streaming', authenticate, createStreamingRoutes(this.apiProxyService, this.databaseService))
     router.use('/downloads', authenticate, createDownloadsRoutes(this.apiProxyService, this.databaseService, this.wsService))
     router.use('/files', authenticate, createFilesRoutes(this.apiProxyService, this.databaseService, this.wsService))
-    router.use('/docker', authenticate, dockerRoutes)
-    router.use('/jellyfin', authenticate, jellyfinRoutes)
+    router.use('/docker', authenticate, createDockerRoutes(this.apiProxyService, this.databaseService, this.wsService))
+    router.use('/jellyfin', authenticate, createJellyfinRoutes(this.apiProxyService, this.databaseService, this.wsService))
     router.use('/settings', authenticate, settingsRoutes)
 
     return router

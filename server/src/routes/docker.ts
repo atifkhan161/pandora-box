@@ -1,22 +1,31 @@
 import { Router } from 'express'
+import PortainerController from '@/controllers/portainer.js'
+import { ApiProxyService } from '@/services/apiProxy.js'
+import { DatabaseService } from '@/services/database.js'
+import { WebSocketService } from '@/services/websocket.js'
+import { requireAuth, requireAdmin } from '@/middleware/auth.js'
 
 const router = Router()
 
-// Docker container management routes - placeholder
-router.get('/containers', (req, res) => {
-  res.status(501).json({ success: false, message: 'Docker endpoints not yet implemented' })
-})
+// Create a function to initialize routes with services
+export const createDockerRoutes = (apiProxy: ApiProxyService, dbService: DatabaseService, wsService: WebSocketService) => {
+  const portainerController = new PortainerController(apiProxy, dbService, wsService)
 
-router.get('/stacks', (req, res) => {
-  res.status(501).json({ success: false, message: 'Docker endpoints not yet implemented' })
-})
+  // Apply authentication middleware to all routes
+  router.use(requireAuth)
+  router.use(requireAdmin) // Docker management requires admin role
 
-router.post('/containers/:id/restart', (req, res) => {
-  res.status(501).json({ success: false, message: 'Docker endpoints not yet implemented' })
-})
+  // Container management
+  router.get('/containers', portainerController.getContainers)
+  router.post('/containers/:containerId/control', portainerController.controlContainer)
+  router.get('/containers/:containerId/logs', portainerController.getContainerLogs)
+  router.get('/containers/:containerId/stats', portainerController.getContainerStats)
 
-router.get('/containers/:id/logs', (req, res) => {
-  res.status(501).json({ success: false, message: 'Docker endpoints not yet implemented' })
-})
+  // Stack management
+  router.get('/stacks', portainerController.getStacks)
+  router.post('/stacks/:stackId/control', portainerController.controlStack)
+
+  return router
+}
 
 export default router

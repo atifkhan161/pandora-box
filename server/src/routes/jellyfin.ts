@@ -1,22 +1,32 @@
 import { Router } from 'express'
+import JellyfinController from '@/controllers/jellyfin.js'
+import { ApiProxyService } from '@/services/apiProxy.js'
+import { DatabaseService } from '@/services/database.js'
+import { WebSocketService } from '@/services/websocket.js'
+import { requireAuth } from '@/middleware/auth.js'
 
 const router = Router()
 
-// Jellyfin media server routes - placeholder
-router.post('/scan/:libraryType', (req, res) => {
-  res.status(501).json({ success: false, message: 'Jellyfin endpoints not yet implemented' })
-})
+// Create a function to initialize routes with services
+export const createJellyfinRoutes = (apiProxy: ApiProxyService, dbService: DatabaseService, wsService: WebSocketService) => {
+  const jellyfinController = new JellyfinController(apiProxy, dbService, wsService)
 
-router.get('/scan/status', (req, res) => {
-  res.status(501).json({ success: false, message: 'Jellyfin endpoints not yet implemented' })
-})
+  // Apply authentication middleware to all routes
+  router.use(requireAuth)
 
-router.get('/libraries', (req, res) => {
-  res.status(501).json({ success: false, message: 'Jellyfin endpoints not yet implemented' })
-})
+  // Server info and status
+  router.get('/info', jellyfinController.getServerInfo)
+  router.get('/libraries', jellyfinController.getLibraries)
+  router.get('/stats', jellyfinController.getLibraryStats)
 
-router.get('/stats', (req, res) => {
-  res.status(501).json({ success: false, message: 'Jellyfin endpoints not yet implemented' })
-})
+  // Library scanning
+  router.post('/scan', jellyfinController.scanLibrary)
+  router.get('/scan/status', jellyfinController.getScanStatus)
+
+  // Library maintenance
+  router.post('/libraries/:libraryId/clean', jellyfinController.cleanLibrary)
+
+  return router
+}
 
 export default router

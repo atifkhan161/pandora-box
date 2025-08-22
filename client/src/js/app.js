@@ -10,6 +10,7 @@ import { routes, isProtectedRoute, isAdminRoute } from './routes.js'
 // Import Services
 import { authService } from './services/auth.js'
 import { apiService } from './services/api.js'
+import websocketService from './services/websocket.js'
 
 // Framework7 App Configuration
 const app = new Framework7({
@@ -196,6 +197,41 @@ const app = new Framework7({
       if (hours > 0) return `${hours}h ago`
       if (minutes > 0) return `${minutes}m ago`
       return 'Just now'
+    },
+    
+    // WebSocket connection management
+    connectWebSocket: function() {
+      websocketService.connect().then(connected => {
+        if (connected) {
+          console.log('WebSocket connected successfully')
+          
+          // Subscribe to user-specific channels
+          const user = authService.getCurrentUser()
+          if (user) {
+            websocketService.subscribe(`downloads:${user.id}`)
+            websocketService.subscribe(`file-operations:${user.id}`)
+            websocketService.subscribe(`notifications:${user.id}`)
+          }
+          
+          // Set up connection status monitoring
+          websocketService.onConnectionStatusChange((isConnected) => {
+            if (isConnected) {
+              this.showSuccess('Real-time connection established')
+            } else {
+              this.showWarning('Real-time connection lost')
+            }
+          })
+          
+        } else {
+          console.warn('Failed to connect WebSocket')
+        }
+      }).catch(error => {
+        console.error('WebSocket connection error:', error)
+      })
+    },
+    
+    disconnectWebSocket: function() {
+      websocketService.disconnect()
     }
   },
   
@@ -212,6 +248,9 @@ const app = new Framework7({
       this.checkAuth().then(isAuthenticated => {
         if (!isAuthenticated && isProtectedRoute(this.view.main.router.currentRoute.path)) {
           this.view.main.router.navigate('/login/')
+        } else if (isAuthenticated) {
+          // Initialize WebSocket connection for authenticated users
+          this.connectWebSocket()
         }
       })
     },

@@ -25,7 +25,12 @@ export class ApiProxyService {
   constructor(dbService: DatabaseService) {
     this.dbService = dbService
     this.httpFactory = new HttpClientFactory(dbService)
-    this.initializeServices()
+    // Initialize services will be called in init method
+  }
+
+  // Initialize the API proxy service
+  async init(): Promise<void> {
+    await this.initializeServices()
   }
 
   // Initialize all external services

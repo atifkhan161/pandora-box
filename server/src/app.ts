@@ -9,9 +9,13 @@ import { errorHandler } from '@/middleware/errorHandler.js'
 import { initAuthMiddleware, authenticate } from '@/middleware/auth.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
+import { ApiProxyService } from '@/services/apiProxy.js'
 
 // Import routes
 import { createAuthRoutes } from '@/routes/auth.js'
+import { createMediaRoutes } from '@/routes/media.js'
+import { createStreamingRoutes } from '@/routes/streaming.js'
+import { createDownloadsRoutes } from '@/routes/downloads.js'
 import healthRoutes from '@/routes/health.js'
 import mediaRoutes from '@/routes/media.js'
 import downloadRoutes from '@/routes/downloads.js'
@@ -24,11 +28,13 @@ class PandoraBoxServer {
   private app: Express
   private databaseService: DatabaseService
   private wsService: WebSocketService
+  private apiProxyService: ApiProxyService
 
   constructor() {
     this.app = express()
     this.databaseService = new DatabaseService()
     this.wsService = new WebSocketService()
+    this.apiProxyService = new ApiProxyService(this.databaseService)
   }
 
   // Initialize the server
@@ -40,6 +46,10 @@ class PandoraBoxServer {
 
       // Initialize authentication middleware
       initAuthMiddleware(this.databaseService)
+
+      // Initialize API proxy service
+      await this.apiProxyService.init()
+      logger.info('API Proxy Service initialized successfully')
 
       // Initialize WebSocket service
       await this.wsService.init()
@@ -150,8 +160,9 @@ class PandoraBoxServer {
     router.use('/auth', createAuthRoutes(this.databaseService))
 
     // Protected routes (authentication required)
-    router.use('/media', authenticate, mediaRoutes)
-    router.use('/downloads', authenticate, downloadRoutes)
+    router.use('/media', authenticate, createMediaRoutes(this.apiProxyService, this.databaseService))
+    router.use('/streaming', authenticate, createStreamingRoutes(this.apiProxyService, this.databaseService))
+    router.use('/downloads', authenticate, createDownloadsRoutes(this.apiProxyService, this.databaseService))
     router.use('/files', authenticate, filesRoutes)
     router.use('/docker', authenticate, dockerRoutes)
     router.use('/jellyfin', authenticate, jellyfinRoutes)
@@ -282,6 +293,11 @@ class PandoraBoxServer {
   // Get WebSocket service
   public getWebSocketService(): WebSocketService {
     return this.wsService
+  }
+
+  // Get API proxy service
+  public getApiProxyService(): ApiProxyService {
+    return this.apiProxyService
   }
 }
 

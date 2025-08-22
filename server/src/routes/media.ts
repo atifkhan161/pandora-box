@@ -1,22 +1,36 @@
 import { Router } from 'express'
+import MediaController from '@/controllers/media.js'
+import { ApiProxyService } from '@/services/apiProxy.js'
 
 const router = Router()
 
-// Media discovery routes - placeholder
-router.get('/trending/:type/:timeWindow', (req, res) => {
-  res.status(501).json({ success: false, message: 'Media endpoints not yet implemented' })
-})
+// Create a function to initialize routes with services
+export const createMediaRoutes = (apiProxy: ApiProxyService, dbService: any) => {
+  const mediaController = new MediaController(apiProxy, dbService)
 
-router.get('/popular/:type', (req, res) => {
-  res.status(501).json({ success: false, message: 'Media endpoints not yet implemented' })
-})
+  // Trending content
+  router.get('/trending/:type/:timeWindow', mediaController.getTrending)
 
-router.get('/search', (req, res) => {
-  res.status(501).json({ success: false, message: 'Media endpoints not yet implemented' })
-})
+  // Popular content
+  router.get('/popular/:type', mediaController.getPopular)
 
-router.get('/:type/:id', (req, res) => {
-  res.status(501).json({ success: false, message: 'Media endpoints not yet implemented' })
-})
+  // Top rated content
+  router.get('/top-rated/:type', mediaController.getTopRated)
+
+  // Search content
+  router.get('/search', mediaController.search)
+
+  // Content details
+  router.get('/:type/:id', mediaController.getDetails)
+
+  // Genres
+  router.get('/genres/:type', mediaController.getGenres)
+
+  // Cache management
+  router.delete('/cache', mediaController.clearCache)
+  router.get('/cache/stats', mediaController.getCacheStats)
+
+  return router
+}
 
 export default router

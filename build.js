@@ -56,6 +56,11 @@ function validateProjectDir(dir, name) {
     log(`Error: ${name} directory not found at ${dir}`, colors.red);
     return false;
   }
+
+  // Skip package.json check for client directory as it's a static site
+  if (name === 'Client') {
+    return true;
+  }
   
   const packageJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
@@ -101,13 +106,9 @@ function installDependencies(projectConfig, projectName) {
 function buildProject(projectConfig, projectName) {
   log(`\n${colors.bright}${colors.cyan}Building ${projectName}...${colors.reset}`);
   try {
-    // Build for client using Vite
+    // Client is a static site, no build step needed
     if (projectName === 'Client') {
-      execSync(projectConfig.buildCmd, { 
-        cwd: projectConfig.dir, 
-        stdio: 'inherit' 
-      });
-      log(`${colors.green}✓ ${projectName} built successfully${colors.reset}`);
+      log(`${colors.green}✓ ${projectName} is a static site, no build step required.${colors.reset}`);
       return true;
     } 
     // Build for server using TypeScript

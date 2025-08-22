@@ -1,5 +1,5 @@
 import { apiService } from '../services/api.js'
-import authService from '../services/auth.js'
+import { authService } from '../services/auth.js'
 
 export default {
   path: '/settings/',

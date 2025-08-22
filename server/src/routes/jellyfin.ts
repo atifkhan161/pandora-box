@@ -3,7 +3,7 @@ import JellyfinController from '@/controllers/jellyfin.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
-import { requireAuth } from '@/middleware/auth.js'
+import { authenticate } from '@/middleware/auth.js'
 
 const router = Router()
 
@@ -12,7 +12,7 @@ export const createJellyfinRoutes = (apiProxy: ApiProxyService, dbService: Datab
   const jellyfinController = new JellyfinController(apiProxy, dbService, wsService)
 
   // Apply authentication middleware to all routes
-  router.use(requireAuth)
+  router.use(authenticate)
 
   // Server info and status
   router.get('/info', jellyfinController.getServerInfo)

@@ -1,8 +1,11 @@
 // Import Framework7
 import Framework7 from 'framework7/lite'
 
-// Import Framework7-Icons
-import Framework7Icons from 'framework7-icons'
+// Import Framework7 CSS
+import 'framework7/css/bundle'
+
+// Import Framework7-Icons CSS
+import 'framework7-icons/css/framework7-icons.css'
 
 // Import Routes
 import { routes, isProtectedRoute, isAdminRoute } from './routes.js'

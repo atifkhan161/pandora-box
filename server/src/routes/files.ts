@@ -3,7 +3,7 @@ import CloudCommanderController from '@/controllers/cloudcommander.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
-import { requireAuth } from '@/middleware/auth.js'
+import { authenticate } from '@/middleware/auth.js'
 
 const router = Router()
 
@@ -12,7 +12,7 @@ export const createFilesRoutes = (apiProxy: ApiProxyService, dbService: Database
   const cloudCmdController = new CloudCommanderController(apiProxy, dbService, wsService)
 
   // Apply authentication middleware to all routes
-  router.use(requireAuth)
+  router.use(authenticate)
 
   // File browsing
   router.get('/browse', cloudCmdController.browseDirectory)

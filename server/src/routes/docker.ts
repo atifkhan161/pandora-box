@@ -3,7 +3,7 @@ import PortainerController from '@/controllers/portainer.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
-import { requireAuth, requireAdmin } from '@/middleware/auth.js'
+import { authenticate, requireAdmin } from '@/middleware/auth.js'
 
 const router = Router()
 
@@ -12,7 +12,7 @@ export const createDockerRoutes = (apiProxy: ApiProxyService, dbService: Databas
   const portainerController = new PortainerController(apiProxy, dbService, wsService)
 
   // Apply authentication middleware to all routes
-  router.use(requireAuth)
+  router.use(authenticate)
   router.use(requireAdmin) // Docker management requires admin role
 
   // Container management

@@ -4,7 +4,7 @@ import { QBittorrentController } from '@/controllers/qbittorrent.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
-import { requireAuth } from '@/middleware/auth.js'
+import { authenticate } from '@/middleware/auth.js'
 
 const router = Router()
 
@@ -14,7 +14,7 @@ export const createDownloadsRoutes = (apiProxy: ApiProxyService, dbService: Data
   const qbController = new QBittorrentController(apiProxy, dbService, wsService)
 
   // Apply authentication middleware to all routes
-  router.use(requireAuth)
+  router.use(authenticate)
 
   // Downloads management routes
   router.get('/', qbController.listTorrents)

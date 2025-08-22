@@ -3,7 +3,7 @@
  * Handles connection to backend WebSocket server for live notifications
  */
 
-import authService from './auth.js'
+import { authService } from './auth.js'
 
 class WebSocketService {
   constructor() {

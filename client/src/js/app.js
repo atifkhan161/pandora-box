@@ -142,17 +142,17 @@ const app = new Framework7({
     
     // Show error toast
     showError(message) {
-      return this.showToast(message, 'error', '<i class="f7-icons">exclamationmark_triangle</i>')
+      return app.methods.showToast(message, 'error', '<i class="f7-icons">exclamationmark_triangle</i>')
     },
     
     // Show success toast
     showSuccess(message) {
-      return this.showToast(message, 'success', '<i class="f7-icons">checkmark_circle</i>')
+      return app.methods.showToast(message, 'success', '<i class="f7-icons">checkmark_circle</i>')
     },
     
     // Show warning toast
     showWarning(message) {
-      return this.showToast(message, 'warning', '<i class="f7-icons">exclamationmark_circle</i>')
+      return app.methods.showToast(message, 'warning', '<i class="f7-icons">exclamationmark_circle</i>')
     },
     
     // Format file size
@@ -219,9 +219,9 @@ const app = new Framework7({
           // Set up connection status monitoring
           websocketService.onConnectionStatusChange((isConnected) => {
             if (isConnected) {
-              this.showSuccess('Real-time connection established')
+              app.methods.showSuccess('Real-time connection established')
             } else {
-              this.showWarning('Real-time connection lost')
+              app.methods.showWarning('Real-time connection lost')
             }
           })
           
@@ -248,12 +248,12 @@ const app = new Framework7({
       apiService.init()
       
       // Check authentication on app start
-      this.checkAuth().then(isAuthenticated => {
-        if (!isAuthenticated && isProtectedRoute(this.view.main.router.currentRoute.path)) {
-          this.view.main.router.navigate('/login/')
+      app.methods.checkAuth().then(isAuthenticated => {
+        if (!isAuthenticated && isProtectedRoute(app.view.main.router.currentRoute.path)) {
+          app.view.main.router.navigate('/login/')
         } else if (isAuthenticated) {
           // Initialize WebSocket connection for authenticated users
-          this.connectWebSocket()
+          app.methods.connectWebSocket()
         }
       })
     },
@@ -264,9 +264,9 @@ const app = new Framework7({
       
       // Check if route requires authentication
       if (isProtectedRoute(path)) {
-        this.checkAuth().then(isAuthenticated => {
+        app.methods.checkAuth().then(isAuthenticated => {
           if (!isAuthenticated) {
-            this.view.main.router.navigate('/login/')
+            app.view.main.router.navigate('/login/')
             return false
           }
           
@@ -274,8 +274,8 @@ const app = new Framework7({
           if (isAdminRoute(path)) {
             const userRole = authService.getCurrentUser()?.role
             if (userRole !== 'admin') {
-              this.showError('Access denied. Admin privileges required.')
-              this.view.main.router.back()
+              app.methods.showError('Access denied. Admin privileges required.')
+              app.view.main.router.back()
               return false
             }
           }
@@ -286,9 +286,9 @@ const app = new Framework7({
     // Connection status
     connectionChanged: function (isOnline) {
       if (isOnline) {
-        this.showSuccess('Connection restored')
+        app.methods.showSuccess('Connection restored')
       } else {
-        this.showWarning('No internet connection')
+        app.methods.showWarning('No internet connection')
       }
     }
   }

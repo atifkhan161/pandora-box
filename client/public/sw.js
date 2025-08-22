@@ -14,8 +14,9 @@ const STATIC_FILES = [
   '/js/services/auth.js',
   '/js/services/api.js',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg',
+  '/icons/favicon.svg'
 ]
 
 // API endpoints to cache
@@ -301,8 +302,8 @@ self.addEventListener('push', (event) => {
   const options = {
     title: data.title || 'Pandora Box',
     body: data.body || 'New notification',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/icons/icon-192x192.svg',
+    badge: '/icons/favicon.svg',
     data: data.data || {},
     actions: data.actions || [],
     requireInteraction: data.requireInteraction || false,

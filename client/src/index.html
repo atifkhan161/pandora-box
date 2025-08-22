@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#e50914">
@@ -14,8 +15,10 @@
   <link rel="stylesheet" href="./css/app.css">
   
   <!-- PWA Icons -->
-  <link rel="icon" type="image/png" sizes="196x196" href="/icons/icon-192x192.png">
-  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.svg">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.svg">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="/manifest.json">
@@ -83,7 +86,7 @@
                     <div class="item-inner">
                       <div class="item-title item-label">Username</div>
                       <div class="item-input-wrap">
-                        <input type="text" name="username" placeholder="Enter username" required>
+                        <input type="text" name="username" placeholder="Enter username" autocomplete="username" required>
                       </div>
                     </div>
                   </li>
@@ -91,7 +94,7 @@
                     <div class="item-inner">
                       <div class="item-title item-label">Password</div>
                       <div class="item-input-wrap">
-                        <input type="password" name="password" placeholder="Enter password" required>
+                        <input type="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
                       </div>
                     </div>
                   </li>

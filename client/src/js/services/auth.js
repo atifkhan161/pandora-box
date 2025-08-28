@@ -27,15 +27,36 @@ export class AuthService {
         rememberMe
       })
 
-      // Store tokens
-      if (response.accessToken) {
-        await this.jwtManager.setTokens(response.accessToken, response.refreshToken)
+      // Handle server response format
+      const accessToken = response.data?.token || response.accessToken
+      const refreshToken = response.data?.refreshToken || response.refreshToken
+      const user = response.data?.user || response.user
+
+      // Store tokens based on rememberMe preference
+      if (accessToken) {
+        if (rememberMe) {
+          // Store in localStorage for persistent login
+          await this.jwtManager.setTokens(accessToken, refreshToken)
+          console.log('Tokens stored persistently (remember me enabled)')
+        } else {
+          // Store in sessionStorage for session-only login
+          await this.jwtManager.setSessionTokens(accessToken, refreshToken)
+          console.log('Tokens stored for session only')
+        }
       }
 
-      return response
+      return {
+        success: true,
+        user: user,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      }
     } catch (error) {
       console.error('Login failed:', error)
-      throw error
+      return {
+        success: false,
+        error: error.message || 'Login failed'
+      }
     }
   }
 
@@ -90,7 +111,8 @@ export class AuthService {
    */
   async verifyToken() {
     try {
-      return await this.client.get('/auth/verify')
+      const response = await this.client.get('/auth/verify')
+      return response.data || response
     } catch (error) {
       console.error('Token verification failed:', error)
       throw error
@@ -103,7 +125,8 @@ export class AuthService {
    */
   async getProfile() {
     try {
-      return await this.client.get('/auth/profile')
+      const response = await this.client.get('/auth/profile')
+      return response.data?.user || response.user || response
     } catch (error) {
       console.error('Failed to get user profile:', error)
       throw error
@@ -189,8 +212,9 @@ export class AuthService {
    */
   hasStoredAuth() {
     try {
-      const accessToken = localStorage.getItem('pb_access_token')
-      return !!accessToken
+      const localToken = localStorage.getItem('pb_access_token')
+      const sessionToken = sessionStorage.getItem('pb_access_token')
+      return !!(localToken || sessionToken)
     } catch (error) {
       return false
     }
@@ -201,6 +225,28 @@ export class AuthService {
    */
   clearTokens() {
     this.jwtManager.clearTokens()
+  }
+
+  /**
+   * Get current access token
+   * @returns {Promise<string|null>}
+   */
+  async getToken() {
+    return await this.jwtManager.getValidToken()
+  }
+
+  /**
+   * Get authorization headers for API requests
+   * @returns {Promise<Object>}
+   */
+  async getAuthHeaders() {
+    const token = await this.getToken()
+    if (token) {
+      return {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+    return {}
   }
 
   /**

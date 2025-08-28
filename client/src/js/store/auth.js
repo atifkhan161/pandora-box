@@ -31,18 +31,56 @@ class AuthStore {
       console.log(`Auth store init - hasStoredAuth: ${hasStoredAuth}`);
       
       if (hasStoredAuth) {
-        // For now, just check if tokens exist without server validation
-        // Server validation will happen on first API call
-        this.setState({
-          isAuthenticated: true,
-          user: { username: 'user' }, // Placeholder user
-          loading: false
-        });
-        
-        console.log('User has stored auth, setting authenticated state');
-        
-        // Initialize WebSocket connection
-        await this.initializeWebSocket();
+        try {
+          // First check if we can get a valid token
+          const token = await this.authService.getToken();
+          console.log('Retrieved token:', token ? 'Token exists' : 'No token found');
+          
+          if (token) {
+            // Validate stored tokens and get user data
+            console.log('Validating stored authentication...');
+            const authState = await this.authService.getAuthState();
+            
+            if (authState.isAuthenticated && authState.user) {
+              this.setState({
+                isAuthenticated: true,
+                user: authState.user,
+                loading: false
+              });
+              
+              console.log('User authenticated with stored tokens:', authState.user);
+              
+              // Initialize WebSocket connection
+              await this.initializeWebSocket();
+            } else {
+              // Stored tokens are invalid, clear them
+              console.log('Stored tokens are invalid, clearing...');
+              this.authService.clearTokens();
+              this.setState({ 
+                isAuthenticated: false,
+                user: null,
+                loading: false 
+              });
+            }
+          } else {
+            // No valid token found
+            console.log('No valid token found');
+            this.setState({ 
+              isAuthenticated: false,
+              user: null,
+              loading: false 
+            });
+          }
+        } catch (validationError) {
+          console.error('Token validation failed:', validationError);
+          // Clear invalid tokens
+          this.authService.clearTokens();
+          this.setState({ 
+            isAuthenticated: false,
+            user: null,
+            loading: false 
+          });
+        }
       } else {
         // No stored auth - user needs to login
         console.log('No stored auth found, user needs to login');

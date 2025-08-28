@@ -216,7 +216,7 @@ export class JWTManager {
   }
 
   /**
-   * Store tokens in localStorage
+   * Store tokens in localStorage (persistent storage)
    * @param {string} accessToken 
    * @param {string} refreshToken 
    */
@@ -235,12 +235,37 @@ export class JWTManager {
   }
 
   /**
+   * Store tokens in sessionStorage (session-only storage)
+   * @param {string} accessToken 
+   * @param {string} refreshToken 
+   */
+  async setSessionTokens(accessToken, refreshToken) {
+    try {
+      if (accessToken) {
+        sessionStorage.setItem(this.storageKeys.accessToken, accessToken);
+      }
+      if (refreshToken) {
+        sessionStorage.setItem(this.storageKeys.refreshToken, refreshToken);
+      }
+    } catch (error) {
+      console.error('Error storing session tokens:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get access token from storage
    * @returns {string|null}
    */
   async getAccessToken() {
     try {
-      return localStorage.getItem(this.storageKeys.accessToken);
+      // Check localStorage first (persistent storage)
+      let token = localStorage.getItem(this.storageKeys.accessToken);
+      if (token) return token;
+      
+      // Check sessionStorage (session-only storage)
+      token = sessionStorage.getItem(this.storageKeys.accessToken);
+      return token;
     } catch (error) {
       console.error('Error getting access token:', error);
       return null;
@@ -253,7 +278,13 @@ export class JWTManager {
    */
   async getRefreshToken() {
     try {
-      return localStorage.getItem(this.storageKeys.refreshToken);
+      // Check localStorage first (persistent storage)
+      let token = localStorage.getItem(this.storageKeys.refreshToken);
+      if (token) return token;
+      
+      // Check sessionStorage (session-only storage)
+      token = sessionStorage.getItem(this.storageKeys.refreshToken);
+      return token;
     } catch (error) {
       console.error('Error getting refresh token:', error);
       return null;
@@ -323,8 +354,12 @@ export class JWTManager {
 
       const data = await response.json();
       
-      if (data.accessToken) {
-        await this.setTokens(data.accessToken, data.refreshToken || refreshToken);
+      // Handle server response format
+      const accessToken = data.data?.token || data.accessToken;
+      const newRefreshToken = data.data?.refreshToken || data.refreshToken;
+      
+      if (accessToken) {
+        await this.setTokens(accessToken, newRefreshToken || refreshToken);
         return true;
       }
 
@@ -341,8 +376,14 @@ export class JWTManager {
    */
   clearTokens() {
     try {
+      // Clear from localStorage
       localStorage.removeItem(this.storageKeys.accessToken);
       localStorage.removeItem(this.storageKeys.refreshToken);
+      
+      // Clear from sessionStorage
+      sessionStorage.removeItem(this.storageKeys.accessToken);
+      sessionStorage.removeItem(this.storageKeys.refreshToken);
+      
       this.clearRefreshTimer();
     } catch (error) {
       console.error('Error clearing tokens:', error);

@@ -1,30 +1,26 @@
 // Downloads page controller
-export default {
-  path: '/downloads/',
-  componentUrl: './pages/downloads.html',
+import authStore from '../store/auth.js'
+
+// Register page events with Framework7
+document.addEventListener('DOMContentLoaded', () => {
+  const app = window.app
   
-  on: {
-    pageInit(e, page) {
+  if (app) {
+    app.on('pageInit', '.page[data-name="downloads"]', function (page) {
       console.log('Downloads page initialized')
-      
       // Initialize downloads functionality here
       // This will be implemented in task 4.1
-    },
+    })
     
-    pageBeforeIn(e, page) {
+    app.on('pageBeforeIn', '.page[data-name="downloads"]', function (page) {
       console.log('Downloads page before in')
-    },
-    
-    pageAfterIn(e, page) {
-      console.log('Downloads page after in')
-    },
-    
-    pageBeforeOut(e, page) {
-      console.log('Downloads page before out')
-    },
-    
-    pageAfterOut(e, page) {
-      console.log('Downloads page after out')
-    }
+      
+      // Check authentication
+      const isAuthenticated = authStore.getters.isAuthenticated.value
+      if (!isAuthenticated) {
+        page.app.views.main.router.navigate('/login/', { clearPreviousHistory: true })
+        return false
+      }
+    })
   }
-}
+})

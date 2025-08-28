@@ -215,6 +215,95 @@ body {
   }
 }
 
+/* Toast styles */
+.toast-success {
+  --f7-toast-bg-color: var(--pb-success);
+  --f7-toast-text-color: #ffffff;
+}
+
+.toast-error {
+  --f7-toast-bg-color: var(--pb-error);
+  --f7-toast-text-color: #ffffff;
+}
+
+.toast .toast-icon {
+  margin-right: 8px;
+}
+
+/* Dialog styles */
+.dialog {
+  --f7-dialog-bg-color: var(--pb-surface-variant);
+  --f7-dialog-text-color: var(--pb-text-primary);
+  --f7-dialog-title-text-color: var(--pb-text-primary);
+  --f7-dialog-button-text-color: var(--pb-primary);
+}
+
+/* Popup styles */
+.popup {
+  --f7-popup-bg-color: var(--pb-background);
+}
+
+.popup .navbar {
+  --f7-navbar-bg-color: var(--pb-surface);
+}
+
+/* Sheet styles */
+.sheet-modal {
+  --f7-sheet-bg-color: var(--pb-surface-variant);
+}
+
+/* Actions styles */
+.actions-modal {
+  --f7-actions-bg-color: var(--pb-surface-variant);
+  --f7-actions-button-text-color: var(--pb-text-primary);
+  --f7-actions-button-pressed-bg-color: var(--pb-border);
+}
+
+.actions-modal .actions-group-title {
+  color: var(--pb-text-secondary);
+}
+
+/* Notification styles */
+.notification {
+  --f7-notification-bg-color: var(--pb-surface-variant);
+  --f7-notification-text-color: var(--pb-text-primary);
+  --f7-notification-title-text-color: var(--pb-text-primary);
+  border: 1px solid var(--pb-border);
+}
+
+/* Photo browser styles */
+.photo-browser {
+  --f7-photobrowser-bg-color: var(--pb-background);
+}
+
+/* Preloader styles */
+.preloader {
+  --f7-preloader-color: var(--pb-primary);
+}
+
+/* Swiper styles */
+.swiper {
+  --swiper-theme-color: var(--pb-primary);
+}
+
+/* Panel styles */
+.panel {
+  --f7-panel-bg-color: var(--pb-surface);
+}
+
+.panel .list {
+  background: transparent;
+}
+
+.panel .list .item-link {
+  color: var(--pb-text-primary);
+}
+
+.panel .list .item-link:hover,
+.panel .list .item-link:active {
+  background: var(--pb-border);
+}
+
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
   * {

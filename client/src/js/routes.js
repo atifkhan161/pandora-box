@@ -1,63 +1,44 @@
-// Import page controllers
-import DashboardPage from './pages/dashboard.js'
-import LoginPage from './pages/login.js'
-import DownloadsPage from './pages/downloads.js'
-import FilesPage from './pages/files.js'
-import ContainersPage from './pages/containers.js'
-import JellyfinPage from './pages/jellyfin.js'
-import SettingsPage from './pages/settings.js'
-
-// Import route guards
-import { requireAuth, redirectIfAuthenticated } from './utils/auth-guard.js'
-
 const routes = [
-  // Login page (redirect if already authenticated)
+  // Login page
   {
     path: '/login/',
-    component: LoginPage,
-    beforeEnter: redirectIfAuthenticated
+    componentUrl: './pages/login.html'
   },
   
-  // Dashboard (home) page (requires authentication)
+  // Dashboard (home) page
   {
     path: '/',
-    component: DashboardPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/dashboard.html'
   },
   
-  // Downloads page (requires authentication)
+  // Downloads page
   {
     path: '/downloads/',
-    component: DownloadsPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/downloads.html'
   },
   
-  // Files page (requires authentication)
+  // Files page
   {
     path: '/files/',
-    component: FilesPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/files.html'
   },
   
-  // Containers page (requires authentication)
+  // Containers page
   {
     path: '/containers/',
-    component: ContainersPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/containers.html'
   },
   
-  // Jellyfin page (requires authentication)
+  // Jellyfin page
   {
     path: '/jellyfin/',
-    component: JellyfinPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/jellyfin.html'
   },
   
-  // Settings page (requires authentication)
+  // Settings page
   {
     path: '/settings/',
-    component: SettingsPage,
-    beforeEnter: requireAuth
+    componentUrl: './pages/settings.html'
   },
   
   // Default route (404)

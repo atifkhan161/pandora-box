@@ -1,4 +1,6 @@
 // Containers page controller
+import authStore from '../store/auth.js'
+
 export default {
   path: '/containers/',
   componentUrl: './pages/containers.html',
@@ -13,6 +15,16 @@ export default {
 
     pageBeforeIn(e, page) {
       console.log('Containers page before in')
+      
+      // Check authentication
+      const isAuthenticated = authStore.getters.isAuthenticated.value
+      if (!isAuthenticated) {
+        // Redirect to login if not authenticated
+        page.app.views.main.router.navigate('/login/', {
+          clearPreviousHistory: true
+        })
+        return false // Prevent page transition
+      }
     },
 
     pageAfterIn(e, page) {

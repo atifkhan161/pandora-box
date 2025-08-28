@@ -1,12 +1,13 @@
 // Login page controller
 import authStore from '../store/auth.js'
 
-export default {
-  path: '/login/',
-  componentUrl: './pages/login.html',
+// Register page events with Framework7
+document.addEventListener('DOMContentLoaded', () => {
+  const app = window.app
   
-  on: {
-    pageInit(e, page) {
+  if (app) {
+    // Login page events
+    app.on('pageInit', '.page[data-name="login"]', function (page) {
       console.log('Login page initialized')
       
       // Get page elements
@@ -99,9 +100,9 @@ export default {
       setTimeout(() => {
         usernameInput.focus()
       }, 300)
-    },
+    })
     
-    pageBeforeIn(e, page) {
+    app.on('pageBeforeIn', '.page[data-name="login"]', function (page) {
       console.log('Login page before in')
       
       // Check if already authenticated
@@ -112,15 +113,15 @@ export default {
         })
         return false // Prevent page transition
       }
-    },
+    })
     
-    pageAfterIn(e, page) {
+    app.on('pageAfterIn', '.page[data-name="login"]', function (page) {
       console.log('Login page after in')
-    },
+    })
     
-    pageBeforeOut(e, page) {
+    app.on('pageBeforeOut', '.page[data-name="login"]', function (page) {
       // Clear any error states when leaving
       authStore.dispatch('clearError')
-    }
+    })
   }
-}
+})

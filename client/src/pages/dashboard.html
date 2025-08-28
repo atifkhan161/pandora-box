@@ -1,66 +1,190 @@
-<div class="page dashboard-page">
+<main class="page dashboard-page" role="main">
   <header class="page-header">
-    <h1 class="page-title">Dashboard</h1>
-    <div class="page-actions">
-      <button id="refresh-btn" class="btn btn-secondary" title="Refresh">
-        🔄
-      </button>
-      <button id="logout-btn" class="btn btn-secondary" title="Logout">
-        🚪
-      </button>
+    <div class="header-content">
+      <h1 class="page-title">Media Discovery</h1>
+      <nav class="page-nav" role="navigation" aria-label="Dashboard navigation">
+        <div class="nav-actions">
+          <button id="search-toggle-btn" class="btn btn-icon" title="Toggle Search" aria-label="Toggle search">
+            <span class="icon">🔍</span>
+          </button>
+          <button id="refresh-btn" class="btn btn-icon" title="Refresh Content" aria-label="Refresh content">
+            <span class="icon">🔄</span>
+          </button>
+          <button id="logout-btn" class="btn btn-icon" title="Logout" aria-label="Logout">
+            <span class="icon">🚪</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+    
+    <div class="search-container" id="search-container" hidden>
+      <form class="search-form" role="search" aria-label="Media search">
+        <div class="search-input-group">
+          <input 
+            type="search" 
+            id="media-search-input" 
+            class="search-input" 
+            placeholder="Search movies and TV shows..." 
+            aria-label="Search for movies and TV shows"
+            autocomplete="off"
+          >
+          <button type="submit" class="search-btn" aria-label="Search">
+            <span class="icon">🔍</span>
+          </button>
+        </div>
+        <div class="search-filters">
+          <select id="content-type-filter" class="filter-select" aria-label="Content type filter">
+            <option value="multi">All Content</option>
+            <option value="movie">Movies</option>
+            <option value="tv">TV Shows</option>
+          </select>
+        </div>
+      </form>
     </div>
   </header>
 
-  <main class="page-content">
-    <section class="dashboard-stats">
-      <!-- Stats will be populated by JavaScript -->
+  <div class="page-content">
+    <!-- Search Results Section -->
+    <section class="search-results-section" id="search-results-section" hidden>
+      <div class="section-header">
+        <h2 class="section-title">Search Results</h2>
+        <button id="clear-search-btn" class="btn btn-secondary">Clear</button>
+      </div>
+      <div class="media-grid" id="search-results-grid" role="region" aria-label="Search results">
+        <!-- Search results will be populated by JavaScript -->
+      </div>
     </section>
 
-    <section class="dashboard-actions">
-      <div class="action-grid">
-        <div class="action-card">
-          <h3>Media Discovery</h3>
-          <p>Browse trending movies and TV shows</p>
-          <a href="/downloads" class="btn btn-primary">Explore</a>
+    <!-- Dashboard Stats -->
+    <section class="dashboard-stats" aria-label="Dashboard statistics">
+      <div class="stats-grid">
+        <!-- Stats will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Trending Content Section -->
+    <section class="content-section trending-section">
+      <div class="section-header">
+        <h2 class="section-title">Trending This Week</h2>
+        <div class="section-controls">
+          <div class="content-type-tabs" role="tablist" aria-label="Content type selection">
+            <button class="tab-btn active" data-type="movie" role="tab" aria-selected="true" aria-controls="trending-movies">Movies</button>
+            <button class="tab-btn" data-type="tv" role="tab" aria-selected="false" aria-controls="trending-tv">TV Shows</button>
+          </div>
         </div>
-        
-        <div class="action-card">
-          <h3>Downloads</h3>
-          <p>Manage your torrent downloads</p>
-          <a href="/downloads" class="btn btn-primary">View Downloads</a>
-        </div>
-        
-        <div class="action-card">
-          <h3>File Manager</h3>
-          <p>Browse and organize your files</p>
-          <a href="/files" class="btn btn-primary">Browse Files</a>
-        </div>
-        
-        <div class="action-card">
-          <h3>Containers</h3>
-          <p>Monitor Docker containers</p>
-          <a href="/containers" class="btn btn-primary">View Containers</a>
-        </div>
-        
-        <div class="action-card">
-          <h3>Jellyfin</h3>
-          <p>Manage media server</p>
-          <a href="/jellyfin" class="btn btn-primary">Open Jellyfin</a>
-        </div>
-        
-        <div class="action-card">
-          <h3>Settings</h3>
-          <p>Configure application</p>
-          <a href="/settings" class="btn btn-primary">Settings</a>
+      </div>
+      <div class="media-carousel-container">
+        <div class="media-carousel" id="trending-carousel" role="region" aria-label="Trending content">
+          <!-- Trending content will be populated by JavaScript -->
         </div>
       </div>
     </section>
 
-    <section class="demo-section">
-      <h2>Demo Features</h2>
-      <button id="demo-features-btn" class="btn btn-secondary">
-        ✨ Show Features
-      </button>
+    <!-- Popular Content Section -->
+    <section class="content-section popular-section">
+      <div class="section-header">
+        <h2 class="section-title">Popular Now</h2>
+        <div class="section-controls">
+          <div class="content-type-tabs" role="tablist" aria-label="Popular content type selection">
+            <button class="tab-btn active" data-type="movie" role="tab" aria-selected="true" aria-controls="popular-movies">Movies</button>
+            <button class="tab-btn" data-type="tv" role="tab" aria-selected="false" aria-controls="popular-tv">TV Shows</button>
+          </div>
+        </div>
+      </div>
+      <div class="media-carousel-container">
+        <div class="media-carousel" id="popular-carousel" role="region" aria-label="Popular content">
+          <!-- Popular content will be populated by JavaScript -->
+        </div>
+      </div>
     </section>
-  </main>
-</div>
+
+    <!-- Top Rated Content Section -->
+    <section class="content-section top-rated-section">
+      <div class="section-header">
+        <h2 class="section-title">Top Rated</h2>
+        <div class="section-controls">
+          <div class="content-type-tabs" role="tablist" aria-label="Top rated content type selection">
+            <button class="tab-btn active" data-type="movie" role="tab" aria-selected="true" aria-controls="top-rated-movies">Movies</button>
+            <button class="tab-btn" data-type="tv" role="tab" aria-selected="false" aria-controls="top-rated-tv">TV Shows</button>
+          </div>
+        </div>
+      </div>
+      <div class="media-carousel-container">
+        <div class="media-carousel" id="top-rated-carousel" role="region" aria-label="Top rated content">
+          <!-- Top rated content will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions Section -->
+    <section class="quick-actions-section">
+      <div class="section-header">
+        <h2 class="section-title">Quick Actions</h2>
+      </div>
+      <div class="action-grid">
+        <article class="action-card">
+          <div class="card-icon">📥</div>
+          <div class="card-content">
+            <h3 class="card-title">Downloads</h3>
+            <p class="card-description">Manage your torrent downloads</p>
+          </div>
+          <a href="/downloads" class="card-link" aria-label="Go to downloads page">
+            <span class="icon">→</span>
+          </a>
+        </article>
+        
+        <article class="action-card">
+          <div class="card-icon">📁</div>
+          <div class="card-content">
+            <h3 class="card-title">File Manager</h3>
+            <p class="card-description">Browse and organize your files</p>
+          </div>
+          <a href="/files" class="card-link" aria-label="Go to file manager">
+            <span class="icon">→</span>
+          </a>
+        </article>
+        
+        <article class="action-card">
+          <div class="card-icon">🐳</div>
+          <div class="card-content">
+            <h3 class="card-title">Containers</h3>
+            <p class="card-description">Monitor Docker containers</p>
+          </div>
+          <a href="/containers" class="card-link" aria-label="Go to containers page">
+            <span class="icon">→</span>
+          </a>
+        </article>
+        
+        <article class="action-card">
+          <div class="card-icon">🎬</div>
+          <div class="card-content">
+            <h3 class="card-title">Jellyfin</h3>
+            <p class="card-description">Manage media server</p>
+          </div>
+          <a href="/jellyfin" class="card-link" aria-label="Go to Jellyfin page">
+            <span class="icon">→</span>
+          </a>
+        </article>
+        
+        <article class="action-card">
+          <div class="card-icon">⚙️</div>
+          <div class="card-content">
+            <h3 class="card-title">Settings</h3>
+            <p class="card-description">Configure application</p>
+          </div>
+          <a href="/settings" class="card-link" aria-label="Go to settings page">
+            <span class="icon">→</span>
+          </a>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay" hidden>
+    <div class="loading-content">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="loading-message">Loading content...</p>
+    </div>
+  </div>
+</main>

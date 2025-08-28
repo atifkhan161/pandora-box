@@ -11,6 +11,7 @@
 
 /* Import component styles */
 @import './components/theme-switcher/theme-switcher.css';
+@import './components/media-card/media-card.css';
 
 /* Import page-specific styles */
 @import './pages/login.css';

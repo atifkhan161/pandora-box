@@ -8,6 +8,9 @@ class Router {
     this.currentPage = null;
     this.isInitialized = false;
     this.loadingElement = null;
+    this.redirectCount = 0;
+    this.maxRedirects = 5;
+    this.lastRedirectTime = 0;
   }
 
   /**
@@ -78,7 +81,22 @@ class Router {
         console.log(`Route ${path} requires auth. Authenticated: ${isAuth}`);
         
         if (!isAuth) {
-          console.log('Route requires authentication, redirecting to login');
+          // Prevent infinite redirect loops
+          const now = Date.now();
+          if (now - this.lastRedirectTime < 1000) {
+            this.redirectCount++;
+          } else {
+            this.redirectCount = 1;
+          }
+          this.lastRedirectTime = now;
+          
+          if (this.redirectCount > this.maxRedirects) {
+            console.error('Too many authentication redirects, stopping to prevent infinite loop');
+            this.showError('Authentication error: Too many redirects. Please refresh the page.');
+            return;
+          }
+          
+          console.log(`Route requires authentication, redirecting to login (attempt ${this.redirectCount})`);
           this.navigate('/login', false);
           return;
         }
@@ -252,6 +270,24 @@ class Router {
    */
   getCurrentPath() {
     return window.location.pathname;
+  }
+
+  /**
+   * Show error message
+   */
+  showError(message) {
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      mainContent.innerHTML = `
+        <div class="error-container">
+          <h2>Router Error</h2>
+          <p>${message}</p>
+          <button onclick="window.location.reload()" class="btn btn-primary">
+            Reload Page
+          </button>
+        </div>
+      `;
+    }
   }
 
   /**

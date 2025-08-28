@@ -1,0 +1,292 @@
+/* Media Card Component Styles */
+
+.media-card {
+  background: var(--pb-background-secondary);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.media-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border-color: var(--pb-primary);
+}
+
+/* Poster Container */
+.media-card-poster-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: var(--pb-background-tertiary);
+}
+
+.media-card-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.media-card:hover .media-card-poster {
+  transform: scale(1.05);
+}
+
+/* Overlay */
+.media-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.media-card:hover .media-card-overlay {
+  opacity: 1;
+}
+
+/* Play Button */
+.play-btn {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: var(--pb-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.play-btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+/* Action Buttons */
+.media-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.action-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: var(--pb-primary);
+  border-color: var(--pb-primary);
+  transform: scale(1.1);
+}
+
+.download-btn:hover {
+  background: var(--pb-accent);
+  border-color: var(--pb-accent);
+}
+
+.favorite-btn:hover {
+  background: var(--pb-error);
+  border-color: var(--pb-error);
+}
+
+/* Card Content */
+.media-card-content {
+  padding: 1rem;
+}
+
+.media-card-title {
+  color: var(--pb-text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.media-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.media-card-year {
+  color: var(--pb-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.media-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--pb-accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.rating-icon {
+  font-size: 0.7rem;
+}
+
+.rating-value {
+  font-size: 0.8rem;
+}
+
+/* Genres */
+.media-card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.genre-tag {
+  padding: 0.125rem 0.5rem;
+  background: var(--pb-background-tertiary);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  color: var(--pb-text-muted);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Loading State */
+.media-card.loading {
+  pointer-events: none;
+}
+
+.media-card.loading .media-card-poster {
+  background: linear-gradient(
+    90deg,
+    var(--pb-background-tertiary) 25%,
+    var(--pb-background-secondary) 50%,
+    var(--pb-background-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.media-card.loading .media-card-title,
+.media-card.loading .media-card-year,
+.media-card.loading .media-card-rating {
+  background: var(--pb-background-tertiary);
+  color: transparent;
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Error State */
+.media-card.error {
+  opacity: 0.6;
+}
+
+.media-card.error .media-card-poster {
+  background: var(--pb-background-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pb-text-muted);
+  font-size: 0.8rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .media-card-content {
+    padding: 0.75rem;
+  }
+  
+  .media-card-title {
+    font-size: 0.85rem;
+  }
+  
+  .media-card-meta {
+    font-size: 0.75rem;
+  }
+  
+  .play-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+  }
+  
+  .action-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .media-card-content {
+    padding: 0.5rem;
+  }
+  
+  .media-card-title {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 1;
+  }
+  
+  .media-card-genres {
+    display: none;
+  }
+  
+  .play-btn {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.9rem;
+  }
+  
+  .action-btn {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.6rem;
+  }
+}

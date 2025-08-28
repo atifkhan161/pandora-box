@@ -227,23 +227,33 @@ class PandoraApp {
    * Initialize authentication
    */
   async initializeAuth() {
+    console.log('Initializing authentication...');
+    
     // Override router's authentication check before initializing auth store
     this.router.isAuthenticated = () => {
-      // Prevent redirect loops by checking if we're already on login page
       const currentPath = window.location.pathname;
+      console.log(`Auth check for path: ${currentPath}`);
+      
+      // Prevent redirect loops by checking if we're already on login page
       if (currentPath === '/login') {
+        console.log('Allowing access to login page');
         return true; // Allow access to login page
       }
       
       // Check if auth store is still loading
-      if (this.authStore.getState().loading) {
+      const authState = this.authStore.getState();
+      if (authState.loading) {
+        console.log('Auth store still loading, allowing navigation');
         return true; // Allow navigation while loading
       }
       
-      return this.authStore.isAuthenticated();
+      const isAuth = this.authStore.isAuthenticated();
+      console.log(`Auth store says authenticated: ${isAuth}`);
+      return isAuth;
     };
     
     await this.authStore.init();
+    console.log('Authentication initialized');
   }
 
   /**
@@ -334,8 +344,27 @@ class PandoraApp {
 
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-  const app = new PandoraApp();
-  await app.init();
+  try {
+    console.log('DOM loaded, initializing Pandora App...');
+    const app = new PandoraApp();
+    await app.init();
+    console.log('Pandora App initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize Pandora App:', error);
+    
+    // Show error to user
+    const errorEl = document.createElement('div');
+    errorEl.style.cssText = `
+      position: fixed; top: 20px; left: 20px; right: 20px;
+      background: #ff4444; color: white; padding: 15px;
+      border-radius: 4px; z-index: 9999;
+    `;
+    errorEl.innerHTML = `
+      <strong>Application Error:</strong> ${error.message}<br>
+      <small>Check console for details. <a href="#" onclick="window.location.reload()" style="color: white;">Reload page</a></small>
+    `;
+    document.body.appendChild(errorEl);
+  }
 });
 
 // Handle page visibility changes

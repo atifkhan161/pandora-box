@@ -1,42 +1,82 @@
 /**
- * Dashboard Page Controller
- * Vanilla JavaScript implementation
+ * Dashboard Page Controller - Media Discovery Dashboard
+ * Vanilla JavaScript implementation with media discovery features
  */
 import BasePage from './base-page.js';
+import { mediaService } from '../services/media.js';
+import MediaCard from '../components/media-card/media-card.js';
 
 class DashboardPage extends BasePage {
   constructor() {
     super();
     this.templatePath = '/src/pages/dashboard.html';
+    this.searchTimeout = null;
+    this.currentSearchQuery = '';
+    this.currentContentType = 'multi';
+    this.activeTab = {
+      trending: 'movie',
+      popular: 'movie',
+      topRated: 'movie'
+    };
   }
 
   /**
    * Setup page-specific logic
    */
   async setupPage() {
-    this.setTitle('Dashboard');
+    this.setTitle('Media Discovery Dashboard');
   }
 
   /**
    * Setup event listeners
    */
   setupEventListeners() {
-    // Logout button handler
-    const logoutBtn = this.querySelector('#logout-btn');
-    if (logoutBtn) {
-      this.addEventListener(logoutBtn, 'click', (e) => {
-        e.preventDefault();
-        this.handleLogout();
+    // Search toggle button
+    const searchToggleBtn = this.querySelector('#search-toggle-btn');
+    if (searchToggleBtn) {
+      this.addEventListener(searchToggleBtn, 'click', () => {
+        this.toggleSearch();
       });
     }
 
-    // Demo features button
-    const demoBtn = this.querySelector('#demo-features-btn');
-    if (demoBtn) {
-      this.addEventListener(demoBtn, 'click', () => {
-        this.showDemoFeatures();
+    // Search form
+    const searchForm = this.querySelector('.search-form');
+    if (searchForm) {
+      this.addEventListener(searchForm, 'submit', (e) => {
+        e.preventDefault();
+        this.performSearch();
       });
     }
+
+    // Search input with debouncing
+    const searchInput = this.querySelector('#media-search-input');
+    if (searchInput) {
+      this.addEventListener(searchInput, 'input', (e) => {
+        this.handleSearchInput(e.target.value);
+      });
+    }
+
+    // Content type filter
+    const contentTypeFilter = this.querySelector('#content-type-filter');
+    if (contentTypeFilter) {
+      this.addEventListener(contentTypeFilter, 'change', (e) => {
+        this.currentContentType = e.target.value;
+        if (this.currentSearchQuery) {
+          this.performSearch();
+        }
+      });
+    }
+
+    // Clear search button
+    const clearSearchBtn = this.querySelector('#clear-search-btn');
+    if (clearSearchBtn) {
+      this.addEventListener(clearSearchBtn, 'click', () => {
+        this.clearSearch();
+      });
+    }
+
+    // Tab buttons for content sections
+    this.setupTabListeners();
 
     // Refresh button
     const refreshBtn = this.querySelector('#refresh-btn');
@@ -45,6 +85,45 @@ class DashboardPage extends BasePage {
         this.refresh();
       });
     }
+
+    // Logout button
+    const logoutBtn = this.querySelector('#logout-btn');
+    if (logoutBtn) {
+      this.addEventListener(logoutBtn, 'click', (e) => {
+        e.preventDefault();
+        this.handleLogout();
+      });
+    }
+
+    // Media card events
+    this.addEventListener(this.container, 'media-card:view-details', (e) => {
+      this.handleMediaDetails(e.detail);
+    });
+
+    this.addEventListener(this.container, 'media-card:download', (e) => {
+      this.handleMediaDownload(e.detail);
+    });
+
+    this.addEventListener(this.container, 'media-card:favorite', (e) => {
+      this.handleMediaFavorite(e.detail);
+    });
+  }
+
+  /**
+   * Setup tab listeners for content sections
+   */
+  setupTabListeners() {
+    const tabButtons = this.querySelectorAll('.tab-btn');
+    tabButtons.forEach(button => {
+      this.addEventListener(button, 'click', (e) => {
+        const section = e.target.closest('.content-section');
+        const sectionClass = section.className.split(' ').find(cls => cls.endsWith('-section'));
+        const sectionType = sectionClass.replace('-section', '');
+        const contentType = e.target.dataset.type;
+
+        this.switchTab(sectionType, contentType, e.target);
+      });
+    });
   }
 
   /**
@@ -52,47 +131,333 @@ class DashboardPage extends BasePage {
    */
   async loadData() {
     try {
-      // Load dashboard data here
-      // This will be expanded in later tasks
-      console.log('Loading dashboard data...');
-      
-      // Simulate loading delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Update UI with loaded data
-      this.updateDashboardStats();
+      this.showPageLoading('Loading media content...');
+
+      // Load dashboard stats
+      await this.loadDashboardStats();
+
+      // Load content sections
+      await Promise.all([
+        this.loadTrendingContent(),
+        this.loadPopularContent(),
+        this.loadTopRatedContent()
+      ]);
+
+      this.hidePageLoading();
       
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+      this.hidePageLoading();
       this.showError('Failed to load dashboard data');
     }
   }
 
   /**
-   * Update dashboard statistics
+   * Load dashboard statistics
    */
-  updateDashboardStats() {
-    const statsContainer = this.querySelector('.dashboard-stats');
-    if (statsContainer) {
-      statsContainer.innerHTML = `
-        <div class="stat-card">
-          <h3>Active Downloads</h3>
-          <p class="stat-number">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>Total Files</h3>
-          <p class="stat-number">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>Running Containers</h3>
-          <p class="stat-number">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>Storage Used</h3>
-          <p class="stat-number">0 GB</p>
+  async loadDashboardStats() {
+    const statsContainer = this.querySelector('.stats-grid');
+    if (!statsContainer) return;
+
+    // Create placeholder stats
+    statsContainer.innerHTML = `
+      <div class="stat-card">
+        <h3>Trending Movies</h3>
+        <p class="stat-number">20</p>
+      </div>
+      <div class="stat-card">
+        <h3>Popular TV Shows</h3>
+        <p class="stat-number">20</p>
+      </div>
+      <div class="stat-card">
+        <h3>Top Rated</h3>
+        <p class="stat-number">20</p>
+      </div>
+      <div class="stat-card">
+        <h3>Available Content</h3>
+        <p class="stat-number">1000+</p>
+      </div>
+    `;
+  }
+
+  /**
+   * Load trending content
+   */
+  async loadTrendingContent() {
+    try {
+      const trendingData = await mediaService.getTrending(this.activeTab.trending, 'week');
+      const carousel = this.querySelector('#trending-carousel');
+      
+      if (carousel && trendingData?.results) {
+        await this.renderMediaCards(carousel, trendingData.results.slice(0, 20));
+      }
+    } catch (error) {
+      console.error('Error loading trending content:', error);
+    }
+  }
+
+  /**
+   * Load popular content
+   */
+  async loadPopularContent() {
+    try {
+      const popularData = await mediaService.getPopular(this.activeTab.popular);
+      const carousel = this.querySelector('#popular-carousel');
+      
+      if (carousel && popularData?.results) {
+        await this.renderMediaCards(carousel, popularData.results.slice(0, 20));
+      }
+    } catch (error) {
+      console.error('Error loading popular content:', error);
+    }
+  }
+
+  /**
+   * Load top rated content
+   */
+  async loadTopRatedContent() {
+    try {
+      const topRatedData = await mediaService.getTopRated(this.activeTab.topRated);
+      const carousel = this.querySelector('#top-rated-carousel');
+      
+      if (carousel && topRatedData?.results) {
+        await this.renderMediaCards(carousel, topRatedData.results.slice(0, 20));
+      }
+    } catch (error) {
+      console.error('Error loading top rated content:', error);
+    }
+  }
+
+  /**
+   * Render media cards in a container
+   */
+  async renderMediaCards(container, mediaItems) {
+    if (!container || !mediaItems) return;
+
+    // Clear existing content
+    container.innerHTML = '';
+
+    // Create media cards
+    const cardPromises = mediaItems.map(async (item) => {
+      const mediaCard = new MediaCard(item, {
+        showActions: true,
+        showGenres: false,
+        imageSize: 'w300'
+      });
+      
+      return await mediaCard.render();
+    });
+
+    const cardElements = await Promise.all(cardPromises);
+    
+    // Append all cards to container
+    cardElements.forEach(cardElement => {
+      if (cardElement) {
+        container.appendChild(cardElement);
+      }
+    });
+  }
+
+  /**
+   * Toggle search visibility
+   */
+  toggleSearch() {
+    const searchContainer = this.querySelector('#search-container');
+    const searchInput = this.querySelector('#media-search-input');
+    
+    if (searchContainer) {
+      const isHidden = searchContainer.hasAttribute('hidden');
+      
+      if (isHidden) {
+        searchContainer.removeAttribute('hidden');
+        searchInput?.focus();
+      } else {
+        searchContainer.setAttribute('hidden', '');
+        this.clearSearch();
+      }
+    }
+  }
+
+  /**
+   * Handle search input with debouncing
+   */
+  handleSearchInput(query) {
+    // Clear previous timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    this.currentSearchQuery = query.trim();
+
+    // Debounce search
+    this.searchTimeout = setTimeout(() => {
+      if (this.currentSearchQuery.length >= 2) {
+        this.performSearch();
+      } else if (this.currentSearchQuery.length === 0) {
+        this.clearSearchResults();
+      }
+    }, 300);
+  }
+
+  /**
+   * Perform search
+   */
+  async performSearch() {
+    if (!this.currentSearchQuery) return;
+
+    try {
+      const searchResults = await mediaService.search(
+        this.currentSearchQuery,
+        this.currentContentType,
+        1
+      );
+
+      this.displaySearchResults(searchResults);
+      
+    } catch (error) {
+      console.error('Search error:', error);
+      this.showError('Search failed. Please try again.');
+    }
+  }
+
+  /**
+   * Display search results
+   */
+  async displaySearchResults(searchResults) {
+    const searchSection = this.querySelector('#search-results-section');
+    const searchGrid = this.querySelector('#search-results-grid');
+    
+    if (!searchSection || !searchGrid) return;
+
+    // Show search results section
+    searchSection.removeAttribute('hidden');
+
+    if (searchResults?.results && searchResults.results.length > 0) {
+      await this.renderMediaCards(searchGrid, searchResults.results);
+    } else {
+      searchGrid.innerHTML = `
+        <div class="no-results">
+          <p>No results found for "${this.currentSearchQuery}"</p>
         </div>
       `;
     }
+  }
+
+  /**
+   * Clear search
+   */
+  clearSearch() {
+    const searchInput = this.querySelector('#media-search-input');
+    if (searchInput) {
+      searchInput.value = '';
+    }
+    
+    this.currentSearchQuery = '';
+    this.clearSearchResults();
+  }
+
+  /**
+   * Clear search results
+   */
+  clearSearchResults() {
+    const searchSection = this.querySelector('#search-results-section');
+    const searchGrid = this.querySelector('#search-results-grid');
+    
+    if (searchSection) {
+      searchSection.setAttribute('hidden', '');
+    }
+    
+    if (searchGrid) {
+      searchGrid.innerHTML = '';
+    }
+  }
+
+  /**
+   * Switch content tab
+   */
+  async switchTab(sectionType, contentType, clickedButton) {
+    // Update active tab
+    this.activeTab[sectionType] = contentType;
+
+    // Update tab button states
+    const section = clickedButton.closest('.content-section');
+    const tabButtons = section.querySelectorAll('.tab-btn');
+    
+    tabButtons.forEach(btn => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-selected', 'false');
+    });
+    
+    clickedButton.classList.add('active');
+    clickedButton.setAttribute('aria-selected', 'true');
+
+    // Load content for the new tab
+    const carousel = section.querySelector('.media-carousel');
+    if (carousel) {
+      carousel.innerHTML = '<div class="loading-message">Loading...</div>';
+      
+      try {
+        let data;
+        switch (sectionType) {
+          case 'trending':
+            data = await mediaService.getTrending(contentType, 'week');
+            break;
+          case 'popular':
+            data = await mediaService.getPopular(contentType);
+            break;
+          case 'top-rated':
+            data = await mediaService.getTopRated(contentType);
+            break;
+        }
+        
+        if (data?.results) {
+          await this.renderMediaCards(carousel, data.results.slice(0, 20));
+        }
+      } catch (error) {
+        console.error(`Error loading ${sectionType} ${contentType}:`, error);
+        carousel.innerHTML = '<div class="error-message">Failed to load content</div>';
+      }
+    }
+  }
+
+  /**
+   * Handle media details view
+   */
+  handleMediaDetails(detail) {
+    console.log('View media details:', detail);
+    
+    // TODO: Navigate to media details page (will be implemented in task 4.3)
+    // For now, show a simple alert
+    const { mediaData } = detail;
+    const title = mediaData.title || mediaData.name;
+    alert(`View details for: ${title}\n\nThis will open the media details page when implemented.`);
+  }
+
+  /**
+   * Handle media download
+   */
+  handleMediaDownload(detail) {
+    console.log('Download media:', detail);
+    
+    // TODO: Integrate with download system (will be implemented in task 5)
+    // For now, show a simple alert
+    const { mediaData } = detail;
+    const title = mediaData.title || mediaData.name;
+    alert(`Download: ${title}\n\nThis will open the download search when implemented.`);
+  }
+
+  /**
+   * Handle media favorite
+   */
+  handleMediaFavorite(detail) {
+    console.log('Favorite media:', detail);
+    
+    // TODO: Implement favorites system
+    const { mediaData, isFavorited } = detail;
+    const title = mediaData.title || mediaData.name;
+    const action = isFavorited ? 'Added to' : 'Removed from';
+    
+    this.showToast(`${action} favorites: ${title}`);
   }
 
   /**
@@ -104,7 +469,7 @@ class DashboardPage extends BasePage {
     }
 
     try {
-      this.showLoading('Logging out...');
+      this.showPageLoading('Logging out...');
 
       // Disconnect WebSocket
       if (window.wsClient) {
@@ -116,10 +481,10 @@ class DashboardPage extends BasePage {
         await window.authStore.logout();
       }
 
-      this.hideLoading();
+      this.hidePageLoading();
 
       // Show success message
-      this.showSuccessToast('Logged out successfully');
+      this.showToast('Logged out successfully');
 
       // Redirect to login
       setTimeout(() => {
@@ -130,67 +495,69 @@ class DashboardPage extends BasePage {
 
     } catch (error) {
       console.error('Logout error:', error);
-      this.hideLoading();
+      this.hidePageLoading();
       this.showError('Error during logout');
     }
   }
 
   /**
-   * Show demo features
+   * Show page loading overlay
    */
-  showDemoFeatures() {
-    const features = [
-      'Media Discovery',
-      'Download Management', 
-      'File Operations',
-      'Container Control',
-      'Jellyfin Integration'
-    ];
-
-    const featuresHtml = features.map(feature => 
-      `<li class="feature-item">${feature}</li>`
-    ).join('');
-
-    const modal = document.createElement('div');
-    modal.className = 'demo-modal';
-    modal.innerHTML = `
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Pandora Box Features</h3>
-          <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p>Available features in Pandora Box:</p>
-          <ul class="features-list">
-            ${featuresHtml}
-          </ul>
-        </div>
-      </div>
-    `;
-
-    // Add close functionality
-    const closeBtn = modal.querySelector('.modal-close');
-    closeBtn.addEventListener('click', () => {
-      modal.remove();
-    });
-
-    // Close on backdrop click
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.remove();
-      }
-    });
-
-    document.body.appendChild(modal);
+  showPageLoading(message = 'Loading...') {
+    const loadingOverlay = this.querySelector('#loading-overlay');
+    const loadingMessage = this.querySelector('.loading-message');
+    
+    if (loadingOverlay) {
+      loadingOverlay.removeAttribute('hidden');
+    }
+    
+    if (loadingMessage) {
+      loadingMessage.textContent = message;
+    }
   }
 
   /**
-   * Show success toast
+   * Hide page loading overlay
    */
-  showSuccessToast(message) {
+  hidePageLoading() {
+    const loadingOverlay = this.querySelector('#loading-overlay');
+    if (loadingOverlay) {
+      loadingOverlay.setAttribute('hidden', '');
+    }
+  }
+
+  /**
+   * Show toast notification
+   */
+  showToast(message, type = 'success') {
     const toast = document.createElement('div');
-    toast.className = 'toast toast-success';
+    toast.className = `toast toast-${type}`;
     toast.textContent = message;
+    
+    // Add toast styles if not already present
+    if (!document.querySelector('#toast-styles')) {
+      const style = document.createElement('style');
+      style.id = 'toast-styles';
+      style.textContent = `
+        .toast {
+          position: fixed;
+          top: 2rem;
+          right: 2rem;
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          color: white;
+          font-weight: 500;
+          z-index: 1000;
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        }
+        .toast.toast-success { background: var(--pb-accent); }
+        .toast.toast-error { background: var(--pb-error); }
+        .toast.toast-warning { background: var(--pb-warning); }
+        .toast.show { transform: translateX(0); }
+      `;
+      document.head.appendChild(style);
+    }
     
     document.body.appendChild(toast);
     
@@ -208,8 +575,7 @@ class DashboardPage extends BasePage {
    * Post-render hook
    */
   onRender() {
-    // Add any post-render logic here
-    console.log('Dashboard page rendered');
+    console.log('Media Discovery Dashboard rendered');
   }
 }
 

@@ -99,19 +99,28 @@ export class MediaService {
    * @param {string} query - Search query
    * @param {string} type - Content type ('movie', 'tv', or 'multi')
    * @param {number} page - Page number (default: 1)
+   * @param {Object} options - Additional search options (sort_by, etc.)
    * @returns {Promise<Object>} Search results with pagination
    */
-  async search(query, type = 'multi', page = 1) {
+  async search(query, type = 'multi', page = 1, options = {}) {
     if (!query || query.trim().length === 0) {
       return { results: [], total_results: 0, total_pages: 0, page: 1 }
     }
 
     try {
-      const response = await this.client.get('/media/search', {
+      const params = {
         query: query.trim(),
         type,
-        page
-      })
+        page,
+        ...options
+      }
+
+      const response = await this.client.get('/media/search', params)
+      
+      // Apply client-side sorting if results need additional sorting
+      if (response.results && options.sort_by) {
+        response.results = this.applySorting(response.results, options.sort_by)
+      }
       
       return response
     } catch (error) {
@@ -448,6 +457,54 @@ export class MediaService {
     }
     
     return voteAverage.toFixed(1)
+  }
+
+  /**
+   * Apply client-side sorting to results
+   * @param {Array} results - Media results array
+   * @param {string} sortBy - Sort criteria
+   * @returns {Array} Sorted results
+   */
+  applySorting(results, sortBy) {
+    if (!results || !Array.isArray(results)) {
+      return results
+    }
+
+    const [field, direction] = sortBy.split('.')
+    const isAscending = direction === 'asc'
+
+    return [...results].sort((a, b) => {
+      let valueA, valueB
+
+      switch (field) {
+        case 'popularity':
+          valueA = a.popularity || 0
+          valueB = b.popularity || 0
+          break
+        case 'vote_average':
+          valueA = a.vote_average || 0
+          valueB = b.vote_average || 0
+          break
+        case 'release_date':
+          valueA = new Date(a.release_date || a.first_air_date || '1900-01-01')
+          valueB = new Date(b.release_date || b.first_air_date || '1900-01-01')
+          break
+        case 'title':
+          valueA = (a.title || a.name || '').toLowerCase()
+          valueB = (b.title || b.name || '').toLowerCase()
+          break
+        default:
+          return 0
+      }
+
+      if (valueA < valueB) {
+        return isAscending ? -1 : 1
+      }
+      if (valueA > valueB) {
+        return isAscending ? 1 : -1
+      }
+      return 0
+    })
   }
 }
 

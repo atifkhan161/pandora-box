@@ -133,6 +133,7 @@
 .search-filters {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .filter-select {
@@ -255,6 +256,61 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
+}
+
+/* Genre Grid */
+.genre-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.genre-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--pb-background-secondary);
+  border: 1px solid var(--pb-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.genre-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: var(--pb-primary);
+}
+
+.genre-card-content {
+  flex: 1;
+}
+
+.genre-card-title {
+  color: var(--pb-text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.genre-card-description {
+  color: var(--pb-text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.genre-card-arrow {
+  color: var(--pb-primary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: transform 0.2s ease;
+}
+
+.genre-card:hover .genre-card-arrow {
+  transform: translateX(4px);
 }
 
 /* Media Card Styles (will be enhanced in media-card component) */
@@ -435,6 +491,10 @@
   .media-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
+  
+  .genre-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
@@ -461,6 +521,10 @@
     gap: 1rem;
   }
   
+  .search-filters {
+    justify-content: center;
+  }
+  
   .page-content {
     padding: 1rem;
   }
@@ -479,6 +543,14 @@
   
   .media-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  .genre-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .genre-card {
+    padding: 1rem;
   }
 }
 
@@ -511,6 +583,14 @@
   
   .media-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .genre-card-title {
+    font-size: 1rem;
+  }
+  
+  .genre-card-description {
+    font-size: 0.8rem;
   }
 }
 

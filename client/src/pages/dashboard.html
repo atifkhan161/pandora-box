@@ -38,6 +38,18 @@
             <option value="movie">Movies</option>
             <option value="tv">TV Shows</option>
           </select>
+          <select id="genre-filter" class="filter-select" aria-label="Genre filter">
+            <option value="">All Genres</option>
+            <!-- Genres will be populated by JavaScript -->
+          </select>
+          <select id="sort-filter" class="filter-select" aria-label="Sort by">
+            <option value="popularity.desc">Most Popular</option>
+            <option value="vote_average.desc">Highest Rated</option>
+            <option value="release_date.desc">Newest First</option>
+            <option value="release_date.asc">Oldest First</option>
+            <option value="title.asc">A-Z</option>
+            <option value="title.desc">Z-A</option>
+          </select>
         </div>
       </form>
     </div>
@@ -113,6 +125,22 @@
         <div class="media-carousel" id="top-rated-carousel" role="region" aria-label="Top rated content">
           <!-- Top rated content will be populated by JavaScript -->
         </div>
+      </div>
+    </section>
+
+    <!-- Browse by Genre Section -->
+    <section class="content-section browse-genres-section">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Genre</h2>
+        <div class="section-controls">
+          <div class="content-type-tabs" role="tablist" aria-label="Genre browse content type selection">
+            <button class="tab-btn active" data-type="movie" role="tab" aria-selected="true" aria-controls="genre-movies">Movies</button>
+            <button class="tab-btn" data-type="tv" role="tab" aria-selected="false" aria-controls="genre-tv">TV Shows</button>
+          </div>
+        </div>
+      </div>
+      <div class="genre-grid" id="genre-grid" role="region" aria-label="Genre categories">
+        <!-- Genre cards will be populated by JavaScript -->
       </div>
     </section>
 

@@ -57,13 +57,13 @@ export class AuthService {
 
   /**
    * Refresh authentication token
-   * @returns {Promise<Object>} New tokens
+   * @returns {Promise<boolean>} Success status
    */
   async refreshToken() {
     try {
       const refreshToken = await this.jwtManager.getRefreshToken()
       if (!refreshToken) {
-        throw new Error('No refresh token available')
+        return false
       }
 
       const response = await this.client.post('/auth/refresh', {
@@ -73,13 +73,14 @@ export class AuthService {
       // Update stored tokens
       if (response.accessToken) {
         await this.jwtManager.setTokens(response.accessToken, response.refreshToken)
+        return true
       }
 
-      return response
+      return false
     } catch (error) {
       console.error('Token refresh failed:', error)
       this.jwtManager.clearTokens()
-      throw error
+      return false
     }
   }
 

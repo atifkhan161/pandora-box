@@ -3,7 +3,7 @@
  * Vanilla JavaScript implementation
  */
 
-import authService from '../services/auth.js';
+import { authService } from '../services/auth.js';
 
 class AuthStore {
   constructor() {

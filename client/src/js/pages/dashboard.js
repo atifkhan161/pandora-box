@@ -13,10 +13,14 @@ class DashboardPage extends BasePage {
     this.searchTimeout = null;
     this.currentSearchQuery = '';
     this.currentContentType = 'multi';
+    this.currentGenre = '';
+    this.currentSortBy = 'popularity.desc';
+    this.genres = { movie: [], tv: [] };
     this.activeTab = {
       trending: 'movie',
       popular: 'movie',
-      topRated: 'movie'
+      topRated: 'movie',
+      browseGenres: 'movie'
     };
   }
 
@@ -61,6 +65,29 @@ class DashboardPage extends BasePage {
     if (contentTypeFilter) {
       this.addEventListener(contentTypeFilter, 'change', (e) => {
         this.currentContentType = e.target.value;
+        this.updateGenreFilter();
+        if (this.currentSearchQuery) {
+          this.performSearch();
+        }
+      });
+    }
+
+    // Genre filter
+    const genreFilter = this.querySelector('#genre-filter');
+    if (genreFilter) {
+      this.addEventListener(genreFilter, 'change', (e) => {
+        this.currentGenre = e.target.value;
+        if (this.currentSearchQuery) {
+          this.performSearch();
+        }
+      });
+    }
+
+    // Sort filter
+    const sortFilter = this.querySelector('#sort-filter');
+    if (sortFilter) {
+      this.addEventListener(sortFilter, 'change', (e) => {
+        this.currentSortBy = e.target.value;
         if (this.currentSearchQuery) {
           this.performSearch();
         }
@@ -133,6 +160,9 @@ class DashboardPage extends BasePage {
     try {
       this.showPageLoading('Loading media content...');
 
+      // Load genres first
+      await this.loadGenres();
+
       // Load dashboard stats
       await this.loadDashboardStats();
 
@@ -140,7 +170,8 @@ class DashboardPage extends BasePage {
       await Promise.all([
         this.loadTrendingContent(),
         this.loadPopularContent(),
-        this.loadTopRatedContent()
+        this.loadTopRatedContent(),
+        this.loadGenreGrid()
       ]);
 
       this.hidePageLoading();
@@ -150,6 +181,66 @@ class DashboardPage extends BasePage {
       this.hidePageLoading();
       this.showError('Failed to load dashboard data');
     }
+  }
+
+  /**
+   * Load genres for filtering
+   */
+  async loadGenres() {
+    try {
+      const [movieGenres, tvGenres] = await Promise.all([
+        mediaService.getGenres('movie'),
+        mediaService.getGenres('tv')
+      ]);
+
+      this.genres.movie = movieGenres.genres || [];
+      this.genres.tv = tvGenres.genres || [];
+
+      // Initialize genre filter
+      this.updateGenreFilter();
+      
+    } catch (error) {
+      console.error('Error loading genres:', error);
+      // Continue without genres if they fail to load
+    }
+  }
+
+  /**
+   * Update genre filter options based on content type
+   */
+  updateGenreFilter() {
+    const genreFilter = this.querySelector('#genre-filter');
+    if (!genreFilter) return;
+
+    // Clear existing options except "All Genres"
+    genreFilter.innerHTML = '<option value="">All Genres</option>';
+
+    let genresToShow = [];
+    
+    if (this.currentContentType === 'movie') {
+      genresToShow = this.genres.movie;
+    } else if (this.currentContentType === 'tv') {
+      genresToShow = this.genres.tv;
+    } else {
+      // For 'multi', combine both and remove duplicates
+      const combined = [...this.genres.movie, ...this.genres.tv];
+      const uniqueGenres = combined.filter((genre, index, self) => 
+        index === self.findIndex(g => g.name === genre.name)
+      );
+      genresToShow = uniqueGenres;
+    }
+
+    // Add genre options
+    genresToShow.forEach(genre => {
+      const option = document.createElement('option');
+      option.value = genre.id;
+      option.textContent = genre.name;
+      genreFilter.appendChild(option);
+    });
+
+    // Reset current genre selection
+    this.currentGenre = '';
+    genreFilter.value = '';
   }
 
   /**
@@ -225,6 +316,44 @@ class DashboardPage extends BasePage {
       }
     } catch (error) {
       console.error('Error loading top rated content:', error);
+    }
+  }
+
+  /**
+   * Load genre grid for browsing
+   */
+  async loadGenreGrid() {
+    try {
+      const genreGrid = this.querySelector('#genre-grid');
+      if (!genreGrid) return;
+
+      const currentGenres = this.activeTab.browseGenres === 'movie' ? this.genres.movie : this.genres.tv;
+      
+      // Clear existing content
+      genreGrid.innerHTML = '';
+
+      // Create genre cards
+      currentGenres.slice(0, 12).forEach(genre => {
+        const genreCard = document.createElement('div');
+        genreCard.className = 'genre-card';
+        genreCard.innerHTML = `
+          <div class="genre-card-content">
+            <h3 class="genre-card-title">${genre.name}</h3>
+            <p class="genre-card-description">Explore ${genre.name.toLowerCase()} ${this.activeTab.browseGenres === 'movie' ? 'movies' : 'TV shows'}</p>
+          </div>
+          <div class="genre-card-arrow">→</div>
+        `;
+        
+        // Add click handler
+        genreCard.addEventListener('click', () => {
+          this.browseGenre(genre.id, genre.name);
+        });
+        
+        genreGrid.appendChild(genreCard);
+      });
+      
+    } catch (error) {
+      console.error('Error loading genre grid:', error);
     }
   }
 
@@ -306,10 +435,20 @@ class DashboardPage extends BasePage {
     if (!this.currentSearchQuery) return;
 
     try {
+      const searchOptions = {
+        sort_by: this.currentSortBy
+      };
+
+      // Add genre filter if selected
+      if (this.currentGenre) {
+        searchOptions.with_genres = this.currentGenre;
+      }
+
       const searchResults = await mediaService.search(
         this.currentSearchQuery,
         this.currentContentType,
-        1
+        1,
+        searchOptions
       );
 
       this.displaySearchResults(searchResults);
@@ -408,6 +547,10 @@ class DashboardPage extends BasePage {
           case 'top-rated':
             data = await mediaService.getTopRated(contentType);
             break;
+          case 'browse-genres':
+            // For genre browsing, reload the genre grid
+            await this.loadGenreGrid();
+            return;
         }
         
         if (data?.results) {
@@ -523,6 +666,58 @@ class DashboardPage extends BasePage {
     const loadingOverlay = this.querySelector('#loading-overlay');
     if (loadingOverlay) {
       loadingOverlay.setAttribute('hidden', '');
+    }
+  }
+
+  /**
+   * Browse content by genre
+   */
+  async browseGenre(genreId, genreName) {
+    try {
+      // Set search filters to browse this genre
+      const contentTypeFilter = this.querySelector('#content-type-filter');
+      const genreFilter = this.querySelector('#genre-filter');
+      const searchInput = this.querySelector('#media-search-input');
+      
+      if (contentTypeFilter) {
+        contentTypeFilter.value = this.activeTab.browseGenres;
+        this.currentContentType = this.activeTab.browseGenres;
+      }
+      
+      if (genreFilter) {
+        genreFilter.value = genreId;
+        this.currentGenre = genreId;
+      }
+      
+      if (searchInput) {
+        searchInput.value = genreName;
+        this.currentSearchQuery = genreName;
+      }
+
+      // Update genre filter options
+      this.updateGenreFilter();
+      
+      // Set the genre filter value again after update
+      if (genreFilter) {
+        genreFilter.value = genreId;
+      }
+
+      // Show search container and perform search
+      const searchContainer = this.querySelector('#search-container');
+      if (searchContainer) {
+        searchContainer.removeAttribute('hidden');
+      }
+
+      // Use discover API for better genre-based results
+      const genreResults = await mediaService.getByGenre(this.activeTab.browseGenres, genreId, 1);
+      this.displaySearchResults(genreResults);
+
+      // Show success message
+      this.showToast(`Browsing ${genreName} ${this.activeTab.browseGenres === 'movie' ? 'movies' : 'TV shows'}`);
+      
+    } catch (error) {
+      console.error('Error browsing genre:', error);
+      this.showError('Failed to browse genre content');
     }
   }
 

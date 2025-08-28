@@ -1,0 +1,165 @@
+<main class="page media-details-page" role="main">
+  <div class="media-details-hero">
+    <div class="hero-backdrop">
+      <img class="backdrop-image" src="" alt="" loading="lazy">
+      <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="media-poster-container">
+        <img class="media-poster" src="" alt="" loading="lazy">
+      </div>
+      
+      <div class="media-info">
+        <div class="media-header">
+          <h1 class="media-title"></h1>
+          <div class="media-tagline"></div>
+        </div>
+        
+        <div class="media-meta">
+          <div class="meta-item">
+            <span class="meta-label">Release Date:</span>
+            <span class="meta-value release-date"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Runtime:</span>
+            <span class="meta-value runtime"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Rating:</span>
+            <div class="rating-container">
+              <span class="rating-icon">⭐</span>
+              <span class="meta-value rating"></span>
+            </div>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Status:</span>
+            <span class="meta-value status"></span>
+          </div>
+        </div>
+        
+        <div class="media-genres">
+          <!-- Genres will be populated by JavaScript -->
+        </div>
+        
+        <div class="media-actions">
+          <button class="btn btn-primary download-btn" aria-label="Download">
+            <span class="icon">📥</span>
+            <span class="text">Download</span>
+          </button>
+          <button class="btn btn-secondary favorite-btn" aria-label="Add to favorites">
+            <span class="icon">❤️</span>
+            <span class="text">Favorite</span>
+          </button>
+          <button class="btn btn-secondary share-btn" aria-label="Share">
+            <span class="icon">🔗</span>
+            <span class="text">Share</span>
+          </button>
+          <button class="btn btn-secondary back-btn" aria-label="Go back">
+            <span class="icon">←</span>
+            <span class="text">Back</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="media-details-content">
+    <!-- Overview Section -->
+    <section class="details-section overview-section">
+      <h2 class="section-title">Overview</h2>
+      <div class="overview-content">
+        <p class="media-overview"></p>
+      </div>
+    </section>
+
+    <!-- Streaming Availability Section -->
+    <section class="details-section streaming-section">
+      <h2 class="section-title">Where to Watch</h2>
+      <div class="streaming-providers" id="streaming-providers">
+        <!-- Streaming providers will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Cast & Crew Section -->
+    <section class="details-section cast-section">
+      <h2 class="section-title">Cast & Crew</h2>
+      <div class="cast-tabs">
+        <button class="tab-btn active" data-tab="cast">Cast</button>
+        <button class="tab-btn" data-tab="crew">Crew</button>
+      </div>
+      <div class="cast-grid" id="cast-grid">
+        <!-- Cast will be populated by JavaScript -->
+      </div>
+      <div class="crew-grid" id="crew-grid" hidden>
+        <!-- Crew will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Videos Section -->
+    <section class="details-section videos-section">
+      <h2 class="section-title">Videos & Trailers</h2>
+      <div class="videos-grid" id="videos-grid">
+        <!-- Videos will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Similar Content Section -->
+    <section class="details-section similar-section">
+      <h2 class="section-title">Similar Content</h2>
+      <div class="media-carousel" id="similar-carousel">
+        <!-- Similar content will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Recommendations Section -->
+    <section class="details-section recommendations-section">
+      <h2 class="section-title">Recommended for You</h2>
+      <div class="media-carousel" id="recommendations-carousel">
+        <!-- Recommendations will be populated by JavaScript -->
+      </div>
+    </section>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loading-overlay" hidden>
+    <div class="loading-content">
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="loading-message">Loading media details...</p>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div class="modal-overlay" id="share-modal" hidden>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Share</h3>
+        <button class="modal-close" aria-label="Close modal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="share-options">
+          <button class="share-option" data-share="copy">
+            <span class="icon">📋</span>
+            <span class="text">Copy Link</span>
+          </button>
+          <button class="share-option" data-share="twitter">
+            <span class="icon">🐦</span>
+            <span class="text">Twitter</span>
+          </button>
+          <button class="share-option" data-share="facebook">
+            <span class="icon">📘</span>
+            <span class="text">Facebook</span>
+          </button>
+          <button class="share-option" data-share="reddit">
+            <span class="icon">🔴</span>
+            <span class="text">Reddit</span>
+          </button>
+        </div>
+        <div class="share-url">
+          <input type="text" class="url-input" readonly>
+          <button class="copy-btn">Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

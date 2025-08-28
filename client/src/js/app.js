@@ -232,28 +232,33 @@ class PandoraApp {
     // Override router's authentication check before initializing auth store
     this.router.isAuthenticated = () => {
       const currentPath = window.location.pathname;
-      console.log(`Auth check for path: ${currentPath}`);
       
-      // Prevent redirect loops by checking if we're already on login page
+      // Always allow access to login page to prevent redirect loops
       if (currentPath === '/login') {
-        console.log('Allowing access to login page');
-        return true; // Allow access to login page
+        return true;
+      }
+      
+      // Check if auth store exists and is initialized
+      if (!this.authStore) {
+        return false;
       }
       
       // Check if auth store is still loading
       const authState = this.authStore.getState();
       if (authState.loading) {
-        console.log('Auth store still loading, allowing navigation');
         return true; // Allow navigation while loading
       }
       
-      const isAuth = this.authStore.isAuthenticated();
-      console.log(`Auth store says authenticated: ${isAuth}`);
-      return isAuth;
+      return this.authStore.isAuthenticated();
     };
     
-    await this.authStore.init();
-    console.log('Authentication initialized');
+    try {
+      await this.authStore.init();
+      console.log('Authentication initialized successfully');
+    } catch (error) {
+      console.error('Authentication initialization failed:', error);
+      // Don't throw here, let the app continue with unauthenticated state
+    }
   }
 
   /**

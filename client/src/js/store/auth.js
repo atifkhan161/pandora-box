@@ -3,6 +3,8 @@
  * Vanilla JavaScript implementation
  */
 
+import authService from '../services/auth.js';
+
 class AuthStore {
   constructor() {
     this.state = {
@@ -14,6 +16,7 @@ class AuthStore {
     
     this.listeners = new Set();
     this.authChangeListeners = new Set();
+    this.authService = authService;
   }
 
   /**
@@ -23,16 +26,28 @@ class AuthStore {
     this.setState({ loading: true, error: null });
     
     try {
-      // Check for stored authentication
-      const token = localStorage.getItem('pb-auth-token');
-      const user = localStorage.getItem('pb-user');
+      // Load stored authentication from service
+      await this.authService.loadStoredAuth();
       
-      if (token && user) {
-        this.setState({
-          isAuthenticated: true,
-          user: JSON.parse(user),
-          loading: false
-        });
+      // Check if user is authenticated
+      if (this.authService.isAuthenticated()) {
+        // Verify token is still valid
+        const isValid = await this.authService.verifyToken();
+        
+        if (isValid) {
+          this.setState({
+            isAuthenticated: true,
+            user: this.authService.getUser(),
+            loading: false
+          });
+          
+          // Initialize WebSocket connection
+          await this.initializeWebSocket();
+        } else {
+          // Token is invalid, clear auth
+          await this.authService.clearAuth();
+          this.setState({ loading: false });
+        }
       } else {
         this.setState({ loading: false });
       }
@@ -121,35 +136,26 @@ class AuthStore {
     this.setState({ loading: true, error: null });
     
     try {
-      // For now, implement a simple demo login
-      // This will be replaced with actual API calls in task 3.2
-      if (username === 'admin' && password === 'admin') {
-        const user = {
-          id: '1',
-          username: 'admin',
-          role: 'admin',
-          name: 'Administrator'
-        };
-
-        // Store authentication data
-        if (rememberMe) {
-          localStorage.setItem('pb-auth-token', 'demo-token');
-          localStorage.setItem('pb-user', JSON.stringify(user));
-        }
-
+      // Use authentication service for login
+      const result = await this.authService.login(username, password, rememberMe);
+      
+      if (result.success) {
         this.setState({
           isAuthenticated: true,
-          user: user,
+          user: result.user,
           loading: false
         });
-
-        return { success: true };
+        
+        // Initialize WebSocket connection
+        await this.initializeWebSocket();
+        
+        return { success: true, user: result.user };
       } else {
         this.setState({
-          error: 'Invalid username or password',
+          error: result.error,
           loading: false
         });
-        return { success: false, error: 'Invalid username or password' };
+        return { success: false, error: result.error };
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -169,9 +175,11 @@ class AuthStore {
     this.setState({ loading: true });
     
     try {
-      // Clear stored authentication data
-      localStorage.removeItem('pb-auth-token');
-      localStorage.removeItem('pb-user');
+      // Disconnect WebSocket first
+      this.disconnectWebSocket();
+      
+      // Use authentication service for logout
+      await this.authService.logout();
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -199,8 +207,70 @@ class AuthStore {
       const updatedUser = { ...this.state.user, ...userData };
       this.setState({ user: updatedUser });
       
-      // Update stored user data
-      localStorage.setItem('pb-user', JSON.stringify(updatedUser));
+      // Update user data in auth service
+      this.authService.user = updatedUser;
+      
+      // Update stored user data via storage service
+      import('../utils/storage.js').then(({ default: storage }) => {
+        storage.setUserData(updatedUser);
+      });
+    }
+  }
+
+  /**
+   * Refresh authentication token
+   */
+  async refreshToken() {
+    try {
+      const success = await this.authService.refreshToken();
+      if (!success) {
+        // Token refresh failed, logout user
+        await this.logout();
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      await this.logout();
+      return false;
+    }
+  }
+
+  /**
+   * Get authentication token
+   */
+  getToken() {
+    return this.authService.getToken();
+  }
+
+  /**
+   * Get authorization headers for API requests
+   */
+  getAuthHeaders() {
+    return this.authService.getAuthHeaders();
+  }
+
+  /**
+   * Initialize WebSocket connection
+   */
+  async initializeWebSocket() {
+    if (window.wsClient && this.state.isAuthenticated) {
+      try {
+        await window.wsClient.connect();
+        console.log('WebSocket connection initialized');
+      } catch (error) {
+        console.warn('Failed to initialize WebSocket:', error);
+      }
+    }
+  }
+
+  /**
+   * Disconnect WebSocket
+   */
+  disconnectWebSocket() {
+    if (window.wsClient) {
+      window.wsClient.disconnect();
+      console.log('WebSocket disconnected');
     }
   }
 

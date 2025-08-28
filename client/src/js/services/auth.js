@@ -3,7 +3,8 @@
  * Handles user authentication, JWT token management, and session storage
  */
 
-import storage from '../utils/storage.js'
+import storage from '../utils/storage.js';
+import jwtManager from '../utils/jwt-manager.js';
 
 class AuthService {
   constructor() {
@@ -37,13 +38,30 @@ class AuthService {
       }
       
       if (storedToken && storedUser) {
-        this.token = storedToken
-        this.user = storedUser
+        // Check if token structure is valid
+        if (!jwtManager.isValidTokenStructure(storedToken)) {
+          console.warn('Invalid token structure, clearing auth');
+          this.clearAuth();
+          return;
+        }
+
+        // Check if token is expired
+        if (jwtManager.isTokenExpired(storedToken)) {
+          console.warn('Token expired, clearing auth');
+          this.clearAuth();
+          return;
+        }
+
+        this.token = storedToken;
+        this.user = storedUser;
         
-        // Verify token is still valid
-        const isValid = await this.verifyToken()
-        if (!isValid) {
-          this.clearAuth()
+        // Verify token with server
+        const isValid = await this.verifyToken();
+        if (isValid) {
+          // Schedule automatic token refresh
+          this.scheduleTokenRefresh();
+        } else {
+          this.clearAuth();
         }
       }
     } catch (error) {
@@ -77,35 +95,38 @@ class AuthService {
 
       if (response.ok && data.token) {
         // Store authentication data
-        this.token = data.token
-        this.user = data.user
+        this.token = data.token;
+        this.user = data.user;
         
         // Store authentication data
         try {
           if (rememberMe) {
             // Store in IndexedDB with 90-day TTL for persistent storage
-            await storage.setAuthToken(this.token, 90 * 24 * 60 * 60 * 1000)
-            await storage.setUserData(this.user)
+            await storage.setAuthToken(this.token, 90 * 24 * 60 * 60 * 1000);
+            await storage.setUserData(this.user);
             
             // Also store in localStorage as fallback
-            localStorage.setItem('pandora_auth_token', this.token)
-            localStorage.setItem('pandora_user_data', JSON.stringify(this.user))
+            localStorage.setItem('pandora_auth_token', this.token);
+            localStorage.setItem('pandora_user_data', JSON.stringify(this.user));
           } else {
             // Store in sessionStorage for session-only persistence
-            sessionStorage.setItem('pandora_auth_token', this.token)
-            sessionStorage.setItem('pandora_user_data', JSON.stringify(this.user))
+            sessionStorage.setItem('pandora_auth_token', this.token);
+            sessionStorage.setItem('pandora_user_data', JSON.stringify(this.user));
           }
         } catch (error) {
-          console.error('Error storing auth data:', error)
+          console.error('Error storing auth data:', error);
           // Fallback to localStorage
-          localStorage.setItem('pandora_auth_token', this.token)
-          localStorage.setItem('pandora_user_data', JSON.stringify(this.user))
+          localStorage.setItem('pandora_auth_token', this.token);
+          localStorage.setItem('pandora_user_data', JSON.stringify(this.user));
         }
+
+        // Schedule automatic token refresh
+        this.scheduleTokenRefresh();
 
         return {
           success: true,
           user: this.user
-        }
+        };
       } else {
         return {
           success: false,
@@ -134,13 +155,13 @@ class AuthService {
             'Authorization': `Bearer ${this.token}`,
             'Content-Type': 'application/json'
           }
-        })
+        });
       }
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('Logout error:', error);
     } finally {
       // Always clear local auth data
-      this.clearAuth()
+      await this.clearAuth();
     }
   }
 
@@ -183,24 +204,27 @@ class AuthService {
       })
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         if (data.token) {
-          this.token = data.token
+          this.token = data.token;
           
           // Update stored token
           try {
-            await storage.setAuthToken(this.token, 90 * 24 * 60 * 60 * 1000)
+            await storage.setAuthToken(this.token, 90 * 24 * 60 * 60 * 1000);
           } catch (error) {
-            console.error('Error updating token in IndexedDB:', error)
+            console.error('Error updating token in IndexedDB:', error);
           }
           
           if (localStorage.getItem('pandora_auth_token')) {
-            localStorage.setItem('pandora_auth_token', this.token)
+            localStorage.setItem('pandora_auth_token', this.token);
           } else if (sessionStorage.getItem('pandora_auth_token')) {
-            sessionStorage.setItem('pandora_auth_token', this.token)
+            sessionStorage.setItem('pandora_auth_token', this.token);
           }
           
-          return true
+          // Schedule next refresh
+          this.scheduleTokenRefresh();
+          
+          return true;
         }
       }
       
@@ -253,24 +277,61 @@ class AuthService {
   }
 
   /**
+   * Schedule automatic token refresh
+   */
+  scheduleTokenRefresh() {
+    if (!this.token) return;
+
+    jwtManager.scheduleRefresh(this.token, async () => {
+      return await this.refreshToken();
+    });
+  }
+
+  /**
+   * Clear refresh timer
+   */
+  clearRefreshTimer() {
+    jwtManager.clearRefreshTimer();
+  }
+
+  /**
+   * Get token information
+   * @returns {object|null}
+   */
+  getTokenInfo() {
+    if (!this.token) return null;
+
+    return {
+      claims: jwtManager.getTokenClaims(this.token),
+      expiresAt: jwtManager.getExpiryTimeString(this.token),
+      timeRemaining: jwtManager.getTimeRemainingString(this.token),
+      isExpired: jwtManager.isTokenExpired(this.token),
+      shouldRefresh: jwtManager.shouldRefreshToken(this.token)
+    };
+  }
+
+  /**
    * Clear all authentication data
    */
   async clearAuth() {
-    this.token = null
-    this.user = null
+    // Clear refresh timer
+    this.clearRefreshTimer();
+    
+    this.token = null;
+    this.user = null;
     
     // Clear from IndexedDB
     try {
-      await storage.clearAuth()
+      await storage.clearAuth();
     } catch (error) {
-      console.error('Error clearing auth from IndexedDB:', error)
+      console.error('Error clearing auth from IndexedDB:', error);
     }
     
     // Clear from both localStorage and sessionStorage
-    localStorage.removeItem('pandora_auth_token')
-    localStorage.removeItem('pandora_user_data')
-    sessionStorage.removeItem('pandora_auth_token')
-    sessionStorage.removeItem('pandora_user_data')
+    localStorage.removeItem('pandora_auth_token');
+    localStorage.removeItem('pandora_user_data');
+    sessionStorage.removeItem('pandora_auth_token');
+    sessionStorage.removeItem('pandora_user_data');
   }
 
   /**

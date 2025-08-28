@@ -3,6 +3,7 @@
  * Vanilla JavaScript implementation
  */
 import BasePage from './base-page.js';
+import { validateUsername, validatePassword } from '../utils/validators.js';
 
 class LoginPage extends BasePage {
   constructor() {
@@ -72,7 +73,7 @@ class LoginPage extends BasePage {
     const submitButton = this.querySelector('button[type="submit"]');
 
     if (!usernameInput || !passwordInput || !submitButton) {
-      this.showError('Form elements not found');
+      this.showValidationError('Form elements not found');
       return;
     }
 
@@ -82,8 +83,17 @@ class LoginPage extends BasePage {
     const rememberMe = rememberCheckbox ? rememberCheckbox.checked : false;
 
     // Validate inputs
-    if (!username || !password) {
-      this.showValidationError('Please enter both username and password');
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.isValid) {
+      this.showValidationError(usernameValidation.message);
+      usernameInput.focus();
+      return;
+    }
+
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      this.showValidationError(passwordValidation.message);
+      passwordInput.focus();
       return;
     }
 
@@ -93,7 +103,10 @@ class LoginPage extends BasePage {
     submitButton.disabled = true;
 
     try {
-      // Attempt login
+      // Clear any previous errors
+      this.clearValidationErrors();
+
+      // Attempt login using auth store
       if (window.authStore) {
         const result = await window.authStore.login({
           username,
@@ -105,32 +118,54 @@ class LoginPage extends BasePage {
           // Show success message
           this.showSuccessToast('Login successful!');
 
-          // Initialize WebSocket connection
-          if (window.wsClient) {
-            window.wsClient.connect();
+          // Initialize WebSocket connection if available
+          if (window.wsClient && typeof window.wsClient.connect === 'function') {
+            try {
+              await window.wsClient.connect();
+            } catch (wsError) {
+              console.warn('WebSocket connection failed:', wsError);
+              // Don't block login for WebSocket failures
+            }
           }
 
-          // Redirect to dashboard
+          // Clear form
+          usernameInput.value = '';
+          passwordInput.value = '';
+          if (rememberCheckbox) rememberCheckbox.checked = false;
+
+          // Redirect to dashboard after short delay
           setTimeout(() => {
             if (window.router) {
-              window.router.navigate('/');
+              window.router.navigate('/dashboard');
+            } else {
+              // Fallback navigation
+              window.location.href = '/dashboard';
             }
           }, 1000);
         } else {
           this.showValidationError(result.error || 'Login failed');
+          // Focus back to username field for retry
+          usernameInput.focus();
         }
       } else {
-        // Demo login for development
-        this.showSuccessToast('Demo login successful!');
-        setTimeout(() => {
-          if (window.router) {
-            window.router.navigate('/');
-          }
-        }, 1000);
+        throw new Error('Authentication store not available');
       }
     } catch (error) {
       console.error('Login error:', error);
-      this.showValidationError('Network error. Please try again.');
+      
+      // Show appropriate error message
+      if (error.name === 'ApiError' && error.status === 401) {
+        this.showValidationError('Invalid username or password');
+      } else if (error.name === 'ApiError' && error.status >= 500) {
+        this.showValidationError('Server error. Please try again later.');
+      } else if (error.message.includes('Network')) {
+        this.showValidationError('Network error. Please check your connection.');
+      } else {
+        this.showValidationError('Login failed. Please try again.');
+      }
+      
+      // Focus back to username field for retry
+      usernameInput.focus();
     } finally {
       // Reset button state
       submitButton.textContent = originalText;
@@ -154,31 +189,49 @@ class LoginPage extends BasePage {
   }
 
   /**
+   * Clear validation errors
+   */
+  clearValidationErrors() {
+    const existingErrors = this.querySelectorAll('.validation-error');
+    existingErrors.forEach(error => error.remove());
+  }
+
+  /**
    * Show validation error
    */
   showValidationError(message) {
     // Remove existing error messages
-    const existingError = this.querySelector('.validation-error');
-    if (existingError) {
-      existingError.remove();
-    }
+    this.clearValidationErrors();
 
     // Create error element
     const errorEl = document.createElement('div');
     errorEl.className = 'validation-error';
-    errorEl.textContent = message;
+    errorEl.innerHTML = `
+      <div class="error-content">
+        <span class="error-icon">⚠️</span>
+        <span class="error-message">${message}</span>
+      </div>
+    `;
 
     // Insert after form
     const form = this.querySelector('#login-form');
     if (form) {
       form.insertAdjacentElement('afterend', errorEl);
       
-      // Remove after 5 seconds
+      // Add animation
       setTimeout(() => {
-        if (errorEl.parentNode) {
-          errorEl.remove();
-        }
-      }, 5000);
+        errorEl.classList.add('show');
+      }, 10);
+      
+      // Remove after 8 seconds
+      setTimeout(() => {
+        errorEl.classList.remove('show');
+        setTimeout(() => {
+          if (errorEl.parentNode) {
+            errorEl.remove();
+          }
+        }, 300);
+      }, 8000);
     }
   }
 

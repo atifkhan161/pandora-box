@@ -126,7 +126,97 @@
   border-radius: 6px;
   margin: 1rem 0;
   font-size: 0.9rem;
-  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  border-left: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.validation-error.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.validation-error .error-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.validation-error .error-icon {
+  font-size: 1rem;
+}
+
+.validation-error .error-message {
+  flex: 1;
+  text-align: left;
+}
+
+/* Loading State Styles */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn:disabled::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Success Toast Styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--pb-accent);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast-success {
+  background: var(--pb-accent);
+}
+
+.toast-error {
+  background: var(--pb-error);
+}
+
+/* Form Focus States */
+.form-group input[type="text"]:invalid,
+.form-group input[type="password"]:invalid {
+  border-color: var(--pb-error);
+}
+
+.form-group input[type="text"]:valid,
+.form-group input[type="password"]:valid {
+  border-color: var(--pb-accent);
 }
 
 /* Responsive Design */

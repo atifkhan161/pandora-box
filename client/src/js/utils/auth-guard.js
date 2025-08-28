@@ -3,77 +3,128 @@
  * Protects routes that require authentication
  */
 
-import authStore from '../store/auth.js'
+/**
+ * Check if user is authenticated
+ * @returns {boolean}
+ */
+export function isAuthenticated() {
+  return window.authStore && window.authStore.isAuthenticated();
+}
+
+/**
+ * Check if user is admin
+ * @returns {boolean}
+ */
+export function isAdmin() {
+  return window.authStore && window.authStore.isAdmin();
+}
 
 /**
  * Route guard that checks authentication
- * Framework7 beforeEnter signature: (routeTo, routeFrom, resolve, reject)
+ * @param {string} path - The path being accessed
+ * @returns {boolean} - True if access is allowed
  */
-export function requireAuth(routeTo, routeFrom, resolve, reject) {
-  const isAuthenticated = authStore.getters.isAuthenticated.value
-  
-  if (isAuthenticated) {
-    // User is authenticated, allow access
-    resolve()
+export function requireAuth(path = '') {
+  if (isAuthenticated()) {
+    return true;
   } else {
     // User is not authenticated, redirect to login
-    // Get the app instance from window since it's globally available
-    if (window.app) {
-      window.app.views.main.router.navigate('/login/', {
-        clearPreviousHistory: true
-      })
+    console.log(`Access denied to ${path}. Redirecting to login.`);
+    
+    if (window.router) {
+      window.router.navigate('/login');
+    } else {
+      window.location.href = '/login';
     }
-    reject()
+    
+    return false;
   }
 }
 
 /**
  * Route guard that redirects authenticated users away from login
+ * @returns {boolean} - True if access is allowed
  */
-export function redirectIfAuthenticated(routeTo, routeFrom, resolve, reject) {
-  const isAuthenticated = authStore.getters.isAuthenticated.value
-  
-  if (!isAuthenticated) {
-    // User is not authenticated, allow access to login
-    resolve()
+export function redirectIfAuthenticated() {
+  if (!isAuthenticated()) {
+    return true; // Allow access to login page
   } else {
     // User is already authenticated, redirect to dashboard
-    if (window.app) {
-      window.app.views.main.router.navigate('/', {
-        clearPreviousHistory: true
-      })
+    console.log('User already authenticated. Redirecting to dashboard.');
+    
+    if (window.router) {
+      window.router.navigate('/dashboard');
+    } else {
+      window.location.href = '/dashboard';
     }
-    reject()
+    
+    return false;
   }
 }
 
 /**
  * Route guard that checks for admin role
+ * @param {string} path - The path being accessed
+ * @returns {boolean} - True if access is allowed
  */
-export function requireAdmin(routeTo, routeFrom, resolve, reject) {
-  const isAuthenticated = authStore.getters.isAuthenticated.value
-  const isAdmin = authStore.getters.isAdmin.value
+export function requireAdmin(path = '') {
+  if (!isAuthenticated()) {
+    console.log(`Access denied to ${path}. User not authenticated.`);
+    
+    if (window.router) {
+      window.router.navigate('/login');
+    } else {
+      window.location.href = '/login';
+    }
+    
+    return false;
+  }
   
-  if (isAuthenticated && isAdmin) {
-    // User is authenticated and is admin, allow access
-    resolve()
-  } else if (isAuthenticated) {
-    // User is authenticated but not admin, show error and stay on current page
-    if (window.app) {
-      window.app.toast.create({
-        text: 'Access denied. Admin privileges required.',
-        position: 'center',
-        closeTimeout: 4000
-      }).open()
-    }
-    reject()
+  if (isAdmin()) {
+    return true;
   } else {
-    // User is not authenticated, redirect to login
-    if (window.app) {
-      window.app.views.main.router.navigate('/login/', {
-        clearPreviousHistory: true
-      })
+    console.log(`Access denied to ${path}. Admin privileges required.`);
+    
+    // Show error message
+    if (window.showToast) {
+      window.showToast('Access denied. Admin privileges required.', 'error');
+    } else {
+      alert('Access denied. Admin privileges required.');
     }
-    reject()
+    
+    return false;
+  }
+}
+
+/**
+ * Get current user data
+ * @returns {object|null}
+ */
+export function getCurrentUser() {
+  return window.authStore ? window.authStore.getUser() : null;
+}
+
+/**
+ * Get authentication token
+ * @returns {string|null}
+ */
+export function getAuthToken() {
+  return window.authStore ? window.authStore.getToken() : null;
+}
+
+/**
+ * Logout current user
+ * @returns {Promise<void>}
+ */
+export async function logout() {
+  if (window.authStore) {
+    await window.authStore.logout();
+    
+    // Redirect to login
+    if (window.router) {
+      window.router.navigate('/login');
+    } else {
+      window.location.href = '/login';
+    }
   }
 }

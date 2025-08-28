@@ -12,6 +12,7 @@ import WebSocketClient from './services/websocket.js';
 // Import page controllers
 import DashboardPage from './pages/dashboard.js';
 import LoginPage from './pages/login.js';
+import MediaDetailsPage from './pages/media-details.js';
 import DownloadsPage from './pages/downloads.js';
 import FilesPage from './pages/files.js';
 import ContainersPage from './pages/containers.js';
@@ -28,6 +29,7 @@ class PandoraApp {
     this.authStore = null;
     this.wsClient = null;
     this.isInitialized = false;
+    this.pendingLoginRedirect = false;
   }
 
   /**
@@ -172,6 +174,8 @@ class PandoraApp {
    * Setup application routing
    */
   setupRouting() {
+    console.log('Setting up application routes...');
+    
     // Register routes
     this.router.addRoute('/', DashboardPage, { 
       requiresAuth: true, 
@@ -181,6 +185,11 @@ class PandoraApp {
     this.router.addRoute('/login', LoginPage, { 
       requiresAuth: false, 
       title: 'Login - Pandora Box' 
+    });
+    
+    this.router.addRoute('/media-details', MediaDetailsPage, { 
+      requiresAuth: true, 
+      title: 'Media Details - Pandora Box' 
     });
     
     this.router.addRoute('/downloads', DownloadsPage, { 
@@ -208,8 +217,18 @@ class PandoraApp {
       title: 'Settings - Pandora Box' 
     });
 
+    console.log('Routes registered, initializing router...');
+    
     // Initialize router after auth is set up
     this.router.init();
+    
+    // Handle pending login redirect after router is initialized
+    if (this.pendingLoginRedirect) {
+      console.log('Executing pending login redirect...');
+      setTimeout(() => {
+        this.router.navigate('/login', true);
+      }, 50);
+    }
   }
 
   /**
@@ -240,24 +259,45 @@ class PandoraApp {
       
       // Check if auth store exists and is initialized
       if (!this.authStore) {
+        console.log('Auth store not available, denying access');
         return false;
       }
       
       // Check if auth store is still loading
       const authState = this.authStore.getState();
       if (authState.loading) {
+        console.log('Auth store still loading, allowing navigation');
         return true; // Allow navigation while loading
       }
       
-      return this.authStore.isAuthenticated();
+      const isAuth = this.authStore.isAuthenticated();
+      console.log(`Auth check result: ${isAuth} for path: ${currentPath}`);
+      return isAuth;
     };
     
     try {
       await this.authStore.init();
       console.log('Authentication initialized successfully');
+      
+      // After auth initialization, check if we need to redirect to login
+      const currentPath = window.location.pathname;
+      const isAuthenticated = this.authStore.isAuthenticated();
+      
+      console.log(`Post-auth check - Path: ${currentPath}, Authenticated: ${isAuthenticated}`);
+      
+      // If user is not authenticated and not already on login page, redirect to login
+      if (!isAuthenticated && currentPath !== '/login') {
+        console.log('User not authenticated, will redirect to login after router initialization');
+        // Store the redirect intention to be handled after router init
+        this.pendingLoginRedirect = true;
+      }
+      
     } catch (error) {
       console.error('Authentication initialization failed:', error);
-      // Don't throw here, let the app continue with unauthenticated state
+      // On auth failure, redirect to login
+      setTimeout(() => {
+        this.router.navigate('/login', true);
+      }, 100);
     }
   }
 

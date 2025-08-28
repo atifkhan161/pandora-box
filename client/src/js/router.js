@@ -81,24 +81,34 @@ class Router {
         console.log(`Route ${path} requires auth. Authenticated: ${isAuth}`);
         
         if (!isAuth) {
-          // Prevent infinite redirect loops
-          const now = Date.now();
-          if (now - this.lastRedirectTime < 1000) {
-            this.redirectCount++;
+          // Prevent infinite redirect loops by checking current path
+          if (path === '/login') {
+            console.log('Already on login page, allowing access');
+            // Reset redirect counter since we're on login page
+            this.redirectCount = 0;
           } else {
-            this.redirectCount = 1;
-          }
-          this.lastRedirectTime = now;
-          
-          if (this.redirectCount > this.maxRedirects) {
-            console.error('Too many authentication redirects, stopping to prevent infinite loop');
-            this.showError('Authentication error: Too many redirects. Please refresh the page.');
+            // Prevent rapid redirects
+            const now = Date.now();
+            if (now - this.lastRedirectTime < 2000) { // Increased to 2 seconds
+              this.redirectCount++;
+            } else {
+              this.redirectCount = 1;
+            }
+            this.lastRedirectTime = now;
+            
+            if (this.redirectCount > this.maxRedirects) {
+              console.error('Too many authentication redirects, stopping to prevent infinite loop');
+              this.showError('Authentication error: Too many redirects. Please refresh the page.');
+              return;
+            }
+            
+            console.log(`Route requires authentication, redirecting to login (attempt ${this.redirectCount})`);
+            this.navigate('/login', true);
             return;
           }
-          
-          console.log(`Route requires authentication, redirecting to login (attempt ${this.redirectCount})`);
-          this.navigate('/login', false);
-          return;
+        } else {
+          // User is authenticated, reset redirect counter
+          this.redirectCount = 0;
         }
       }
 

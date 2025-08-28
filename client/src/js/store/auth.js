@@ -28,6 +28,7 @@ class AuthStore {
     try {
       // Check if user has stored authentication tokens
       const hasStoredAuth = this.authService.hasStoredAuth();
+      console.log(`Auth store init - hasStoredAuth: ${hasStoredAuth}`);
       
       if (hasStoredAuth) {
         // For now, just check if tokens exist without server validation
@@ -38,14 +39,24 @@ class AuthStore {
           loading: false
         });
         
+        console.log('User has stored auth, setting authenticated state');
+        
         // Initialize WebSocket connection
         await this.initializeWebSocket();
       } else {
-        this.setState({ loading: false });
+        // No stored auth - user needs to login
+        console.log('No stored auth found, user needs to login');
+        this.setState({ 
+          isAuthenticated: false,
+          user: null,
+          loading: false 
+        });
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
       this.setState({
+        isAuthenticated: false,
+        user: null,
         error: 'Failed to initialize authentication',
         loading: false
       });

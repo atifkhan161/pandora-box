@@ -2,49 +2,49 @@ const routes = [
   // Login page
   {
     path: '/login/',
-    componentUrl: './pages/login.html'
+    url: './pages/login.html'
   },
   
   // Dashboard (home) page
   {
     path: '/',
-    componentUrl: './pages/dashboard.html'
+    url: './pages/dashboard.html'
   },
   
   // Downloads page
   {
     path: '/downloads/',
-    componentUrl: './pages/downloads.html'
+    url: './pages/downloads.html'
   },
   
   // Files page
   {
     path: '/files/',
-    componentUrl: './pages/files.html'
+    url: './pages/files.html'
   },
   
   // Containers page
   {
     path: '/containers/',
-    componentUrl: './pages/containers.html'
+    url: './pages/containers.html'
   },
   
   // Jellyfin page
   {
     path: '/jellyfin/',
-    componentUrl: './pages/jellyfin.html'
+    url: './pages/jellyfin.html'
   },
   
   // Settings page
   {
     path: '/settings/',
-    componentUrl: './pages/settings.html'
+    url: './pages/settings.html'
   },
   
   // Default route (404)
   {
     path: '(.*)',
-    componentUrl: './pages/404.html'
+    url: './pages/404.html'
   }
 ]
 

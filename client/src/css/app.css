@@ -65,6 +65,73 @@ body {
   width: 100vw;
 }
 
+/* Ensure main view is visible */
+.view-main {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix for panel covering main content */
+.panel-left.panel-in {
+  transform: translate3d(0, 0, 0);
+}
+
+.panel-left:not(.panel-in) {
+  transform: translate3d(-100%, 0, 0);
+}
+
+/* Ensure main view is not hidden when panel is closed */
+.view-main.view-init {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Force main view to be visible on load */
+.view-main {
+  opacity: 1 !important;
+  transform: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 10 !important;
+}
+
+/* Force panel to be hidden by default */
+.panel-left:not(.panel-in) {
+  transform: translate3d(-100%, 0, 0) !important;
+  z-index: 5000;
+}
+
+.panel-left.panel-in {
+  transform: translate3d(0, 0, 0) !important;
+  z-index: 5000;
+}
+
+/* Ensure panel doesn't interfere with main content on desktop */
+@media (min-width: 768px) {
+  .panel-left.panel-cover {
+    z-index: 5000;
+  }
+  
+  .view-main {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* Panel fixes */
+.panel-left {
+  z-index: 5000;
+}
+
+.panel-backdrop {
+  z-index: 4999;
+}
+
 /* Loading screen styles */
 .preloader-backdrop {
   position: fixed;
@@ -302,6 +369,25 @@ body {
 .panel .list .item-link:hover,
 .panel .list .item-link:active {
   background: var(--pb-border);
+}
+
+.panel .list .item-link:focus {
+  outline: 2px solid var(--pb-primary);
+  outline-offset: 2px;
+  background: var(--pb-border);
+}
+
+/* Improve accessibility for panel transitions */
+.panel-backdrop {
+  transition: opacity 0.3s ease;
+}
+
+.panel-left.panel-in {
+  transition: transform 0.3s ease;
+}
+
+.panel-left:not(.panel-in) {
+  transition: transform 0.3s ease;
 }
 
 /* Accessibility improvements */

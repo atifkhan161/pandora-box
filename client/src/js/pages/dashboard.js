@@ -121,6 +121,33 @@ document.addEventListener('DOMContentLoaded', () => {
           ], 'Framework7 Features Demo')
         })
       }
+
+      // Debug button to close panel
+      const debugPanelBtn = page.$el.find('#debug-panel-btn')
+      if (debugPanelBtn.length > 0) {
+        debugPanelBtn.on('click', () => {
+          console.log('Debug: Closing panel and ensuring main view visibility')
+          
+          // Close any open panels
+          if (app.panel && app.panel.left && app.panel.left.opened) {
+            app.panel.close('left')
+          }
+          
+          // Ensure main view is visible
+          const mainView = document.querySelector('.view-main')
+          if (mainView) {
+            mainView.style.display = 'block'
+            mainView.style.visibility = 'visible'
+            mainView.style.opacity = '1'
+            mainView.style.transform = 'none'
+          }
+          
+          // Force refresh the current page
+          page.app.views.main.router.refreshPage()
+          
+          f7Helpers.showSuccess('Panel closed and main view restored')
+        })
+      }
       
       // Initialize dashboard functionality here
       // This will be implemented in task 3.1

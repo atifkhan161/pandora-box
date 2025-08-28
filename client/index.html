@@ -1,35 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#141414">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pandora Box">
   <meta name="description" content="Self-hosted media management PWA">
-  
+
   <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png">
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
-  
+
   <!-- Framework7 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@8.3.3/css/framework7.bundle.min.css">
-  
+
   <!-- Framework7 Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7-icons@5.0.5/css/framework7-icons.css">
-  
+
   <title>Pandora Box</title>
 </head>
+
 <body>
   <!-- App root element -->
   <div id="app">
     <!-- Left Panel -->
-    <div class="panel panel-left panel-reveal panel-resizable">
+    <div class="panel panel-left panel-cover panel-resizable">
       <div class="panel-backdrop"></div>
       <div class="panel-content">
         <div class="page">
@@ -43,39 +46,39 @@
             <div class="list links-list">
               <ul>
                 <li>
-                  <a href="/" class="panel-close">
-                    <i class="f7-icons">house_fill</i>
-                    <span>Dashboard</span>
+                  <a href="/" class="panel-close" tabindex="0"></a>
+                  <i class="f7-icons">house_fill</i>
+                  <span>Dashboard</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/downloads/" class="panel-close">
+                  <a href="/downloads/" class="panel-close" tabindex="0">
                     <i class="f7-icons">arrow_down_circle_fill</i>
                     <span>Downloads</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/files/" class="panel-close">
+                  <a href="/files/" class="panel-close" tabindex="0">
                     <i class="f7-icons">folder_fill</i>
                     <span>Files</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/containers/" class="panel-close">
+                  <a href="/containers/" class="panel-close" tabindex="0">
                     <i class="f7-icons">cube_box_fill</i>
                     <span>Containers</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/jellyfin/" class="panel-close">
-                    <i class="f7-icons">tv_fill</i>
-                    <span>Jellyfin</span>
+                  <a href="/jellyfin/" class="panel-close" tabindex="0"></a>
+                  <i class="f7-icons">tv_fill</i>
+                  <span>Jellyfin</span>
                   </a>
                 </li>
                 <li>
-                  <a href="/settings/" class="panel-close">
-                    <i class="f7-icons">gear_alt_fill</i>
-                    <span>Settings</span>
+                  <a href="/settings/" class="panel-close" tabindex="0"></a>
+                  <i class="f7-icons">gear_alt_fill</i>
+                  <span>Settings</span>
                   </a>
                 </li>
               </ul>
@@ -102,9 +105,75 @@
         </div>
       </div>
     </div>
+
+    <!-- Emergency fix button -->
+    <button id="emergency-fix-btn" style="position: fixed; top: 50%; right: 20px; z-index: 9999; background: #e50914; color: white; border: none; padding: 15px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+      🔧
+    </button>
   </div>
-  
+
+  <!-- Debug script to ensure main view is visible -->
+  <script>
+    // Aggressive debug script to force main view visibility
+    function forceMainViewVisible() {
+      const mainView = document.querySelector('.view-main')
+      const panel = document.querySelector('.panel-left')
+      
+      if (mainView) {
+        mainView.style.display = 'block'
+        mainView.style.visibility = 'visible'
+        mainView.style.opacity = '1'
+        mainView.style.transform = 'none'
+        mainView.style.position = 'fixed'
+        mainView.style.top = '0'
+        mainView.style.left = '0'
+        mainView.style.width = '100%'
+        mainView.style.height = '100%'
+        mainView.style.zIndex = '10'
+      }
+      
+      if (panel) {
+        panel.classList.remove('panel-in')
+        panel.style.transform = 'translate3d(-100%, 0, 0)'
+        panel.style.zIndex = '5000'
+      }
+      
+      console.log('Forced main view visible')
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(forceMainViewVisible, 100)
+      setTimeout(forceMainViewVisible, 500)
+      setTimeout(forceMainViewVisible, 1000)
+      setTimeout(forceMainViewVisible, 2000)
+    })
+    
+    // Also run on window load
+    window.addEventListener('load', () => {
+      setTimeout(forceMainViewVisible, 100)
+    })
+    
+    // Emergency fix button
+    document.addEventListener('DOMContentLoaded', () => {
+      const emergencyBtn = document.getElementById('emergency-fix-btn')
+      if (emergencyBtn) {
+        emergencyBtn.addEventListener('click', () => {
+          console.log('Emergency fix button clicked!')
+          forceMainViewVisible()
+          
+          // Also try to navigate to dashboard
+          setTimeout(() => {
+            if (window.app && window.app.views && window.app.views.main) {
+              window.app.views.main.router.navigate('/', { force: true })
+            }
+          }, 500)
+        })
+      }
+    })
+  </script>
+
   <!-- App initialization script -->
   <script type="module" src="/src/js/app.js"></script>
 </body>
+
 </html>

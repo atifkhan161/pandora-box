@@ -1,9 +1,7 @@
 /**
  * Authentication State Management
- * Simple reactive state manager for authentication
+ * Vanilla JavaScript implementation
  */
-
-import authService from '../services/auth.js'
 
 class AuthStore {
   constructor() {
@@ -12,171 +10,206 @@ class AuthStore {
       user: null,
       loading: false,
       error: null
-    }
+    };
     
-    this.listeners = new Set()
+    this.listeners = new Set();
+    this.authChangeListeners = new Set();
   }
 
-  // Subscribe to state changes
-  subscribe(callback) {
-    this.listeners.add(callback)
-    return () => this.listeners.delete(callback)
-  }
-
-  // Notify all listeners of state changes
-  notify() {
-    this.listeners.forEach(callback => callback(this.state))
-  }
-
-  // Update state and notify listeners
-  setState(updates) {
-    this.state = { ...this.state, ...updates }
-    this.notify()
-  }
-
-  // Getters
-  getters = {
-    isAuthenticated: {
-      get value() {
-        return authStore.state.isAuthenticated
-      }
-    },
-    
-    user: {
-      get value() {
-        return authStore.state.user
-      }
-    },
-    
-    isAdmin: {
-      get value() {
-        return authStore.state.user && authStore.state.user.role === 'admin'
-      }
-    },
-    
-    loading: {
-      get value() {
-        return authStore.state.loading
-      }
-    },
-    
-    error: {
-      get value() {
-        return authStore.state.error
-      }
-    }
-  }
-
-  // Actions
-  async dispatch(action, payload) {
-    switch (action) {
-      case 'initAuth':
-        return this.initAuth()
-      case 'login':
-        return this.login(payload)
-      case 'logout':
-        return this.logout()
-      case 'clearError':
-        return this.clearError()
-      case 'updateUser':
-        return this.updateUser(payload)
-      default:
-        throw new Error(`Unknown action: ${action}`)
-    }
-  }
-
-  // Initialize authentication state
-  async initAuth() {
-    this.setState({ loading: true, error: null })
+  /**
+   * Initialize the auth store
+   */
+  async init() {
+    this.setState({ loading: true, error: null });
     
     try {
-      // Load stored authentication data
-      await authService.loadStoredAuth()
+      // Check for stored authentication
+      const token = localStorage.getItem('pb-auth-token');
+      const user = localStorage.getItem('pb-user');
       
-      if (authService.isAuthenticated()) {
+      if (token && user) {
         this.setState({
           isAuthenticated: true,
-          user: authService.getUser(),
+          user: JSON.parse(user),
           loading: false
-        })
+        });
       } else {
-        this.setState({ loading: false })
+        this.setState({ loading: false });
       }
     } catch (error) {
-      console.error('Auth initialization error:', error)
+      console.error('Auth initialization error:', error);
       this.setState({
         error: 'Failed to initialize authentication',
         loading: false
-      })
+      });
     }
   }
 
-  // Login action
+  /**
+   * Subscribe to state changes
+   */
+  subscribe(callback) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+
+  /**
+   * Subscribe to authentication changes
+   */
+  onAuthChange(callback) {
+    this.authChangeListeners.add(callback);
+    return () => this.authChangeListeners.delete(callback);
+  }
+
+  /**
+   * Notify all listeners of state changes
+   */
+  notify() {
+    this.listeners.forEach(callback => callback(this.state));
+  }
+
+  /**
+   * Notify auth change listeners
+   */
+  notifyAuthChange() {
+    this.authChangeListeners.forEach(callback => 
+      callback(this.state.isAuthenticated)
+    );
+  }
+
+  /**
+   * Update state and notify listeners
+   */
+  setState(updates) {
+    const wasAuthenticated = this.state.isAuthenticated;
+    this.state = { ...this.state, ...updates };
+    
+    // Notify general listeners
+    this.notify();
+    
+    // Notify auth change listeners if authentication status changed
+    if (wasAuthenticated !== this.state.isAuthenticated) {
+      this.notifyAuthChange();
+    }
+  }
+
+  /**
+   * Check if user is authenticated
+   */
+  isAuthenticated() {
+    return this.state.isAuthenticated;
+  }
+
+  /**
+   * Get current user
+   */
+  getUser() {
+    return this.state.user;
+  }
+
+  /**
+   * Check if user is admin
+   */
+  isAdmin() {
+    return this.state.user && this.state.user.role === 'admin';
+  }
+
+  /**
+   * Login user
+   */
   async login({ username, password, rememberMe }) {
-    this.setState({ loading: true, error: null })
+    this.setState({ loading: true, error: null });
     
     try {
-      const result = await authService.login(username, password, rememberMe)
-      
-      if (result.success) {
+      // For now, implement a simple demo login
+      // This will be replaced with actual API calls in task 3.2
+      if (username === 'admin' && password === 'admin') {
+        const user = {
+          id: '1',
+          username: 'admin',
+          role: 'admin',
+          name: 'Administrator'
+        };
+
+        // Store authentication data
+        if (rememberMe) {
+          localStorage.setItem('pb-auth-token', 'demo-token');
+          localStorage.setItem('pb-user', JSON.stringify(user));
+        }
+
         this.setState({
           isAuthenticated: true,
-          user: result.user,
+          user: user,
           loading: false
-        })
-        return { success: true }
+        });
+
+        return { success: true };
       } else {
         this.setState({
-          error: result.error,
+          error: 'Invalid username or password',
           loading: false
-        })
-        return { success: false, error: result.error }
+        });
+        return { success: false, error: 'Invalid username or password' };
       }
     } catch (error) {
-      console.error('Login action error:', error)
-      const errorMessage = 'Login failed. Please try again.'
+      console.error('Login error:', error);
+      const errorMessage = 'Login failed. Please try again.';
       this.setState({
         error: errorMessage,
         loading: false
-      })
-      return { success: false, error: errorMessage }
+      });
+      return { success: false, error: errorMessage };
     }
   }
 
-  // Logout action
+  /**
+   * Logout user
+   */
   async logout() {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
     
     try {
-      await authService.logout()
+      // Clear stored authentication data
+      localStorage.removeItem('pb-auth-token');
+      localStorage.removeItem('pb-user');
     } catch (error) {
-      console.error('Logout action error:', error)
+      console.error('Logout error:', error);
     } finally {
       this.setState({
         isAuthenticated: false,
         user: null,
         loading: false,
         error: null
-      })
+      });
     }
   }
 
-  // Clear error
+  /**
+   * Clear error state
+   */
   clearError() {
-    this.setState({ error: null })
+    this.setState({ error: null });
   }
 
-  // Update user data
+  /**
+   * Update user data
+   */
   updateUser(userData) {
     if (this.state.isAuthenticated) {
-      this.setState({
-        user: { ...this.state.user, ...userData }
-      })
+      const updatedUser = { ...this.state.user, ...userData };
+      this.setState({ user: updatedUser });
+      
+      // Update stored user data
+      localStorage.setItem('pb-user', JSON.stringify(updatedUser));
     }
+  }
+
+  /**
+   * Get current state
+   */
+  getState() {
+    return { ...this.state };
   }
 }
 
-// Create singleton instance
-const authStore = new AuthStore()
-
-export default authStore
+export default AuthStore;

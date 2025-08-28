@@ -1,44 +1,54 @@
-<div class="page no-navbar" data-name="login">
-    <div class="page-content login-screen-content">
-      <div class="login-screen-title">
-        <h1>Pandora Box</h1>
-        <p>Self-hosted Media Management</p>
-      </div>
-      
-      <form class="list" id="login-form">
-        <ul>
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Username</div>
-              <div class="item-input-wrap">
-                <input type="text" name="username" placeholder="Enter username" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </div>
-          </li>
-          <li class="item-content item-input">
-            <div class="item-inner">
-              <div class="item-title item-label">Password</div>
-              <div class="item-input-wrap">
-                <input type="password" name="password" placeholder="Enter password" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </div>
-          </li>
-          <li>
-            <label class="item-checkbox item-content">
-              <input type="checkbox" name="remember" value="1">
-              <i class="icon icon-checkbox"></i>
-              <div class="item-inner">
-                <div class="item-title">Remember Me</div>
-              </div>
-            </label>
-          </li>
-        </ul>
-        
-        <div class="block">
-          <button type="submit" class="button button-large button-fill">Sign In</button>
+<div class="page login-page">
+  <div class="login-container">
+    <header class="login-header">
+      <h1 class="login-title">Pandora Box</h1>
+      <p class="login-subtitle">Self-hosted Media Management</p>
+    </header>
+
+    <main class="login-content">
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="Enter username" 
+            required 
+            autocomplete="username"
+          >
         </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter password" 
+            required 
+            autocomplete="current-password"
+          >
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" id="remember">
+            <span class="checkmark"></span>
+            Remember Me
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">
+          Sign In
+        </button>
       </form>
-    </div>
+
+      <div class="login-demo">
+        <button type="button" id="demo-login-btn" class="btn btn-secondary">
+          Fill Demo Credentials
+        </button>
+      </div>
+    </main>
+  </div>
 </div>

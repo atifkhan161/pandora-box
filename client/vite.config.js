@@ -4,40 +4,17 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
     plugins: [
         VitePWA({
-            registerType: 'autoUpdate',
-            workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-                runtimeCaching: [
-                    {
-                        urlPattern: /^https:\/\/api\./,
-                        handler: 'NetworkFirst',
-                        options: {
-                            cacheName: 'api-cache',
-                            expiration: {
-                                maxEntries: 100,
-                                maxAgeSeconds: 60 * 60 * 24 // 24 hours
-                            }
-                        }
-                    },
-                    {
-                        urlPattern: /^https:\/\/image\.tmdb\.org\//,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'tmdb-images',
-                            expiration: {
-                                maxEntries: 200,
-                                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-                            }
-                        }
-                    }
-                ]
+            // No service worker - PWA installability only
+            strategies: 'injectManifest',
+            injectManifest: {
+                swSrc: 'public/sw.js'
             },
             manifest: {
                 name: 'Pandora Box',
                 short_name: 'Pandora',
                 description: 'Self-hosted media management PWA',
-                theme_color: '#141414',
-                background_color: '#000000',
+                theme_color: '#e50914',
+                background_color: '#141414',
                 display: 'standalone',
                 orientation: 'portrait-primary',
                 scope: '/',
@@ -100,9 +77,6 @@ export default defineConfig({
                     proxy.on('error', (err, _req, _res) => {
                         console.log('proxy error', err);
                     });
-                    proxy.on('proxyReq', (proxyReq, req, _res) => {
-                        console.log('Sending Request to the Target:', req.method, req.url);
-                    });
                     proxy.on('proxyRes', (proxyRes, req, _res) => {
                         console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
                     });
@@ -120,10 +94,8 @@ export default defineConfig({
         outDir: 'dist',
         sourcemap: true,
         rollupOptions: {
-            output: {
-                manualChunks: {
-                    framework7: ['framework7']
-                }
+            input: {
+                main: 'index.html'
             }
         }
     },

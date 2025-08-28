@@ -1,26 +1,32 @@
-// Downloads page controller
-import authStore from '../store/auth.js'
+/**
+ * Downloads Page Controller
+ * Vanilla JavaScript implementation
+ */
+import BasePage from './base-page.js';
 
-// Register page events with Framework7
-document.addEventListener('DOMContentLoaded', () => {
-  const app = window.app
-  
-  if (app) {
-    app.on('pageInit', '.page[data-name="downloads"]', function (page) {
-      console.log('Downloads page initialized')
-      // Initialize downloads functionality here
-      // This will be implemented in task 4.1
-    })
-    
-    app.on('pageBeforeIn', '.page[data-name="downloads"]', function (page) {
-      console.log('Downloads page before in')
-      
-      // Check authentication
-      const isAuthenticated = authStore.getters.isAuthenticated.value
-      if (!isAuthenticated) {
-        page.app.views.main.router.navigate('/login/', { clearPreviousHistory: true })
-        return false
-      }
-    })
+class DownloadsPage extends BasePage {
+  constructor() {
+    super();
+    this.templatePath = '/src/pages/downloads.html';
   }
-})
+
+  async setupPage() {
+    this.setTitle('Downloads');
+  }
+
+  setupEventListeners() {
+    // Placeholder for downloads functionality
+    console.log('Downloads page event listeners setup');
+  }
+
+  async loadData() {
+    // Placeholder for downloads data loading
+    console.log('Loading downloads data...');
+  }
+
+  onRender() {
+    console.log('Downloads page rendered');
+  }
+}
+
+export default DownloadsPage;

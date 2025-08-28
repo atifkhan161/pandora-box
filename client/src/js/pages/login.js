@@ -1,127 +1,233 @@
-// Login page controller
-import authStore from '../store/auth.js'
+/**
+ * Login Page Controller
+ * Vanilla JavaScript implementation
+ */
+import BasePage from './base-page.js';
 
-// Register page events with Framework7
-document.addEventListener('DOMContentLoaded', () => {
-  const app = window.app
-  
-  if (app) {
-    // Login page events
-    app.on('pageInit', '.page[data-name="login"]', function (page) {
-      console.log('Login page initialized')
-      
-      // Get page elements
-      const loginForm = page.$el.find('#login-form')
-      const usernameInput = page.$el.find('input[name="username"]')
-      const passwordInput = page.$el.find('input[name="password"]')
-      const rememberCheckbox = page.$el.find('input[name="remember"]')
-      const submitButton = page.$el.find('button[type="submit"]')
-      
-      // Handle form submission
-      loginForm.on('submit', async (e) => {
-        e.preventDefault()
-        
-        // Get form values
-        const username = usernameInput.val().trim()
-        const password = passwordInput.val()
-        const rememberMe = rememberCheckbox.prop('checked')
-        
-        // Validate inputs
-        if (!username || !password) {
-          page.app.toast.create({
-            text: 'Please enter both username and password',
-            position: 'center',
-            closeTimeout: 3000
-          }).open()
-          return
-        }
-        
-        // Show loading state
-        submitButton.text('Signing In...')
-        submitButton.prop('disabled', true)
-        
-        try {
-          // Attempt login
-          const result = await authStore.dispatch('login', {
-            username,
-            password,
-            rememberMe
-          })
-          
-          if (result.success) {
-            // Show success message
-            page.app.toast.create({
-              text: 'Login successful!',
-              position: 'center',
-              closeTimeout: 2000
-            }).open()
-            
-            // Initialize WebSocket connection
-            if (window.wsClient) {
-              window.wsClient.connect()
-            }
-            
-            // Redirect to dashboard
-            setTimeout(() => {
-              page.app.views.main.router.navigate('/', {
-                clearPreviousHistory: true
-              })
-            }, 1000)
-          } else {
-            // Show error message
-            page.app.toast.create({
-              text: result.error || 'Login failed',
-              position: 'center',
-              closeTimeout: 4000
-            }).open()
-          }
-        } catch (error) {
-          console.error('Login error:', error)
-          page.app.toast.create({
-            text: 'Network error. Please try again.',
-            position: 'center',
-            closeTimeout: 4000
-          }).open()
-        } finally {
-          // Reset button state
-          submitButton.text('Sign In')
-          submitButton.prop('disabled', false)
-        }
-      })
-      
-      // Handle enter key in password field
-      passwordInput.on('keypress', (e) => {
-        if (e.which === 13) { // Enter key
-          loginForm.trigger('submit')
-        }
-      })
-      
-      // Auto-focus username field
-      setTimeout(() => {
-        usernameInput.focus()
-      }, 300)
-    })
-    
-    app.on('pageBeforeIn', '.page[data-name="login"]', function (page) {
-      console.log('Login page before in')
-      
-      // Check if already authenticated
-      if (authStore.getters.isAuthenticated.value) {
-        // Redirect to dashboard if already logged in
-        page.app.views.main.router.navigate('/', {
-          clearPreviousHistory: true
-        })
-        return false // Prevent page transition
-      }
-    })
-    
-    app.on('pageAfterIn', '.page[data-name="login"]', function (page) {
-      console.log('Login page after in')
-    })
-    
-    app.on('pageBeforeOut', '.page[data-name="login"]', function (page) {
-      // Clear any error states when leaving
-      authStore.dispatch('clearError')
-    })
+class LoginPage extends BasePage {
+  constructor() {
+    super();
+    this.templatePath = '/src/pages/login.html';
   }
-})
+
+  /**
+   * Setup page-specific logic
+   */
+  async setupPage() {
+    this.setTitle('Login');
+  }
+
+  /**
+   * Setup event listeners
+   */
+  setupEventListeners() {
+    // Login form handler
+    const loginForm = this.querySelector('#login-form');
+    if (loginForm) {
+      this.addEventListener(loginForm, 'submit', (e) => {
+        e.preventDefault();
+        this.handleLogin();
+      });
+    }
+
+    // Enter key handler for password field
+    const passwordInput = this.querySelector('input[name="password"]');
+    if (passwordInput) {
+      this.addEventListener(passwordInput, 'keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.handleLogin();
+        }
+      });
+    }
+
+    // Demo login button
+    const demoLoginBtn = this.querySelector('#demo-login-btn');
+    if (demoLoginBtn) {
+      this.addEventListener(demoLoginBtn, 'click', () => {
+        this.fillDemoCredentials();
+      });
+    }
+  }
+
+  /**
+   * Load initial data
+   */
+  async loadData() {
+    // Auto-focus username field
+    setTimeout(() => {
+      const usernameInput = this.querySelector('input[name="username"]');
+      if (usernameInput) {
+        usernameInput.focus();
+      }
+    }, 300);
+  }
+
+  /**
+   * Handle login form submission
+   */
+  async handleLogin() {
+    const usernameInput = this.querySelector('input[name="username"]');
+    const passwordInput = this.querySelector('input[name="password"]');
+    const rememberCheckbox = this.querySelector('input[name="remember"]');
+    const submitButton = this.querySelector('button[type="submit"]');
+
+    if (!usernameInput || !passwordInput || !submitButton) {
+      this.showError('Form elements not found');
+      return;
+    }
+
+    // Get form values
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+    const rememberMe = rememberCheckbox ? rememberCheckbox.checked : false;
+
+    // Validate inputs
+    if (!username || !password) {
+      this.showValidationError('Please enter both username and password');
+      return;
+    }
+
+    // Show loading state
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Signing In...';
+    submitButton.disabled = true;
+
+    try {
+      // Attempt login
+      if (window.authStore) {
+        const result = await window.authStore.login({
+          username,
+          password,
+          rememberMe
+        });
+
+        if (result.success) {
+          // Show success message
+          this.showSuccessToast('Login successful!');
+
+          // Initialize WebSocket connection
+          if (window.wsClient) {
+            window.wsClient.connect();
+          }
+
+          // Redirect to dashboard
+          setTimeout(() => {
+            if (window.router) {
+              window.router.navigate('/');
+            }
+          }, 1000);
+        } else {
+          this.showValidationError(result.error || 'Login failed');
+        }
+      } else {
+        // Demo login for development
+        this.showSuccessToast('Demo login successful!');
+        setTimeout(() => {
+          if (window.router) {
+            window.router.navigate('/');
+          }
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      this.showValidationError('Network error. Please try again.');
+    } finally {
+      // Reset button state
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+    }
+  }
+
+  /**
+   * Fill demo credentials
+   */
+  fillDemoCredentials() {
+    const usernameInput = this.querySelector('input[name="username"]');
+    const passwordInput = this.querySelector('input[name="password"]');
+
+    if (usernameInput && passwordInput) {
+      usernameInput.value = 'admin';
+      passwordInput.value = 'admin';
+      
+      this.showSuccessToast('Demo credentials filled');
+    }
+  }
+
+  /**
+   * Show validation error
+   */
+  showValidationError(message) {
+    // Remove existing error messages
+    const existingError = this.querySelector('.validation-error');
+    if (existingError) {
+      existingError.remove();
+    }
+
+    // Create error element
+    const errorEl = document.createElement('div');
+    errorEl.className = 'validation-error';
+    errorEl.textContent = message;
+
+    // Insert after form
+    const form = this.querySelector('#login-form');
+    if (form) {
+      form.insertAdjacentElement('afterend', errorEl);
+      
+      // Remove after 5 seconds
+      setTimeout(() => {
+        if (errorEl.parentNode) {
+          errorEl.remove();
+        }
+      }, 5000);
+    }
+  }
+
+  /**
+   * Show success toast
+   */
+  showSuccessToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-success';
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  /**
+   * Post-render hook
+   */
+  onRender() {
+    console.log('Login page rendered');
+    
+    // Check if already authenticated
+    if (window.authStore && window.authStore.isAuthenticated()) {
+      // Redirect to dashboard if already logged in
+      if (window.router) {
+        window.router.navigate('/');
+      }
+    }
+  }
+
+  /**
+   * Cleanup when leaving page
+   */
+  destroy() {
+    // Clear any error states when leaving
+    if (window.authStore && typeof window.authStore.clearError === 'function') {
+      window.authStore.clearError();
+    }
+    
+    super.destroy();
+  }
+}
+
+export default LoginPage;

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme System Test - Pandora PWA</title>
+    <meta name="theme-color" content="#e50914">
+    
+    <!-- Import CSS -->
+    <link rel="stylesheet" href="src/css/base/reset.css">
+    <link rel="stylesheet" href="src/css/base/typography.css">
+    <link rel="stylesheet" href="src/css/base/layout.css">
+    <link rel="stylesheet" href="src/css/base/animations.css">
+    <link rel="stylesheet" href="src/css/themes/netflix.css">
+    <link rel="stylesheet" href="src/css/components/theme-switcher/theme-switcher.css">
+    
+    <style>
+        body {
+            padding: var(--pb-spacing-4);
+            min-height: 100vh;
+            background: var(--pb-background);
+            color: var(--pb-text-primary);
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            background: var(--pb-surface-variant);
+            border: 1px solid var(--pb-border);
+            border-radius: var(--pb-radius-lg);
+            padding: var(--pb-spacing-4);
+            margin-bottom: var(--pb-spacing-4);
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: var(--pb-spacing-2);
+            flex-wrap: wrap;
+            margin-bottom: var(--pb-spacing-4);
+        }
+        
+        .test-button {
+            padding: var(--pb-spacing-2) var(--pb-spacing-4);
+            border: none;
+            border-radius: var(--pb-radius-md);
+            font-weight: var(--pb-font-weight-medium);
+            cursor: pointer;
+            transition: all var(--pb-duration-fast) var(--pb-ease-out);
+        }
+        
+        .test-button.primary {
+            background: var(--pb-primary);
+            color: var(--pb-text-primary);
+        }
+        
+        .test-button.primary:hover {
+            background: var(--pb-primary-dark);
+        }
+        
+        .test-button.secondary {
+            background: var(--pb-surface);
+            color: var(--pb-text-secondary);
+            border: 1px solid var(--pb-border);
+        }
+        
+        .test-button.secondary:hover {
+            background: var(--pb-surface-hover);
+            color: var(--pb-text-primary);
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--pb-spacing-2);
+        }
+        
+        .color-swatch {
+            padding: var(--pb-spacing-3);
+            border-radius: var(--pb-radius-md);
+            text-align: center;
+            font-size: var(--pb-text-sm);
+            font-weight: var(--pb-font-weight-medium);
+        }
+        
+        .swatch-primary { background: var(--pb-primary); color: var(--pb-text-primary); }
+        .swatch-secondary { background: var(--pb-secondary); color: var(--pb-text-primary); }
+        .swatch-success { background: var(--pb-success); color: var(--pb-text-primary); }
+        .swatch-warning { background: var(--pb-warning); color: var(--pb-background); }
+        .swatch-error { background: var(--pb-error); color: var(--pb-text-primary); }
+        .swatch-accent { background: var(--pb-accent); color: var(--pb-text-primary); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header class="test-section">
+            <h1>Pandora PWA Theme System Test</h1>
+            <p class="text-secondary">Testing the OTT-inspired theme system with all 6 theme variations</p>
+        </header>
+        
+        <section class="test-section">
+            <h2>Quick Theme Switcher</h2>
+            <div class="test-buttons">
+                <button class="test-button primary" onclick="switchTheme('netflix')">Netflix</button>
+                <button class="test-button primary" onclick="switchTheme('prime-video')">Prime Video</button>
+                <button class="test-button primary" onclick="switchTheme('hulu')">Hulu</button>
+                <button class="test-button primary" onclick="switchTheme('hbo-max')">HBO Max</button>
+                <button class="test-button primary" onclick="switchTheme('disney-plus')">Disney+</button>
+                <button class="test-button primary" onclick="switchTheme('apple-tv')">Apple TV+</button>
+            </div>
+            <p id="current-theme" class="text-muted">Current theme: Netflix</p>
+        </section>
+        
+        <section class="test-section">
+            <h2>Color Palette</h2>
+            <div class="color-grid">
+                <div class="color-swatch swatch-primary">Primary</div>
+                <div class="color-swatch swatch-secondary">Secondary</div>
+                <div class="color-swatch swatch-accent">Accent</div>
+                <div class="color-swatch swatch-success">Success</div>
+                <div class="color-swatch swatch-warning">Warning</div>
+                <div class="color-swatch swatch-error">Error</div>
+            </div>
+        </section>
+        
+        <section class="test-section">
+            <h2>Typography & Components</h2>
+            <h3>Heading Level 3</h3>
+            <p>This is a paragraph with <a href="#">a link</a> to test text styling.</p>
+            <div class="test-buttons">
+                <button class="test-button primary">Primary Button</button>
+                <button class="test-button secondary">Secondary Button</button>
+            </div>
+        </section>
+        
+        <section class="test-section">
+            <h2>Theme Switcher Component</h2>
+            <div id="theme-switcher-container"></div>
+        </section>
+    </div>
+
+    <script type="module">
+        // Simple theme switching for testing
+        window.switchTheme = async function(themeId) {
+            try {
+                // Remove existing theme stylesheets
+                const existingThemeLinks = document.querySelectorAll('link[data-theme-css]');
+                existingThemeLinks.forEach(link => link.remove());
+
+                // Load new theme stylesheet
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = `src/css/themes/${themeId}.css`;
+                link.setAttribute('data-theme-css', themeId);
+                document.head.appendChild(link);
+
+                // Set data-theme attribute
+                document.documentElement.setAttribute('data-theme', themeId);
+                document.body.setAttribute('data-theme', themeId);
+
+                // Update current theme display
+                const themeNames = {
+                    'netflix': 'Netflix',
+                    'prime-video': 'Prime Video',
+                    'hulu': 'Hulu',
+                    'hbo-max': 'HBO Max',
+                    'disney-plus': 'Disney+',
+                    'apple-tv': 'Apple TV+'
+                };
+                
+                document.getElementById('current-theme').textContent = `Current theme: ${themeNames[themeId]}`;
+                
+                // Update meta theme-color
+                const themeColors = {
+                    'netflix': '#e50914',
+                    'prime-video': '#00a8e1',
+                    'hulu': '#1ce783',
+                    'hbo-max': '#9146ff',
+                    'disney-plus': '#113ccf',
+                    'apple-tv': '#007aff'
+                };
+                
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    metaThemeColor.content = themeColors[themeId];
+                }
+                
+                console.log(`Switched to ${themeNames[themeId]} theme`);
+            } catch (error) {
+                console.error('Failed to switch theme:', error);
+            }
+        };
+
+        // Initialize with Netflix theme
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTheme('netflix');
+        });
+
+        // Load and initialize theme switcher component
+        import('./src/js/utils/theme-manager.js').then(({ default: themeManager }) => {
+            return themeManager.init();
+        }).then(() => {
+            return import('./src/js/components/theme-switcher/theme-switcher.js');
+        }).then(({ default: ThemeSwitcher }) => {
+            const container = document.getElementById('theme-switcher-container');
+            const themeSwitcher = new ThemeSwitcher(container);
+            return themeSwitcher.init();
+        }).catch(error => {
+            console.error('Failed to initialize theme system:', error);
+        });
+    </script>
+</body>
+</html>

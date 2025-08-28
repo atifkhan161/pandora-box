@@ -1,45 +1,66 @@
-<div class="page" data-name="dashboard">
-  <!-- Top Navbar -->
-  <div class="navbar navbar-large">
-    <div class="navbar-bg"></div>
-    <div class="navbar-inner">
-      <div class="left">
-        <a href="#" class="link icon-only panel-open" data-panel="left">
-          <i class="f7-icons">menu</i>
-        </a>
-      </div>
-      <div class="title sliding">Pandora Box</div>
-      <div class="right">
-        <a href="#" class="link icon-only" id="search-btn">
-          <i class="f7-icons">search</i>
-        </a>
-        <a href="#" class="link icon-only" id="logout-btn">
-          <i class="f7-icons">power</i>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scrollable page content -->
-  <div class="page-content">
-    <div class="block-title">Welcome to Pandora Box</div>
-    <div class="block block-strong">
-      <p>Your unified media management dashboard.</p>
-      <p>This is a placeholder for the media discovery dashboard that will be implemented in task 3.1.</p>
-    </div>
-
-    <div class="block">
-      <button class="button button-large button-fill" id="demo-features-btn">
-        <i class="f7-icons">sparkles</i>
-        Demo Framework7 Features
+<div class="page dashboard-page">
+  <header class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <div class="page-actions">
+      <button id="refresh-btn" class="btn btn-secondary" title="Refresh">
+        🔄
+      </button>
+      <button id="logout-btn" class="btn btn-secondary" title="Logout">
+        🚪
       </button>
     </div>
+  </header>
 
-    <div class="block">
-      <button class="button button-large button-outline" id="debug-panel-btn">
-        <i class="f7-icons">xmark</i>
-        Close Panel (Debug)
+  <main class="page-content">
+    <section class="dashboard-stats">
+      <!-- Stats will be populated by JavaScript -->
+    </section>
+
+    <section class="dashboard-actions">
+      <div class="action-grid">
+        <div class="action-card">
+          <h3>Media Discovery</h3>
+          <p>Browse trending movies and TV shows</p>
+          <a href="/downloads" class="btn btn-primary">Explore</a>
+        </div>
+        
+        <div class="action-card">
+          <h3>Downloads</h3>
+          <p>Manage your torrent downloads</p>
+          <a href="/downloads" class="btn btn-primary">View Downloads</a>
+        </div>
+        
+        <div class="action-card">
+          <h3>File Manager</h3>
+          <p>Browse and organize your files</p>
+          <a href="/files" class="btn btn-primary">Browse Files</a>
+        </div>
+        
+        <div class="action-card">
+          <h3>Containers</h3>
+          <p>Monitor Docker containers</p>
+          <a href="/containers" class="btn btn-primary">View Containers</a>
+        </div>
+        
+        <div class="action-card">
+          <h3>Jellyfin</h3>
+          <p>Manage media server</p>
+          <a href="/jellyfin" class="btn btn-primary">Open Jellyfin</a>
+        </div>
+        
+        <div class="action-card">
+          <h3>Settings</h3>
+          <p>Configure application</p>
+          <a href="/settings" class="btn btn-primary">Settings</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Demo Features</h2>
+      <button id="demo-features-btn" class="btn btn-secondary">
+        ✨ Show Features
       </button>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>

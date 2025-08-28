@@ -1,0 +1,301 @@
+/* Apple TV+ Inspired Theme */
+[data-theme="apple-tv"] {
+  /* Primary Colors - Apple Black */
+  --pb-primary: #000000;
+  --pb-primary-50: #fafafa;
+  --pb-primary-100: #f4f4f5;
+  --pb-primary-200: #e4e4e7;
+  --pb-primary-300: #d4d4d8;
+  --pb-primary-400: #a1a1aa;
+  --pb-primary-500: #71717a;
+  --pb-primary-600: #52525b;
+  --pb-primary-700: #3f3f46;
+  --pb-primary-800: #27272a;
+  --pb-primary-900: #18181b;
+  --pb-primary-950: #09090b;
+
+  /* Primary Variants */
+  --pb-primary-light: #333333;
+  --pb-primary-dark: #1a1a1a;
+  --pb-primary-darker: #0a0a0a;
+
+  /* Secondary Colors - Apple Gray */
+  --pb-secondary: #38383a;
+  --pb-secondary-50: #fafafa;
+  --pb-secondary-100: #f4f4f5;
+  --pb-secondary-200: #e4e4e7;
+  --pb-secondary-300: #d4d4d8;
+  --pb-secondary-400: #a1a1aa;
+  --pb-secondary-500: #71717a;
+  --pb-secondary-600: #52525b;
+  --pb-secondary-700: #3f3f46;
+  --pb-secondary-800: #27272a;
+  --pb-secondary-900: #18181b;
+
+  /* Background Colors - Apple Pure Black */
+  --pb-background: #000000;
+  --pb-background-secondary: #1c1c1e;
+  --pb-background-tertiary: #2c2c2e;
+  --pb-background-quaternary: #3a3a3c;
+
+  /* Surface Colors */
+  --pb-surface: #1c1c1e;
+  --pb-surface-variant: #2c2c2e;
+  --pb-surface-hover: #3a3a3c;
+  --pb-surface-active: #48484a;
+  --pb-surface-disabled: #1a1a1c;
+
+  /* Text Colors */
+  --pb-text-primary: #ffffff;
+  --pb-text-secondary: #ebebf5;
+  --pb-text-tertiary: #d1d1d6;
+  --pb-text-muted: #8e8e93;
+  --pb-text-disabled: #636366;
+  --pb-text-inverse: #000000;
+
+  /* Border Colors */
+  --pb-border: #38383a;
+  --pb-border-light: #48484a;
+  --pb-border-lighter: #58585a;
+  --pb-border-dark: #2c2c2e;
+  --pb-border-darker: #1c1c1e;
+
+  /* State Colors */
+  --pb-success: #30d158;
+  --pb-success-light: #64d2ff;
+  --pb-success-dark: #248a3d;
+  --pb-success-bg: rgba(48, 209, 88, 0.1);
+
+  --pb-warning: #ff9500;
+  --pb-warning-light: #ffb340;
+  --pb-warning-dark: #cc7700;
+  --pb-warning-bg: rgba(255, 149, 0, 0.1);
+
+  --pb-error: #ff3b30;
+  --pb-error-light: #ff6961;
+  --pb-error-dark: #d70015;
+  --pb-error-bg: rgba(255, 59, 48, 0.1);
+
+  --pb-info: #007aff;
+  --pb-info-light: #409cff;
+  --pb-info-dark: #0051d5;
+  --pb-info-bg: rgba(0, 122, 255, 0.1);
+
+  /* Accent Colors - Apple Blue */
+  --pb-accent: #007aff;
+  --pb-accent-light: #409cff;
+  --pb-accent-dark: #0051d5;
+
+  /* Interactive States */
+  --pb-hover-opacity: 0.8;
+  --pb-active-opacity: 0.6;
+  --pb-disabled-opacity: 0.4;
+  --pb-focus-ring: var(--pb-accent);
+
+  /* Gradients */
+  --pb-gradient-primary: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
+  --pb-gradient-background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-surface) 100%);
+  --pb-gradient-surface: linear-gradient(135deg, var(--pb-surface) 0%, var(--pb-surface-variant) 100%);
+  --pb-gradient-overlay: linear-gradient(0deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.95) 100%);
+  --pb-gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Theme-specific shadows */
+  --pb-shadow: var(--pb-shadow-dark-base);
+  --pb-shadow-sm: var(--pb-shadow-dark-sm);
+  --pb-shadow-md: var(--pb-shadow-dark-md);
+  --pb-shadow-lg: var(--pb-shadow-dark-lg);
+  --pb-shadow-xl: var(--pb-shadow-dark-xl);
+
+  /* Apple TV+-specific colors */
+  --pb-apple-black: #000000;
+  --pb-apple-dark-gray: #1c1c1e;
+  --pb-apple-gray: #38383a;
+  --pb-apple-light-gray: #8e8e93;
+  --pb-apple-blue: #007aff;
+  --pb-apple-white: #ffffff;
+
+  /* Component-specific overrides */
+  --pb-card-bg: var(--pb-surface-variant);
+  --pb-card-border: var(--pb-border);
+  --pb-card-shadow: var(--pb-shadow-lg);
+
+  --pb-button-primary-bg: var(--pb-accent);
+  --pb-button-primary-hover: var(--pb-accent-dark);
+  --pb-button-primary-active: var(--pb-accent-dark);
+  --pb-button-primary-text: var(--pb-text-primary);
+
+  --pb-input-bg: var(--pb-surface-variant);
+  --pb-input-border: var(--pb-border);
+  --pb-input-focus-border: var(--pb-accent);
+  --pb-input-text: var(--pb-text-primary);
+  --pb-input-placeholder: var(--pb-text-muted);
+
+  --pb-navbar-bg: var(--pb-surface);
+  --pb-navbar-border: transparent;
+  --pb-navbar-text: var(--pb-text-primary);
+
+  --pb-sidebar-bg: var(--pb-surface);
+  --pb-sidebar-border: var(--pb-border);
+  --pb-sidebar-text: var(--pb-text-primary);
+
+  /* PWA Theme Color */
+  --pb-theme-color: var(--pb-accent);
+  --pb-theme-color-dark: var(--pb-accent-dark);
+}
+
+/* Apple TV+ theme body styles */
+[data-theme="apple-tv"] body {
+  background: var(--pb-background);
+  color: var(--pb-text-primary);
+}
+
+/* Apple TV+ theme specific component styles */
+[data-theme="apple-tv"] .apple-brand {
+  color: var(--pb-apple-white);
+  font-weight: var(--pb-font-weight-medium);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+}
+
+[data-theme="apple-tv"] .apple-accent {
+  color: var(--pb-apple-blue);
+}
+
+[data-theme="apple-tv"] .apple-hero {
+  background: var(--pb-gradient-background);
+}
+
+[data-theme="apple-tv"] .apple-card {
+  background: var(--pb-gradient-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--pb-radius-2xl);
+  box-shadow: var(--pb-shadow-xl);
+  transition: transform var(--pb-duration-normal) var(--pb-ease-out),
+              box-shadow var(--pb-duration-normal) var(--pb-ease-out),
+              background var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="apple-tv"] .apple-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+}
+
+[data-theme="apple-tv"] .apple-button {
+  background: var(--pb-accent);
+  color: var(--pb-text-primary);
+  border: none;
+  border-radius: var(--pb-radius-2xl);
+  padding: var(--pb-spacing-3) var(--pb-spacing-8);
+  font-weight: var(--pb-font-weight-medium);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  transition: all var(--pb-duration-fast) var(--pb-ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="apple-tv"] .apple-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.2) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform var(--pb-duration-slow) var(--pb-ease-out);
+}
+
+[data-theme="apple-tv"] .apple-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="apple-tv"] .apple-button:hover::before {
+  transform: translateX(100%);
+}
+
+[data-theme="apple-tv"] .apple-button:active {
+  transform: translateY(0);
+}
+
+[data-theme="apple-tv"] .apple-button-secondary {
+  background: var(--pb-gradient-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--pb-text-primary);
+}
+
+[data-theme="apple-tv"] .apple-button-secondary:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Apple TV+ theme glass morphism */
+[data-theme="apple-tv"] .apple-glass {
+  background: var(--pb-gradient-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--pb-radius-2xl);
+}
+
+[data-theme="apple-tv"] .apple-frosted {
+  background: rgba(28, 28, 30, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Apple TV+ theme minimalist elements */
+[data-theme="apple-tv"] .apple-minimal {
+  border: none;
+  background: transparent;
+  color: var(--pb-text-secondary);
+  transition: color var(--pb-duration-fast) var(--pb-ease-out);
+}
+
+[data-theme="apple-tv"] .apple-minimal:hover {
+  color: var(--pb-text-primary);
+}
+
+[data-theme="apple-tv"] .apple-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  border: none;
+  margin: var(--pb-spacing-4) 0;
+}
+
+/* Apple TV+ theme scrollbar */
+[data-theme="apple-tv"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[data-theme="apple-tv"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme="apple-tv"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--pb-radius-full);
+}
+
+[data-theme="apple-tv"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Apple TV+ theme selection */
+[data-theme="apple-tv"] ::selection {
+  background: var(--pb-accent);
+  color: var(--pb-text-primary);
+}
+
+/* Apple TV+ theme focus styles */
+[data-theme="apple-tv"] :focus-visible {
+  outline: 2px solid var(--pb-accent);
+  outline-offset: 2px;
+  border-radius: var(--pb-radius-md);
+}

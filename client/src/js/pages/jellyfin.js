@@ -1,42 +1,32 @@
-// Jellyfin page controller
-import authStore from '../store/auth.js'
+/**
+ * Jellyfin Page Controller
+ * Vanilla JavaScript implementation
+ */
+import BasePage from './base-page.js';
 
-export default {
-  path: '/jellyfin/',
-  componentUrl: './pages/jellyfin.html',
-  
-  on: {
-    pageInit(e, page) {
-      console.log('Jellyfin page initialized')
-      
-      // Initialize jellyfin functionality here
-      // This will be implemented in task 7.1
-    },
-    
-    pageBeforeIn(e, page) {
-      console.log('Jellyfin page before in')
-      
-      // Check authentication
-      const isAuthenticated = authStore.getters.isAuthenticated.value
-      if (!isAuthenticated) {
-        // Redirect to login if not authenticated
-        page.app.views.main.router.navigate('/login/', {
-          clearPreviousHistory: true
-        })
-        return false // Prevent page transition
-      }
-    },
-    
-    pageAfterIn(e, page) {
-      console.log('Jellyfin page after in')
-    },
-    
-    pageBeforeOut(e, page) {
-      console.log('Jellyfin page before out')
-    },
-    
-    pageAfterOut(e, page) {
-      console.log('Jellyfin page after out')
-    }
+class JellyfinPage extends BasePage {
+  constructor() {
+    super();
+    this.templatePath = '/src/pages/jellyfin.html';
+  }
+
+  async setupPage() {
+    this.setTitle('Jellyfin');
+  }
+
+  setupEventListeners() {
+    // Placeholder for jellyfin functionality
+    console.log('Jellyfin page event listeners setup');
+  }
+
+  async loadData() {
+    // Placeholder for jellyfin data loading
+    console.log('Loading jellyfin data...');
+  }
+
+  onRender() {
+    console.log('Jellyfin page rendered');
   }
 }
+
+export default JellyfinPage;

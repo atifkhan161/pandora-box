@@ -1,182 +1,216 @@
-// Dashboard page controller
-import authStore from '../store/auth.js'
-import f7Helpers from '../utils/framework7-helpers.js'
+/**
+ * Dashboard Page Controller
+ * Vanilla JavaScript implementation
+ */
+import BasePage from './base-page.js';
 
-// Register page events with Framework7
-document.addEventListener('DOMContentLoaded', () => {
-  const app = window.app
-  
-  if (app) {
-    // Dashboard page events
-    app.on('pageInit', '.page[data-name="dashboard"]', function (page) {
-      console.log('Dashboard page initialized')
-      
-      // Get logout button
-      const logoutBtn = page.$el.find('#logout-btn')
-      
-      // Handle logout
-      logoutBtn.on('click', async (e) => {
-        e.preventDefault()
-        
-        // Show confirmation dialog using helper
-        f7Helpers.showConfirm(
-          'Logout',
-          'Are you sure you want to logout?',
-          async () => {
-            // Show loading
-            const loading = f7Helpers.showLoading('Logging out...')
-            
-            try {
-              // Disconnect WebSocket
-              if (window.wsClient) {
-                window.wsClient.disconnect()
-              }
-              
-              // Perform logout
-              await authStore.dispatch('logout')
-              
-              // Hide loading
-              f7Helpers.hideLoading()
-              
-              // Show success message
-              f7Helpers.showSuccess('Logged out successfully')
-              
-              // Redirect to login
-              setTimeout(() => {
-                page.app.views.main.router.navigate('/login/', {
-                  clearPreviousHistory: true
-                })
-              }, 1000)
-            } catch (error) {
-              console.error('Logout error:', error)
-              f7Helpers.hideLoading()
-              f7Helpers.showError('Error during logout')
-            }
-          }
-        )
-      })
-      
-      // Add demo buttons for Framework7 features
-      const demoBtn = page.$el.find('#demo-features-btn')
-      if (demoBtn.length > 0) {
-        demoBtn.on('click', () => {
-          f7Helpers.showActionSheet([
-            {
-              text: 'Show Toast',
-              onClick: () => f7Helpers.showToast('This is a toast message!')
-            },
-            {
-              text: 'Show Success',
-              onClick: () => f7Helpers.showSuccess('Operation completed successfully!')
-            },
-            {
-              text: 'Show Error',
-              onClick: () => f7Helpers.showError('Something went wrong!')
-            },
-            {
-              text: 'Show Notification',
-              onClick: () => f7Helpers.showNotification({
-                title: 'New Message',
-                text: 'You have a new notification',
-                icon: '<i class="f7-icons">bell_fill</i>'
-              })
-            },
-            {
-              text: 'Show Popup',
-              onClick: () => {
-                const popupContent = `
-                  <div class="popup">
-                    <div class="page">
-                      <div class="navbar">
-                        <div class="navbar-bg"></div>
-                        <div class="navbar-inner">
-                          <div class="title">Demo Popup</div>
-                          <div class="right">
-                            <a href="#" class="link popup-close">Close</a>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="page-content">
-                        <div class="block">
-                          <p>This is a demo popup using full Framework7 features!</p>
-                          <p>Device info:</p>
-                          <ul>
-                            <li>iOS: ${f7Helpers.device.isIos}</li>
-                            <li>Android: ${f7Helpers.device.isAndroid}</li>
-                            <li>Desktop: ${f7Helpers.device.isDesktop}</li>
-                            <li>Mobile: ${f7Helpers.device.isMobile}</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                `
-                f7Helpers.showPopup(popupContent)
-              }
-            },
-            {
-              text: 'Cancel',
-              color: 'red'
-            }
-          ], 'Framework7 Features Demo')
-        })
-      }
-
-      // Debug button to close panel
-      const debugPanelBtn = page.$el.find('#debug-panel-btn')
-      if (debugPanelBtn.length > 0) {
-        debugPanelBtn.on('click', () => {
-          console.log('Debug: Closing panel and ensuring main view visibility')
-          
-          // Close any open panels
-          if (app.panel && app.panel.left && app.panel.left.opened) {
-            app.panel.close('left')
-          }
-          
-          // Ensure main view is visible
-          const mainView = document.querySelector('.view-main')
-          if (mainView) {
-            mainView.style.display = 'block'
-            mainView.style.visibility = 'visible'
-            mainView.style.opacity = '1'
-            mainView.style.transform = 'none'
-          }
-          
-          // Force refresh the current page
-          page.app.views.main.router.refreshPage()
-          
-          f7Helpers.showSuccess('Panel closed and main view restored')
-        })
-      }
-      
-      // Initialize dashboard functionality here
-      // This will be implemented in task 3.1
-    })
-    
-    app.on('pageBeforeIn', '.page[data-name="dashboard"]', function (page) {
-      console.log('Dashboard page before in')
-      
-      // Check authentication
-      const isAuthenticated = authStore.getters.isAuthenticated.value
-      if (!isAuthenticated) {
-        // Redirect to login if not authenticated
-        page.app.views.main.router.navigate('/login/', {
-          clearPreviousHistory: true
-        })
-        return false // Prevent page transition
-      }
-    })
-    
-    app.on('pageAfterIn', '.page[data-name="dashboard"]', function (page) {
-      console.log('Dashboard page after in')
-    })
-    
-    app.on('pageBeforeOut', '.page[data-name="dashboard"]', function (page) {
-      console.log('Dashboard page before out')
-    })
-    
-    app.on('pageAfterOut', '.page[data-name="dashboard"]', function (page) {
-      console.log('Dashboard page after out')
-    })
+class DashboardPage extends BasePage {
+  constructor() {
+    super();
+    this.templatePath = '/src/pages/dashboard.html';
   }
-})
+
+  /**
+   * Setup page-specific logic
+   */
+  async setupPage() {
+    this.setTitle('Dashboard');
+  }
+
+  /**
+   * Setup event listeners
+   */
+  setupEventListeners() {
+    // Logout button handler
+    const logoutBtn = this.querySelector('#logout-btn');
+    if (logoutBtn) {
+      this.addEventListener(logoutBtn, 'click', (e) => {
+        e.preventDefault();
+        this.handleLogout();
+      });
+    }
+
+    // Demo features button
+    const demoBtn = this.querySelector('#demo-features-btn');
+    if (demoBtn) {
+      this.addEventListener(demoBtn, 'click', () => {
+        this.showDemoFeatures();
+      });
+    }
+
+    // Refresh button
+    const refreshBtn = this.querySelector('#refresh-btn');
+    if (refreshBtn) {
+      this.addEventListener(refreshBtn, 'click', () => {
+        this.refresh();
+      });
+    }
+  }
+
+  /**
+   * Load initial data
+   */
+  async loadData() {
+    try {
+      // Load dashboard data here
+      // This will be expanded in later tasks
+      console.log('Loading dashboard data...');
+      
+      // Simulate loading delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update UI with loaded data
+      this.updateDashboardStats();
+      
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      this.showError('Failed to load dashboard data');
+    }
+  }
+
+  /**
+   * Update dashboard statistics
+   */
+  updateDashboardStats() {
+    const statsContainer = this.querySelector('.dashboard-stats');
+    if (statsContainer) {
+      statsContainer.innerHTML = `
+        <div class="stat-card">
+          <h3>Active Downloads</h3>
+          <p class="stat-number">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Files</h3>
+          <p class="stat-number">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Running Containers</h3>
+          <p class="stat-number">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Storage Used</h3>
+          <p class="stat-number">0 GB</p>
+        </div>
+      `;
+    }
+  }
+
+  /**
+   * Handle logout
+   */
+  async handleLogout() {
+    if (!confirm('Are you sure you want to logout?')) {
+      return;
+    }
+
+    try {
+      this.showLoading('Logging out...');
+
+      // Disconnect WebSocket
+      if (window.wsClient) {
+        window.wsClient.disconnect();
+      }
+
+      // Perform logout
+      if (window.authStore) {
+        await window.authStore.logout();
+      }
+
+      this.hideLoading();
+
+      // Show success message
+      this.showSuccessToast('Logged out successfully');
+
+      // Redirect to login
+      setTimeout(() => {
+        if (window.router) {
+          window.router.navigate('/login');
+        }
+      }, 1000);
+
+    } catch (error) {
+      console.error('Logout error:', error);
+      this.hideLoading();
+      this.showError('Error during logout');
+    }
+  }
+
+  /**
+   * Show demo features
+   */
+  showDemoFeatures() {
+    const features = [
+      'Media Discovery',
+      'Download Management', 
+      'File Operations',
+      'Container Control',
+      'Jellyfin Integration'
+    ];
+
+    const featuresHtml = features.map(feature => 
+      `<li class="feature-item">${feature}</li>`
+    ).join('');
+
+    const modal = document.createElement('div');
+    modal.className = 'demo-modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Pandora Box Features</h3>
+          <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Available features in Pandora Box:</p>
+          <ul class="features-list">
+            ${featuresHtml}
+          </ul>
+        </div>
+      </div>
+    `;
+
+    // Add close functionality
+    const closeBtn = modal.querySelector('.modal-close');
+    closeBtn.addEventListener('click', () => {
+      modal.remove();
+    });
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.remove();
+      }
+    });
+
+    document.body.appendChild(modal);
+  }
+
+  /**
+   * Show success toast
+   */
+  showSuccessToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-success';
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  /**
+   * Post-render hook
+   */
+  onRender() {
+    // Add any post-render logic here
+    console.log('Dashboard page rendered');
+  }
+}
+
+export default DashboardPage;

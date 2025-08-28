@@ -1,0 +1,326 @@
+/* Disney+ Inspired Theme */
+[data-theme="disney-plus"] {
+  /* Primary Colors - Disney Blue */
+  --pb-primary: #113ccf;
+  --pb-primary-50: #eff6ff;
+  --pb-primary-100: #dbeafe;
+  --pb-primary-200: #bfdbfe;
+  --pb-primary-300: #93c5fd;
+  --pb-primary-400: #60a5fa;
+  --pb-primary-500: #3b82f6;
+  --pb-primary-600: #2563eb;
+  --pb-primary-700: #1d4ed8;
+  --pb-primary-800: #1e40af;
+  --pb-primary-900: #1e3a8a;
+  --pb-primary-950: #172554;
+
+  /* Primary Variants */
+  --pb-primary-light: #2563eb;
+  --pb-primary-dark: #0d2db3;
+  --pb-primary-darker: #0a2490;
+
+  /* Secondary Colors - Disney Navy */
+  --pb-secondary: #1a202c;
+  --pb-secondary-50: #f7fafc;
+  --pb-secondary-100: #edf2f7;
+  --pb-secondary-200: #e2e8f0;
+  --pb-secondary-300: #cbd5e0;
+  --pb-secondary-400: #a0aec0;
+  --pb-secondary-500: #718096;
+  --pb-secondary-600: #4a5568;
+  --pb-secondary-700: #2d3748;
+  --pb-secondary-800: #1a202c;
+  --pb-secondary-900: #171923;
+
+  /* Background Colors - Disney Dark */
+  --pb-background: #040814;
+  --pb-background-secondary: #0f1419;
+  --pb-background-tertiary: #1a202c;
+  --pb-background-quaternary: #2d3748;
+
+  /* Surface Colors */
+  --pb-surface: #0f1419;
+  --pb-surface-variant: #1a202c;
+  --pb-surface-hover: #2d3748;
+  --pb-surface-active: #4a5568;
+  --pb-surface-disabled: #171923;
+
+  /* Text Colors */
+  --pb-text-primary: #f7fafc;
+  --pb-text-secondary: #cbd5e0;
+  --pb-text-tertiary: #a0aec0;
+  --pb-text-muted: #718096;
+  --pb-text-disabled: #4a5568;
+  --pb-text-inverse: #040814;
+
+  /* Border Colors */
+  --pb-border: #2d3748;
+  --pb-border-light: #4a5568;
+  --pb-border-lighter: #718096;
+  --pb-border-dark: #1a202c;
+  --pb-border-darker: #171923;
+
+  /* State Colors */
+  --pb-success: #38a169;
+  --pb-success-light: #48bb78;
+  --pb-success-dark: #2f855a;
+  --pb-success-bg: rgba(56, 161, 105, 0.1);
+
+  --pb-warning: #ed8936;
+  --pb-warning-light: #f6ad55;
+  --pb-warning-dark: #dd6b20;
+  --pb-warning-bg: rgba(237, 137, 54, 0.1);
+
+  --pb-error: #e53e3e;
+  --pb-error-light: #fc8181;
+  --pb-error-dark: #c53030;
+  --pb-error-bg: rgba(229, 62, 62, 0.1);
+
+  --pb-info: #3182ce;
+  --pb-info-light: #63b3ed;
+  --pb-info-dark: #2c5282;
+  --pb-info-bg: rgba(49, 130, 206, 0.1);
+
+  /* Accent Colors - Disney Gold */
+  --pb-accent: #f6ad55;
+  --pb-accent-light: #fbd38d;
+  --pb-accent-dark: #ed8936;
+
+  /* Interactive States */
+  --pb-hover-opacity: 0.8;
+  --pb-active-opacity: 0.6;
+  --pb-disabled-opacity: 0.4;
+  --pb-focus-ring: var(--pb-primary);
+
+  /* Gradients */
+  --pb-gradient-primary: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
+  --pb-gradient-background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-surface) 100%);
+  --pb-gradient-surface: linear-gradient(135deg, var(--pb-surface) 0%, var(--pb-surface-variant) 100%);
+  --pb-gradient-overlay: linear-gradient(0deg, rgba(4, 8, 20, 0.9) 0%, rgba(4, 8, 20, 0.3) 50%, rgba(4, 8, 20, 0.9) 100%);
+  --pb-gradient-magic: linear-gradient(135deg, #113ccf 0%, #2563eb 25%, #f6ad55 50%, #ed8936 75%, #113ccf 100%);
+  --pb-gradient-starfield: radial-gradient(circle at 25% 25%, #f6ad55 0%, transparent 50%),
+                           radial-gradient(circle at 75% 75%, #2563eb 0%, transparent 50%),
+                           radial-gradient(circle at 50% 50%, #113ccf 0%, transparent 50%);
+
+  /* Theme-specific shadows */
+  --pb-shadow: var(--pb-shadow-dark-base);
+  --pb-shadow-sm: var(--pb-shadow-dark-sm);
+  --pb-shadow-md: var(--pb-shadow-dark-md);
+  --pb-shadow-lg: var(--pb-shadow-dark-lg);
+  --pb-shadow-xl: var(--pb-shadow-dark-xl);
+
+  /* Disney+-specific colors */
+  --pb-disney-blue: #113ccf;
+  --pb-disney-dark-blue: #0d2db3;
+  --pb-disney-navy: #040814;
+  --pb-disney-dark-gray: #0f1419;
+  --pb-disney-gray: #1a202c;
+  --pb-disney-gold: #f6ad55;
+
+  /* Component-specific overrides */
+  --pb-card-bg: var(--pb-surface-variant);
+  --pb-card-border: var(--pb-border);
+  --pb-card-shadow: var(--pb-shadow-lg);
+
+  --pb-button-primary-bg: var(--pb-primary);
+  --pb-button-primary-hover: var(--pb-primary-dark);
+  --pb-button-primary-active: var(--pb-primary-darker);
+  --pb-button-primary-text: var(--pb-text-primary);
+
+  --pb-input-bg: var(--pb-surface-variant);
+  --pb-input-border: var(--pb-border);
+  --pb-input-focus-border: var(--pb-primary);
+  --pb-input-text: var(--pb-text-primary);
+  --pb-input-placeholder: var(--pb-text-muted);
+
+  --pb-navbar-bg: var(--pb-surface);
+  --pb-navbar-border: transparent;
+  --pb-navbar-text: var(--pb-text-primary);
+
+  --pb-sidebar-bg: var(--pb-surface);
+  --pb-sidebar-border: var(--pb-border);
+  --pb-sidebar-text: var(--pb-text-primary);
+
+  /* PWA Theme Color */
+  --pb-theme-color: var(--pb-primary);
+  --pb-theme-color-dark: var(--pb-primary-dark);
+}
+
+/* Disney+ theme body styles */
+[data-theme="disney-plus"] body {
+  background: var(--pb-background);
+  color: var(--pb-text-primary);
+}
+
+/* Disney+ theme specific component styles */
+[data-theme="disney-plus"] .disney-brand {
+  background: var(--pb-gradient-magic);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--pb-font-weight-bold);
+  animation: disney-shimmer 3s ease-in-out infinite;
+}
+
+@keyframes disney-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[data-theme="disney-plus"] .disney-accent {
+  color: var(--pb-disney-gold);
+}
+
+[data-theme="disney-plus"] .disney-hero {
+  background: var(--pb-gradient-starfield), var(--pb-gradient-background);
+  background-size: 200% 200%, cover;
+  animation: disney-starfield 20s ease-in-out infinite;
+}
+
+@keyframes disney-starfield {
+  0%, 100% { background-position: 0% 0%, center; }
+  50% { background-position: 100% 100%, center; }
+}
+
+[data-theme="disney-plus"] .disney-card {
+  background: var(--pb-surface-variant);
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius-xl);
+  box-shadow: var(--pb-shadow-lg);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--pb-duration-normal) var(--pb-ease-out),
+              box-shadow var(--pb-duration-normal) var(--pb-ease-out),
+              border-color var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="disney-plus"] .disney-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--pb-gradient-magic);
+  opacity: 0;
+  transition: opacity var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="disney-plus"] .disney-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--pb-shadow-xl);
+  border-color: var(--pb-primary);
+}
+
+[data-theme="disney-plus"] .disney-card:hover::before {
+  opacity: 1;
+}
+
+[data-theme="disney-plus"] .disney-button {
+  background: var(--pb-gradient-primary);
+  color: var(--pb-text-primary);
+  border: none;
+  border-radius: var(--pb-radius-lg);
+  padding: var(--pb-spacing-3) var(--pb-spacing-6);
+  font-weight: var(--pb-font-weight-semibold);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--pb-duration-fast) var(--pb-ease-out);
+}
+
+[data-theme="disney-plus"] .disney-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  transition: width var(--pb-duration-normal) var(--pb-ease-out),
+              height var(--pb-duration-normal) var(--pb-ease-out);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+[data-theme="disney-plus"] .disney-button:hover {
+  transform: translateY(-2px);
+}
+
+[data-theme="disney-plus"] .disney-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+[data-theme="disney-plus"] .disney-button:active {
+  transform: translateY(0);
+}
+
+[data-theme="disney-plus"] .disney-button-magic {
+  background: var(--pb-gradient-magic);
+  background-size: 200% 200%;
+  animation: disney-button-magic 3s ease-in-out infinite;
+}
+
+@keyframes disney-button-magic {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+[data-theme="disney-plus"] .disney-button-accent {
+  background: var(--pb-accent);
+  color: var(--pb-background);
+}
+
+[data-theme="disney-plus"] .disney-button-accent:hover {
+  background: var(--pb-accent-dark);
+}
+
+/* Disney+ theme magical elements */
+[data-theme="disney-plus"] .disney-sparkle {
+  position: relative;
+}
+
+[data-theme="disney-plus"] .disney-sparkle::after {
+  content: '✨';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 1.2em;
+  animation: disney-sparkle 2s ease-in-out infinite;
+}
+
+@keyframes disney-sparkle {
+  0%, 100% { 
+    opacity: 0.5;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+/* Disney+ theme scrollbar */
+[data-theme="disney-plus"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="disney-plus"] ::-webkit-scrollbar-track {
+  background: var(--pb-background-secondary);
+}
+
+[data-theme="disney-plus"] ::-webkit-scrollbar-thumb {
+  background: var(--pb-gradient-primary);
+  border-radius: var(--pb-radius-full);
+}
+
+[data-theme="disney-plus"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--pb-gradient-magic);
+}
+
+/* Disney+ theme selection */
+[data-theme="disney-plus"] ::selection {
+  background: var(--pb-primary);
+  color: var(--pb-text-primary);
+}

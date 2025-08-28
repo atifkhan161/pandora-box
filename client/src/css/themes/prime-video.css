@@ -1,0 +1,233 @@
+/* Prime Video-Inspired Theme */
+[data-theme="prime-video"] {
+  /* Primary Colors - Prime Blue */
+  --pb-primary: #00a8e1;
+  --pb-primary-50: #f0f9ff;
+  --pb-primary-100: #e0f2fe;
+  --pb-primary-200: #bae6fd;
+  --pb-primary-300: #7dd3fc;
+  --pb-primary-400: #38bdf8;
+  --pb-primary-500: #0ea5e9;
+  --pb-primary-600: #0284c7;
+  --pb-primary-700: #0369a1;
+  --pb-primary-800: #075985;
+  --pb-primary-900: #0c4a6e;
+  --pb-primary-950: #082f49;
+
+  /* Primary Variants */
+  --pb-primary-light: #33b9e8;
+  --pb-primary-dark: #0073a8;
+  --pb-primary-darker: #005577;
+
+  /* Secondary Colors - Prime Gray */
+  --pb-secondary: #37475a;
+  --pb-secondary-50: #f8fafc;
+  --pb-secondary-100: #f1f5f9;
+  --pb-secondary-200: #e2e8f0;
+  --pb-secondary-300: #cbd5e1;
+  --pb-secondary-400: #94a3b8;
+  --pb-secondary-500: #64748b;
+  --pb-secondary-600: #475569;
+  --pb-secondary-700: #334155;
+  --pb-secondary-800: #1e293b;
+  --pb-secondary-900: #0f172a;
+
+  /* Background Colors - Prime Dark Blue */
+  --pb-background: #0f171e;
+  --pb-background-secondary: #1a252f;
+  --pb-background-tertiary: #232f3e;
+  --pb-background-quaternary: #2c3e50;
+
+  /* Surface Colors */
+  --pb-surface: #1a252f;
+  --pb-surface-variant: #232f3e;
+  --pb-surface-hover: #2c3e50;
+  --pb-surface-active: #34495e;
+  --pb-surface-disabled: #1e2a36;
+
+  /* Text Colors */
+  --pb-text-primary: #ffffff;
+  --pb-text-secondary: #aeb7c2;
+  --pb-text-tertiary: #8a9ba8;
+  --pb-text-muted: #7d8590;
+  --pb-text-disabled: #5a6c7d;
+  --pb-text-inverse: #0f171e;
+
+  /* Border Colors */
+  --pb-border: #37475a;
+  --pb-border-light: #445566;
+  --pb-border-lighter: #556677;
+  --pb-border-dark: #2a3a4a;
+  --pb-border-darker: #1d2a36;
+
+  /* State Colors */
+  --pb-success: #27ae60;
+  --pb-success-light: #2ecc71;
+  --pb-success-dark: #229954;
+  --pb-success-bg: rgba(39, 174, 96, 0.1);
+
+  --pb-warning: #f39c12;
+  --pb-warning-light: #f1c40f;
+  --pb-warning-dark: #d68910;
+  --pb-warning-bg: rgba(243, 156, 18, 0.1);
+
+  --pb-error: #e74c3c;
+  --pb-error-light: #ec7063;
+  --pb-error-dark: #c0392b;
+  --pb-error-bg: rgba(231, 76, 60, 0.1);
+
+  --pb-info: #3498db;
+  --pb-info-light: #5dade2;
+  --pb-info-dark: #2980b9;
+  --pb-info-bg: rgba(52, 152, 219, 0.1);
+
+  /* Accent Colors - Prime Orange */
+  --pb-accent: #ff9500;
+  --pb-accent-light: #ffb84d;
+  --pb-accent-dark: #cc7700;
+
+  /* Interactive States */
+  --pb-hover-opacity: 0.8;
+  --pb-active-opacity: 0.6;
+  --pb-disabled-opacity: 0.4;
+  --pb-focus-ring: var(--pb-primary);
+
+  /* Gradients */
+  --pb-gradient-primary: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
+  --pb-gradient-background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-surface) 100%);
+  --pb-gradient-surface: linear-gradient(135deg, var(--pb-surface) 0%, var(--pb-surface-variant) 100%);
+  --pb-gradient-overlay: linear-gradient(0deg, rgba(15, 23, 30, 0.8) 0%, rgba(15, 23, 30, 0.2) 50%, rgba(15, 23, 30, 0.8) 100%);
+
+  /* Theme-specific shadows */
+  --pb-shadow: var(--pb-shadow-dark-base);
+  --pb-shadow-sm: var(--pb-shadow-dark-sm);
+  --pb-shadow-md: var(--pb-shadow-dark-md);
+  --pb-shadow-lg: var(--pb-shadow-dark-lg);
+  --pb-shadow-xl: var(--pb-shadow-dark-xl);
+
+  /* Prime Video-specific colors */
+  --pb-prime-blue: #00a8e1;
+  --pb-prime-dark-blue: #0073a8;
+  --pb-prime-navy: #0f171e;
+  --pb-prime-dark-gray: #1a252f;
+  --pb-prime-gray: #37475a;
+  --pb-prime-orange: #ff9500;
+
+  /* Component-specific overrides */
+  --pb-card-bg: var(--pb-surface-variant);
+  --pb-card-border: var(--pb-border);
+  --pb-card-shadow: var(--pb-shadow-lg);
+
+  --pb-button-primary-bg: var(--pb-primary);
+  --pb-button-primary-hover: var(--pb-primary-dark);
+  --pb-button-primary-active: var(--pb-primary-darker);
+  --pb-button-primary-text: var(--pb-text-primary);
+
+  --pb-input-bg: var(--pb-surface-variant);
+  --pb-input-border: var(--pb-border);
+  --pb-input-focus-border: var(--pb-primary);
+  --pb-input-text: var(--pb-text-primary);
+  --pb-input-placeholder: var(--pb-text-muted);
+
+  --pb-navbar-bg: var(--pb-surface);
+  --pb-navbar-border: transparent;
+  --pb-navbar-text: var(--pb-text-primary);
+
+  --pb-sidebar-bg: var(--pb-surface);
+  --pb-sidebar-border: var(--pb-border);
+  --pb-sidebar-text: var(--pb-text-primary);
+
+  /* PWA Theme Color */
+  --pb-theme-color: var(--pb-primary);
+  --pb-theme-color-dark: var(--pb-primary-dark);
+}
+
+/* Prime Video theme body styles */
+[data-theme="prime-video"] body {
+  background: var(--pb-background);
+  color: var(--pb-text-primary);
+}
+
+/* Prime Video theme specific component styles */
+[data-theme="prime-video"] .prime-brand {
+  color: var(--pb-prime-blue);
+  font-weight: var(--pb-font-weight-bold);
+}
+
+[data-theme="prime-video"] .prime-accent {
+  color: var(--pb-prime-orange);
+}
+
+[data-theme="prime-video"] .prime-hero {
+  background: linear-gradient(
+    rgba(15, 23, 30, 0.4),
+    rgba(15, 23, 30, 0.7)
+  ), var(--pb-gradient-background);
+}
+
+[data-theme="prime-video"] .prime-card {
+  background: var(--pb-surface-variant);
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius-lg);
+  box-shadow: var(--pb-shadow-lg);
+  transition: transform var(--pb-duration-normal) var(--pb-ease-out),
+              box-shadow var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="prime-video"] .prime-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pb-shadow-xl);
+  border-color: var(--pb-primary);
+}
+
+[data-theme="prime-video"] .prime-button {
+  background: var(--pb-primary);
+  color: var(--pb-text-primary);
+  border: none;
+  border-radius: var(--pb-radius-md);
+  padding: var(--pb-spacing-2) var(--pb-spacing-4);
+  font-weight: var(--pb-font-weight-semibold);
+  transition: background-color var(--pb-duration-fast) var(--pb-ease-in-out);
+}
+
+[data-theme="prime-video"] .prime-button:hover {
+  background: var(--pb-primary-dark);
+}
+
+[data-theme="prime-video"] .prime-button:active {
+  background: var(--pb-primary-darker);
+}
+
+[data-theme="prime-video"] .prime-button-accent {
+  background: var(--pb-accent);
+  color: var(--pb-background);
+}
+
+[data-theme="prime-video"] .prime-button-accent:hover {
+  background: var(--pb-accent-dark);
+}
+
+/* Prime Video theme scrollbar */
+[data-theme="prime-video"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="prime-video"] ::-webkit-scrollbar-track {
+  background: var(--pb-background-secondary);
+}
+
+[data-theme="prime-video"] ::-webkit-scrollbar-thumb {
+  background: var(--pb-border);
+  border-radius: var(--pb-radius-full);
+}
+
+[data-theme="prime-video"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--pb-primary);
+}
+
+/* Prime Video theme selection */
+[data-theme="prime-video"] ::selection {
+  background: var(--pb-primary);
+  color: var(--pb-text-primary);
+}

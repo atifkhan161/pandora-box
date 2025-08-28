@@ -1,9 +1,7 @@
 /**
  * WebSocket Client Service
- * Handles real-time communication with the backend
+ * Vanilla JavaScript implementation for real-time communication
  */
-
-import authService from './auth.js'
 
 class WebSocketClient {
   constructor() {
@@ -47,7 +45,8 @@ class WebSocketClient {
     }
 
     // Check if user is authenticated
-    if (!authService.isAuthenticated()) {
+    const token = localStorage.getItem('pb-auth-token');
+    if (!token) {
       console.warn('Cannot connect to WebSocket: User not authenticated')
       return
     }
@@ -58,7 +57,6 @@ class WebSocketClient {
       console.log('Connecting to WebSocket:', this.url)
       
       // Create WebSocket connection with auth token
-      const token = authService.getToken()
       const wsUrl = `${this.url}?token=${encodeURIComponent(token)}`
       
       this.ws = new WebSocket(wsUrl)
@@ -178,7 +176,7 @@ class WebSocketClient {
     })
     
     // Schedule reconnect if not a clean close
-    if (event.code !== 1000 && authService.isAuthenticated()) {
+    if (event.code !== 1000 && localStorage.getItem('pb-auth-token')) {
       this.scheduleReconnect()
     }
   }
@@ -212,7 +210,7 @@ class WebSocketClient {
     console.log(`Scheduling reconnect attempt ${this.reconnectAttempts} in ${delay}ms`)
     
     setTimeout(() => {
-      if (authService.isAuthenticated() && !this.isConnected) {
+      if (localStorage.getItem('pb-auth-token') && !this.isConnected) {
         this.connect()
       }
     }, delay)
@@ -397,7 +395,4 @@ class WebSocketClient {
   }
 }
 
-// Create singleton instance
-const wsClient = new WebSocketClient()
-
-export default wsClient
+export default WebSocketClient;

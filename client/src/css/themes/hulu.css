@@ -1,0 +1,247 @@
+/* Hulu-Inspired Theme */
+[data-theme="hulu"] {
+  /* Primary Colors - Hulu Green */
+  --pb-primary: #1ce783;
+  --pb-primary-50: #f0fdf4;
+  --pb-primary-100: #dcfce7;
+  --pb-primary-200: #bbf7d0;
+  --pb-primary-300: #86efac;
+  --pb-primary-400: #4ade80;
+  --pb-primary-500: #22c55e;
+  --pb-primary-600: #16a34a;
+  --pb-primary-700: #15803d;
+  --pb-primary-800: #166534;
+  --pb-primary-900: #14532d;
+  --pb-primary-950: #052e16;
+
+  /* Primary Variants */
+  --pb-primary-light: #3ced97;
+  --pb-primary-dark: #17c46f;
+  --pb-primary-darker: #12a85c;
+
+  /* Secondary Colors - Hulu Dark Gray */
+  --pb-secondary: #2d3e50;
+  --pb-secondary-50: #f8fafc;
+  --pb-secondary-100: #f1f5f9;
+  --pb-secondary-200: #e2e8f0;
+  --pb-secondary-300: #cbd5e1;
+  --pb-secondary-400: #94a3b8;
+  --pb-secondary-500: #64748b;
+  --pb-secondary-600: #475569;
+  --pb-secondary-700: #334155;
+  --pb-secondary-800: #1e293b;
+  --pb-secondary-900: #0f172a;
+
+  /* Background Colors - Hulu Dark */
+  --pb-background: #0b0e0f;
+  --pb-background-secondary: #151a1e;
+  --pb-background-tertiary: #1f262b;
+  --pb-background-quaternary: #293138;
+
+  /* Surface Colors */
+  --pb-surface: #151a1e;
+  --pb-surface-variant: #1f262b;
+  --pb-surface-hover: #293138;
+  --pb-surface-active: #333c45;
+  --pb-surface-disabled: #1a2025;
+
+  /* Text Colors */
+  --pb-text-primary: #ffffff;
+  --pb-text-secondary: #b8c5d1;
+  --pb-text-tertiary: #9aa7b4;
+  --pb-text-muted: #8a9ba8;
+  --pb-text-disabled: #6b7c89;
+  --pb-text-inverse: #0b0e0f;
+
+  /* Border Colors */
+  --pb-border: #2d3e50;
+  --pb-border-light: #3a4d61;
+  --pb-border-lighter: #475c72;
+  --pb-border-dark: #243040;
+  --pb-border-darker: #1b2530;
+
+  /* State Colors */
+  --pb-success: #2ecc71;
+  --pb-success-light: #58d68d;
+  --pb-success-dark: #27ae60;
+  --pb-success-bg: rgba(46, 204, 113, 0.1);
+
+  --pb-warning: #ffa726;
+  --pb-warning-light: #ffb74d;
+  --pb-warning-dark: #ff9800;
+  --pb-warning-bg: rgba(255, 167, 38, 0.1);
+
+  --pb-error: #f44336;
+  --pb-error-light: #ef5350;
+  --pb-error-dark: #e53935;
+  --pb-error-bg: rgba(244, 67, 54, 0.1);
+
+  --pb-info: #29b6f6;
+  --pb-info-light: #4fc3f7;
+  --pb-info-dark: #0288d1;
+  --pb-info-bg: rgba(41, 182, 246, 0.1);
+
+  /* Accent Colors - Hulu Orange */
+  --pb-accent: #ff6b35;
+  --pb-accent-light: #ff8a65;
+  --pb-accent-dark: #ff5722;
+
+  /* Interactive States */
+  --pb-hover-opacity: 0.8;
+  --pb-active-opacity: 0.6;
+  --pb-disabled-opacity: 0.4;
+  --pb-focus-ring: var(--pb-primary);
+
+  /* Gradients */
+  --pb-gradient-primary: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
+  --pb-gradient-background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-surface) 100%);
+  --pb-gradient-surface: linear-gradient(135deg, var(--pb-surface) 0%, var(--pb-surface-variant) 100%);
+  --pb-gradient-overlay: linear-gradient(0deg, rgba(11, 14, 15, 0.8) 0%, rgba(11, 14, 15, 0.2) 50%, rgba(11, 14, 15, 0.8) 100%);
+
+  /* Theme-specific shadows */
+  --pb-shadow: var(--pb-shadow-dark-base);
+  --pb-shadow-sm: var(--pb-shadow-dark-sm);
+  --pb-shadow-md: var(--pb-shadow-dark-md);
+  --pb-shadow-lg: var(--pb-shadow-dark-lg);
+  --pb-shadow-xl: var(--pb-shadow-dark-xl);
+
+  /* Hulu-specific colors */
+  --pb-hulu-green: #1ce783;
+  --pb-hulu-dark-green: #17c46f;
+  --pb-hulu-black: #0b0e0f;
+  --pb-hulu-dark-gray: #151a1e;
+  --pb-hulu-gray: #2d3e50;
+  --pb-hulu-orange: #ff6b35;
+
+  /* Component-specific overrides */
+  --pb-card-bg: var(--pb-surface-variant);
+  --pb-card-border: var(--pb-border);
+  --pb-card-shadow: var(--pb-shadow-lg);
+
+  --pb-button-primary-bg: var(--pb-primary);
+  --pb-button-primary-hover: var(--pb-primary-dark);
+  --pb-button-primary-active: var(--pb-primary-darker);
+  --pb-button-primary-text: var(--pb-background);
+
+  --pb-input-bg: var(--pb-surface-variant);
+  --pb-input-border: var(--pb-border);
+  --pb-input-focus-border: var(--pb-primary);
+  --pb-input-text: var(--pb-text-primary);
+  --pb-input-placeholder: var(--pb-text-muted);
+
+  --pb-navbar-bg: var(--pb-surface);
+  --pb-navbar-border: transparent;
+  --pb-navbar-text: var(--pb-text-primary);
+
+  --pb-sidebar-bg: var(--pb-surface);
+  --pb-sidebar-border: var(--pb-border);
+  --pb-sidebar-text: var(--pb-text-primary);
+
+  /* PWA Theme Color */
+  --pb-theme-color: var(--pb-primary);
+  --pb-theme-color-dark: var(--pb-primary-dark);
+}
+
+/* Hulu theme body styles */
+[data-theme="hulu"] body {
+  background: var(--pb-background);
+  color: var(--pb-text-primary);
+}
+
+/* Hulu theme specific component styles */
+[data-theme="hulu"] .hulu-brand {
+  color: var(--pb-hulu-green);
+  font-weight: var(--pb-font-weight-bold);
+}
+
+[data-theme="hulu"] .hulu-accent {
+  color: var(--pb-hulu-orange);
+}
+
+[data-theme="hulu"] .hulu-hero {
+  background: linear-gradient(
+    rgba(11, 14, 15, 0.4),
+    rgba(11, 14, 15, 0.7)
+  ), var(--pb-gradient-background);
+}
+
+[data-theme="hulu"] .hulu-card {
+  background: var(--pb-surface-variant);
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius-lg);
+  box-shadow: var(--pb-shadow-lg);
+  transition: transform var(--pb-duration-normal) var(--pb-ease-out),
+              box-shadow var(--pb-duration-normal) var(--pb-ease-out),
+              border-color var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="hulu"] .hulu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--pb-shadow-xl);
+  border-color: var(--pb-primary);
+}
+
+[data-theme="hulu"] .hulu-button {
+  background: var(--pb-primary);
+  color: var(--pb-background);
+  border: none;
+  border-radius: var(--pb-radius-md);
+  padding: var(--pb-spacing-2) var(--pb-spacing-4);
+  font-weight: var(--pb-font-weight-semibold);
+  transition: background-color var(--pb-duration-fast) var(--pb-ease-in-out);
+}
+
+[data-theme="hulu"] .hulu-button:hover {
+  background: var(--pb-primary-dark);
+}
+
+[data-theme="hulu"] .hulu-button:active {
+  background: var(--pb-primary-darker);
+}
+
+[data-theme="hulu"] .hulu-button-accent {
+  background: var(--pb-accent);
+  color: var(--pb-text-primary);
+}
+
+[data-theme="hulu"] .hulu-button-accent:hover {
+  background: var(--pb-accent-dark);
+}
+
+/* Hulu theme progress bars */
+[data-theme="hulu"] .hulu-progress {
+  background: var(--pb-border);
+  border-radius: var(--pb-radius-full);
+  overflow: hidden;
+}
+
+[data-theme="hulu"] .hulu-progress-bar {
+  background: linear-gradient(90deg, var(--pb-primary) 0%, var(--pb-primary-light) 100%);
+  height: 100%;
+  transition: width var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+/* Hulu theme scrollbar */
+[data-theme="hulu"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="hulu"] ::-webkit-scrollbar-track {
+  background: var(--pb-background-secondary);
+}
+
+[data-theme="hulu"] ::-webkit-scrollbar-thumb {
+  background: var(--pb-border);
+  border-radius: var(--pb-radius-full);
+}
+
+[data-theme="hulu"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--pb-primary);
+}
+
+/* Hulu theme selection */
+[data-theme="hulu"] ::selection {
+  background: var(--pb-primary);
+  color: var(--pb-background);
+}

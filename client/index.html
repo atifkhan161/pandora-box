@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#141414">
+  <meta name="theme-color" content="#e50914">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,11 +19,17 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
 
-  <!-- Framework7 CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@8.3.3/css/framework7.bundle.min.css">
-
-  <!-- Framework7 Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7-icons@5.0.5/css/framework7-icons.css">
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="/src/css/base/reset.css">
+  <link rel="stylesheet" href="/src/css/base/typography.css">
+  <link rel="stylesheet" href="/src/css/base/layout.css">
+  <link rel="stylesheet" href="/src/css/base/animations.css">
+  
+  <!-- Default Theme (Netflix) -->
+  <link rel="stylesheet" href="/src/css/themes/netflix.css" id="theme-stylesheet">
+  
+  <!-- App CSS -->
+  <link rel="stylesheet" href="/src/css/app.css">
 
   <title>Pandora Box</title>
 </head>
@@ -31,146 +37,71 @@
 <body>
   <!-- App root element -->
   <div id="app">
-    <!-- Left Panel -->
-    <div class="panel panel-left panel-cover panel-resizable">
-      <div class="panel-backdrop"></div>
-      <div class="panel-content">
-        <div class="page">
-          <div class="navbar">
-            <div class="navbar-bg"></div>
-            <div class="navbar-inner">
-              <div class="title">Navigation</div>
-            </div>
-          </div>
-          <div class="page-content">
-            <div class="list links-list">
-              <ul>
-                <li>
-                  <a href="/" class="panel-close" tabindex="0"></a>
-                  <i class="f7-icons">house_fill</i>
-                  <span>Dashboard</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/downloads/" class="panel-close" tabindex="0">
-                    <i class="f7-icons">arrow_down_circle_fill</i>
-                    <span>Downloads</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/files/" class="panel-close" tabindex="0">
-                    <i class="f7-icons">folder_fill</i>
-                    <span>Files</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/containers/" class="panel-close" tabindex="0">
-                    <i class="f7-icons">cube_box_fill</i>
-                    <span>Containers</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/jellyfin/" class="panel-close" tabindex="0"></a>
-                  <i class="f7-icons">tv_fill</i>
-                  <span>Jellyfin</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="/settings/" class="panel-close" tabindex="0"></a>
-                  <i class="f7-icons">gear_alt_fill</i>
-                  <span>Settings</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+    <!-- Loading screen -->
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p class="loading-text">Loading Pandora Box...</p>
       </div>
     </div>
 
-    <!-- Main View -->
-    <div class="view view-main view-init safe-areas" data-url="/">
-      <!-- Initial loading screen -->
-      <div class="preloader-backdrop">
-        <div class="preloader">
-          <span class="preloader-inner">
-            <span class="preloader-inner-gap"></span>
-            <span class="preloader-inner-left">
-              <span class="preloader-inner-half-circle"></span>
-            </span>
-            <span class="preloader-inner-right">
-              <span class="preloader-inner-half-circle"></span>
-            </span>
-          </span>
-        </div>
+    <!-- Navigation -->
+    <nav id="main-navigation" class="main-navigation" aria-label="Main navigation">
+      <div class="nav-header">
+        <h1 class="nav-title">Pandora Box</h1>
+        <button id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+          <span class="hamburger"></span>
+        </button>
       </div>
-    </div>
+      
+      <ul class="nav-menu" role="menubar">
+        <li role="none">
+          <a href="/" class="nav-link" role="menuitem" data-page="dashboard">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Dashboard</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="/downloads" class="nav-link" role="menuitem" data-page="downloads">
+            <span class="nav-icon">⬇️</span>
+            <span class="nav-text">Downloads</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="/files" class="nav-link" role="menuitem" data-page="files">
+            <span class="nav-icon">📁</span>
+            <span class="nav-text">Files</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="/containers" class="nav-link" role="menuitem" data-page="containers">
+            <span class="nav-icon">📦</span>
+            <span class="nav-text">Containers</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="/jellyfin" class="nav-link" role="menuitem" data-page="jellyfin">
+            <span class="nav-icon">📺</span>
+            <span class="nav-text">Jellyfin</span>
+          </a>
+        </li>
+        <li role="none">
+          <a href="/settings" class="nav-link" role="menuitem" data-page="settings">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-text">Settings</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
 
-    <!-- Emergency fix button -->
-    <button id="emergency-fix-btn" style="position: fixed; top: 50%; right: 20px; z-index: 9999; background: #e50914; color: white; border: none; padding: 15px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-      🔧
-    </button>
+    <!-- Main content area -->
+    <main id="main-content" class="main-content" role="main">
+      <!-- Page content will be dynamically loaded here -->
+    </main>
+
+    <!-- Navigation backdrop for mobile -->
+    <div id="nav-backdrop" class="nav-backdrop"></div>
   </div>
-
-  <!-- Debug script to ensure main view is visible -->
-  <script>
-    // Aggressive debug script to force main view visibility
-    function forceMainViewVisible() {
-      const mainView = document.querySelector('.view-main')
-      const panel = document.querySelector('.panel-left')
-      
-      if (mainView) {
-        mainView.style.display = 'block'
-        mainView.style.visibility = 'visible'
-        mainView.style.opacity = '1'
-        mainView.style.transform = 'none'
-        mainView.style.position = 'fixed'
-        mainView.style.top = '0'
-        mainView.style.left = '0'
-        mainView.style.width = '100%'
-        mainView.style.height = '100%'
-        mainView.style.zIndex = '10'
-      }
-      
-      if (panel) {
-        panel.classList.remove('panel-in')
-        panel.style.transform = 'translate3d(-100%, 0, 0)'
-        panel.style.zIndex = '5000'
-      }
-      
-      console.log('Forced main view visible')
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(forceMainViewVisible, 100)
-      setTimeout(forceMainViewVisible, 500)
-      setTimeout(forceMainViewVisible, 1000)
-      setTimeout(forceMainViewVisible, 2000)
-    })
-    
-    // Also run on window load
-    window.addEventListener('load', () => {
-      setTimeout(forceMainViewVisible, 100)
-    })
-    
-    // Emergency fix button
-    document.addEventListener('DOMContentLoaded', () => {
-      const emergencyBtn = document.getElementById('emergency-fix-btn')
-      if (emergencyBtn) {
-        emergencyBtn.addEventListener('click', () => {
-          console.log('Emergency fix button clicked!')
-          forceMainViewVisible()
-          
-          // Also try to navigate to dashboard
-          setTimeout(() => {
-            if (window.app && window.app.views && window.app.views.main) {
-              window.app.views.main.router.navigate('/', { force: true })
-            }
-          }, 500)
-        })
-      }
-    })
-  </script>
 
   <!-- App initialization script -->
   <script type="module" src="/src/js/app.js"></script>

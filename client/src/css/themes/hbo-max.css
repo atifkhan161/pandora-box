@@ -1,0 +1,290 @@
+/* HBO Max-Inspired Theme */
+[data-theme="hbo-max"] {
+  /* Primary Colors - HBO Purple */
+  --pb-primary: #9146ff;
+  --pb-primary-50: #faf5ff;
+  --pb-primary-100: #f3e8ff;
+  --pb-primary-200: #e9d5ff;
+  --pb-primary-300: #d8b4fe;
+  --pb-primary-400: #c084fc;
+  --pb-primary-500: #a855f7;
+  --pb-primary-600: #9333ea;
+  --pb-primary-700: #7c3aed;
+  --pb-primary-800: #6b21a8;
+  --pb-primary-900: #581c87;
+  --pb-primary-950: #3b0764;
+
+  /* Primary Variants */
+  --pb-primary-light: #a855f7;
+  --pb-primary-dark: #7c3aed;
+  --pb-primary-darker: #6b21a8;
+
+  /* Secondary Colors - HBO Dark Purple */
+  --pb-secondary: #4c1d95;
+  --pb-secondary-50: #faf5ff;
+  --pb-secondary-100: #f3e8ff;
+  --pb-secondary-200: #e9d5ff;
+  --pb-secondary-300: #d8b4fe;
+  --pb-secondary-400: #c084fc;
+  --pb-secondary-500: #a855f7;
+  --pb-secondary-600: #9333ea;
+  --pb-secondary-700: #7c3aed;
+  --pb-secondary-800: #6b21a8;
+  --pb-secondary-900: #581c87;
+
+  /* Background Colors - HBO Dark Purple */
+  --pb-background: #100e17;
+  --pb-background-secondary: #1a1625;
+  --pb-background-tertiary: #241f33;
+  --pb-background-quaternary: #2e2741;
+
+  /* Surface Colors */
+  --pb-surface: #1a1625;
+  --pb-surface-variant: #241f33;
+  --pb-surface-hover: #2e2741;
+  --pb-surface-active: #38304f;
+  --pb-surface-disabled: #1f1a2b;
+
+  /* Text Colors */
+  --pb-text-primary: #ffffff;
+  --pb-text-secondary: #c4b5fd;
+  --pb-text-tertiary: #b19cd9;
+  --pb-text-muted: #a78bfa;
+  --pb-text-disabled: #8b7bb8;
+  --pb-text-inverse: #100e17;
+
+  /* Border Colors */
+  --pb-border: #4c1d95;
+  --pb-border-light: #5b21b6;
+  --pb-border-lighter: #6d28d9;
+  --pb-border-dark: #3b0764;
+  --pb-border-darker: #2e1065;
+
+  /* State Colors */
+  --pb-success: #10b981;
+  --pb-success-light: #34d399;
+  --pb-success-dark: #059669;
+  --pb-success-bg: rgba(16, 185, 129, 0.1);
+
+  --pb-warning: #fbbf24;
+  --pb-warning-light: #fcd34d;
+  --pb-warning-dark: #f59e0b;
+  --pb-warning-bg: rgba(251, 191, 36, 0.1);
+
+  --pb-error: #ef4444;
+  --pb-error-light: #f87171;
+  --pb-error-dark: #dc2626;
+  --pb-error-bg: rgba(239, 68, 68, 0.1);
+
+  --pb-info: #3b82f6;
+  --pb-info-light: #60a5fa;
+  --pb-info-dark: #2563eb;
+  --pb-info-bg: rgba(59, 130, 246, 0.1);
+
+  /* Accent Colors - HBO Gold */
+  --pb-accent: #f59e0b;
+  --pb-accent-light: #fbbf24;
+  --pb-accent-dark: #d97706;
+
+  /* Interactive States */
+  --pb-hover-opacity: 0.8;
+  --pb-active-opacity: 0.6;
+  --pb-disabled-opacity: 0.4;
+  --pb-focus-ring: var(--pb-primary);
+
+  /* Gradients */
+  --pb-gradient-primary: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
+  --pb-gradient-background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-surface) 100%);
+  --pb-gradient-surface: linear-gradient(135deg, var(--pb-surface) 0%, var(--pb-surface-variant) 100%);
+  --pb-gradient-overlay: linear-gradient(0deg, rgba(16, 14, 23, 0.9) 0%, rgba(16, 14, 23, 0.3) 50%, rgba(16, 14, 23, 0.9) 100%);
+  --pb-gradient-purple: linear-gradient(135deg, #9146ff 0%, #7c3aed 50%, #6b21a8 100%);
+
+  /* Theme-specific shadows */
+  --pb-shadow: var(--pb-shadow-dark-base);
+  --pb-shadow-sm: var(--pb-shadow-dark-sm);
+  --pb-shadow-md: var(--pb-shadow-dark-md);
+  --pb-shadow-lg: var(--pb-shadow-dark-lg);
+  --pb-shadow-xl: var(--pb-shadow-dark-xl);
+
+  /* HBO Max-specific colors */
+  --pb-hbo-purple: #9146ff;
+  --pb-hbo-dark-purple: #7c3aed;
+  --pb-hbo-navy: #100e17;
+  --pb-hbo-dark-gray: #1a1625;
+  --pb-hbo-gray: #4c1d95;
+  --pb-hbo-gold: #f59e0b;
+
+  /* Component-specific overrides */
+  --pb-card-bg: var(--pb-surface-variant);
+  --pb-card-border: var(--pb-border);
+  --pb-card-shadow: var(--pb-shadow-lg);
+
+  --pb-button-primary-bg: var(--pb-primary);
+  --pb-button-primary-hover: var(--pb-primary-dark);
+  --pb-button-primary-active: var(--pb-primary-darker);
+  --pb-button-primary-text: var(--pb-text-primary);
+
+  --pb-input-bg: var(--pb-surface-variant);
+  --pb-input-border: var(--pb-border);
+  --pb-input-focus-border: var(--pb-primary);
+  --pb-input-text: var(--pb-text-primary);
+  --pb-input-placeholder: var(--pb-text-muted);
+
+  --pb-navbar-bg: var(--pb-surface);
+  --pb-navbar-border: transparent;
+  --pb-navbar-text: var(--pb-text-primary);
+
+  --pb-sidebar-bg: var(--pb-surface);
+  --pb-sidebar-border: var(--pb-border);
+  --pb-sidebar-text: var(--pb-text-primary);
+
+  /* PWA Theme Color */
+  --pb-theme-color: var(--pb-primary);
+  --pb-theme-color-dark: var(--pb-primary-dark);
+}
+
+/* HBO Max theme body styles */
+[data-theme="hbo-max"] body {
+  background: var(--pb-background);
+  color: var(--pb-text-primary);
+}
+
+/* HBO Max theme specific component styles */
+[data-theme="hbo-max"] .hbo-brand {
+  background: var(--pb-gradient-purple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--pb-font-weight-bold);
+}
+
+[data-theme="hbo-max"] .hbo-accent {
+  color: var(--pb-hbo-gold);
+}
+
+[data-theme="hbo-max"] .hbo-hero {
+  background: linear-gradient(
+    rgba(16, 14, 23, 0.4),
+    rgba(16, 14, 23, 0.7)
+  ), var(--pb-gradient-background);
+}
+
+[data-theme="hbo-max"] .hbo-card {
+  background: var(--pb-surface-variant);
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-radius-xl);
+  box-shadow: var(--pb-shadow-lg);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--pb-duration-normal) var(--pb-ease-out),
+              box-shadow var(--pb-duration-normal) var(--pb-ease-out),
+              border-color var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="hbo-max"] .hbo-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--pb-gradient-purple);
+  opacity: 0;
+  transition: opacity var(--pb-duration-normal) var(--pb-ease-out);
+}
+
+[data-theme="hbo-max"] .hbo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--pb-shadow-xl);
+  border-color: var(--pb-primary);
+}
+
+[data-theme="hbo-max"] .hbo-card:hover::before {
+  opacity: 1;
+}
+
+[data-theme="hbo-max"] .hbo-button {
+  background: var(--pb-gradient-purple);
+  color: var(--pb-text-primary);
+  border: none;
+  border-radius: var(--pb-radius-lg);
+  padding: var(--pb-spacing-3) var(--pb-spacing-6);
+  font-weight: var(--pb-font-weight-semibold);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--pb-duration-fast) var(--pb-ease-out);
+}
+
+[data-theme="hbo-max"] .hbo-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--pb-duration-slow) var(--pb-ease-out);
+}
+
+[data-theme="hbo-max"] .hbo-button:hover {
+  transform: translateY(-1px);
+}
+
+[data-theme="hbo-max"] .hbo-button:hover::before {
+  left: 100%;
+}
+
+[data-theme="hbo-max"] .hbo-button:active {
+  transform: translateY(0);
+}
+
+[data-theme="hbo-max"] .hbo-button-accent {
+  background: var(--pb-accent);
+  color: var(--pb-background);
+}
+
+[data-theme="hbo-max"] .hbo-button-accent:hover {
+  background: var(--pb-accent-dark);
+}
+
+/* HBO Max theme premium elements */
+[data-theme="hbo-max"] .hbo-premium {
+  background: var(--pb-gradient-purple);
+  border-radius: var(--pb-radius-xl);
+  padding: var(--pb-spacing-4);
+  position: relative;
+}
+
+[data-theme="hbo-max"] .hbo-premium::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  background: var(--pb-surface-variant);
+  border-radius: var(--pb-radius-lg);
+  z-index: -1;
+}
+
+/* HBO Max theme scrollbar */
+[data-theme="hbo-max"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="hbo-max"] ::-webkit-scrollbar-track {
+  background: var(--pb-background-secondary);
+}
+
+[data-theme="hbo-max"] ::-webkit-scrollbar-thumb {
+  background: var(--pb-gradient-purple);
+  border-radius: var(--pb-radius-full);
+}
+
+[data-theme="hbo-max"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--pb-primary-light);
+}
+
+/* HBO Max theme selection */
+[data-theme="hbo-max"] ::selection {
+  background: var(--pb-primary);
+  color: var(--pb-text-primary);
+}

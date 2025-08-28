@@ -1,42 +1,32 @@
-// Containers page controller
-import authStore from '../store/auth.js'
+/**
+ * Containers Page Controller
+ * Vanilla JavaScript implementation
+ */
+import BasePage from './base-page.js';
 
-export default {
-  path: '/containers/',
-  componentUrl: './pages/containers.html',
+class ContainersPage extends BasePage {
+  constructor() {
+    super();
+    this.templatePath = '/src/pages/containers.html';
+  }
 
-  on: {
-    pageInit(e, page) {
-      console.log('Containers page initialized')
+  async setupPage() {
+    this.setTitle('Containers');
+  }
 
-      // Initialize containers functionality here
-      // This will be implemented in task 6.1
-    },
+  setupEventListeners() {
+    // Placeholder for containers functionality
+    console.log('Containers page event listeners setup');
+  }
 
-    pageBeforeIn(e, page) {
-      console.log('Containers page before in')
-      
-      // Check authentication
-      const isAuthenticated = authStore.getters.isAuthenticated.value
-      if (!isAuthenticated) {
-        // Redirect to login if not authenticated
-        page.app.views.main.router.navigate('/login/', {
-          clearPreviousHistory: true
-        })
-        return false // Prevent page transition
-      }
-    },
+  async loadData() {
+    // Placeholder for containers data loading
+    console.log('Loading containers data...');
+  }
 
-    pageAfterIn(e, page) {
-      console.log('Containers page after in')
-    },
-
-    pageBeforeOut(e, page) {
-      console.log('Containers page before out')
-    },
-
-    pageAfterOut(e, page) {
-      console.log('Containers page after out')
-    }
+  onRender() {
+    console.log('Containers page rendered');
   }
 }
+
+export default ContainersPage;

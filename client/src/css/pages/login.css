@@ -1,0 +1,168 @@
+/**
+ * Login Page Styles
+ * Netflix-inspired dark theme for login screen
+ */
+
+/* Login screen layout */
+.login-screen-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--pb-background-primary, #141414) 0%, var(--pb-background-secondary, #1a1a1a) 100%);
+  padding: 2rem 1rem;
+}
+
+/* Login title styling */
+.login-screen-title {
+  text-align: center;
+  margin-bottom: 3rem;
+  color: var(--pb-text-primary, #ffffff);
+}
+
+.login-screen-title h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--pb-accent-primary, #e50914);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.login-screen-title p {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.8;
+  color: var(--pb-text-secondary, #b3b3b3);
+}
+
+/* Form container */
+.page[data-name="login"] .list {
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+  padding: 2rem;
+  margin: 0;
+  width: 100%;
+  max-width: 400px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page[data-name="login"] .list ul {
+  background: transparent;
+}
+
+/* Input styling */
+.page[data-name="login"] .item-content {
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.page[data-name="login"] .item-content:last-child {
+  border-bottom: none;
+}
+
+.page[data-name="login"] .item-label {
+  color: var(--pb-text-primary, #ffffff);
+  font-weight: 500;
+}
+
+.page[data-name="login"] .item-input-wrap input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: var(--pb-text-primary, #ffffff);
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.page[data-name="login"] .item-input-wrap input:focus {
+  border-color: var(--pb-accent-primary, #e50914);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.2);
+}
+
+.page[data-name="login"] .item-input-wrap input::placeholder {
+  color: var(--pb-text-tertiary, #666666);
+}
+
+/* Checkbox styling */
+.page[data-name="login"] .item-checkbox .item-title {
+  color: var(--pb-text-primary, #ffffff);
+  font-size: 0.9rem;
+}
+
+.page[data-name="login"] .item-checkbox .icon-checkbox {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.page[data-name="login"] .item-checkbox input:checked + .icon-checkbox {
+  background-color: var(--pb-accent-primary, #e50914);
+  border-color: var(--pb-accent-primary, #e50914);
+}
+
+/* Submit button */
+.page[data-name="login"] .button {
+  background: var(--pb-accent-primary, #e50914);
+  color: var(--pb-text-primary, #ffffff);
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.875rem 2rem;
+  margin-top: 1.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
+}
+
+.page[data-name="login"] .button:hover {
+  background: var(--pb-accent-hover, #f40612);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+}
+
+.page[data-name="login"] .button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.3);
+}
+
+.page[data-name="login"] .button:disabled {
+  background: var(--pb-background-tertiary, #333333);
+  color: var(--pb-text-tertiary, #666666);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .login-screen-content {
+    padding: 1rem;
+  }
+  
+  .login-screen-title h1 {
+    font-size: 2rem;
+  }
+  
+  .page[data-name="login"] .list {
+    padding: 1.5rem;
+  }
+}
+
+/* Loading state animation */
+.page[data-name="login"] .button:disabled::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

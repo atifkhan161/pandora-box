@@ -25,18 +25,78 @@
 <body>
   <!-- App root element -->
   <div id="app">
-    <!-- Initial loading screen -->
-    <div class="preloader-backdrop">
-      <div class="preloader">
-        <span class="preloader-inner">
-          <span class="preloader-inner-gap"></span>
-          <span class="preloader-inner-left">
-            <span class="preloader-inner-half-circle"></span>
+    <!-- Left Panel -->
+    <div class="panel panel-left panel-reveal panel-resizable">
+      <div class="panel-backdrop"></div>
+      <div class="panel-content">
+        <div class="page">
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="title">Navigation</div>
+            </div>
+          </div>
+          <div class="page-content">
+            <div class="list links-list">
+              <ul>
+                <li>
+                  <a href="/" class="panel-close">
+                    <i class="f7-icons">house_fill</i>
+                    <span>Dashboard</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/downloads/" class="panel-close">
+                    <i class="f7-icons">arrow_down_circle_fill</i>
+                    <span>Downloads</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/files/" class="panel-close">
+                    <i class="f7-icons">folder_fill</i>
+                    <span>Files</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/containers/" class="panel-close">
+                    <i class="f7-icons">cube_box_fill</i>
+                    <span>Containers</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/jellyfin/" class="panel-close">
+                    <i class="f7-icons">tv_fill</i>
+                    <span>Jellyfin</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/settings/" class="panel-close">
+                    <i class="f7-icons">gear_alt_fill</i>
+                    <span>Settings</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main View -->
+    <div class="view view-main view-init safe-areas" data-url="/">
+      <!-- Initial loading screen -->
+      <div class="preloader-backdrop">
+        <div class="preloader">
+          <span class="preloader-inner">
+            <span class="preloader-inner-gap"></span>
+            <span class="preloader-inner-left">
+              <span class="preloader-inner-half-circle"></span>
+            </span>
+            <span class="preloader-inner-right">
+              <span class="preloader-inner-half-circle"></span>
+            </span>
           </span>
-          <span class="preloader-inner-right">
-            <span class="preloader-inner-half-circle"></span>
-          </span>
-        </span>
+        </div>
       </div>
     </div>
   </div>

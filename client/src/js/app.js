@@ -1,5 +1,4 @@
 import Framework7 from 'framework7/lite-bundle'
-import Framework7Icons from 'framework7-icons'
 import routes from './routes.js'
 
 // Import main app styles

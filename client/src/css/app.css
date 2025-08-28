@@ -1,6 +1,9 @@
 /* Import Framework7 Bundle CSS */
 @import 'framework7/css/bundle';
 
+/* Import page-specific styles */
+@import './pages/login.css';
+
 /* Pandora Box Custom CSS Variables */
 :root {
   /* Netflix-inspired dark theme colors */

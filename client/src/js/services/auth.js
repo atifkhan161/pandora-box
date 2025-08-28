@@ -183,6 +183,26 @@ export class AuthService {
   }
 
   /**
+   * Check if user has stored authentication tokens
+   * @returns {boolean} Whether tokens exist in storage
+   */
+  hasStoredAuth() {
+    try {
+      const accessToken = localStorage.getItem('pb_access_token')
+      return !!accessToken
+    } catch (error) {
+      return false
+    }
+  }
+
+  /**
+   * Clear stored authentication tokens
+   */
+  clearTokens() {
+    this.jwtManager.clearTokens()
+  }
+
+  /**
    * Check if user is authenticated
    * @returns {Promise<boolean>} Authentication status
    */

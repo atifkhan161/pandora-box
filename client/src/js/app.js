@@ -45,14 +45,14 @@ class PandoraApp {
       // Setup navigation
       this.setupNavigation();
 
-      // Setup routing
+      // Setup authentication first
+      await this.initializeAuth();
+
+      // Setup routing after auth is initialized
       this.setupRouting();
 
       // Initialize theme system
       await this.initializeTheme();
-
-      // Setup authentication
-      await this.initializeAuth();
 
       // Setup WebSocket connection
       this.initializeWebSocket();
@@ -208,7 +208,7 @@ class PandoraApp {
       title: 'Settings - Pandora Box' 
     });
 
-    // Initialize router
+    // Initialize router after auth is set up
     this.router.init();
   }
 
@@ -227,10 +227,23 @@ class PandoraApp {
    * Initialize authentication
    */
   async initializeAuth() {
-    await this.authStore.init();
+    // Override router's authentication check before initializing auth store
+    this.router.isAuthenticated = () => {
+      // Prevent redirect loops by checking if we're already on login page
+      const currentPath = window.location.pathname;
+      if (currentPath === '/login') {
+        return true; // Allow access to login page
+      }
+      
+      // Check if auth store is still loading
+      if (this.authStore.getState().loading) {
+        return true; // Allow navigation while loading
+      }
+      
+      return this.authStore.isAuthenticated();
+    };
     
-    // Override router's authentication check
-    this.router.isAuthenticated = () => this.authStore.isAuthenticated();
+    await this.authStore.init();
   }
 
   /**

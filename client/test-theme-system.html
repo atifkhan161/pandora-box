@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Theme System Test - Pandora PWA</title>
     <meta name="theme-color" content="#e50914">
-    
+
     <!-- Import CSS -->
     <link rel="stylesheet" href="src/css/base/reset.css">
     <link rel="stylesheet" href="src/css/base/typography.css">
@@ -13,7 +14,7 @@
     <link rel="stylesheet" href="src/css/base/animations.css">
     <link rel="stylesheet" href="src/css/themes/netflix.css">
     <link rel="stylesheet" href="src/css/components/theme-switcher/theme-switcher.css">
-    
+
     <style>
         body {
             padding: var(--pb-spacing-4);
@@ -21,12 +22,12 @@
             background: var(--pb-background);
             color: var(--pb-text-primary);
         }
-        
+
         .test-container {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .test-section {
             background: var(--pb-surface-variant);
             border: 1px solid var(--pb-border);
@@ -34,14 +35,14 @@
             padding: var(--pb-spacing-4);
             margin-bottom: var(--pb-spacing-4);
         }
-        
+
         .test-buttons {
             display: flex;
             gap: var(--pb-spacing-2);
             flex-wrap: wrap;
             margin-bottom: var(--pb-spacing-4);
         }
-        
+
         .test-button {
             padding: var(--pb-spacing-2) var(--pb-spacing-4);
             border: none;
@@ -50,33 +51,33 @@
             cursor: pointer;
             transition: all var(--pb-duration-fast) var(--pb-ease-out);
         }
-        
+
         .test-button.primary {
             background: var(--pb-primary);
             color: var(--pb-text-primary);
         }
-        
+
         .test-button.primary:hover {
             background: var(--pb-primary-dark);
         }
-        
+
         .test-button.secondary {
             background: var(--pb-surface);
             color: var(--pb-text-secondary);
             border: 1px solid var(--pb-border);
         }
-        
+
         .test-button.secondary:hover {
             background: var(--pb-surface-hover);
             color: var(--pb-text-primary);
         }
-        
+
         .color-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: var(--pb-spacing-2);
         }
-        
+
         .color-swatch {
             padding: var(--pb-spacing-3);
             border-radius: var(--pb-radius-md);
@@ -84,22 +85,46 @@
             font-size: var(--pb-text-sm);
             font-weight: var(--pb-font-weight-medium);
         }
-        
-        .swatch-primary { background: var(--pb-primary); color: var(--pb-text-primary); }
-        .swatch-secondary { background: var(--pb-secondary); color: var(--pb-text-primary); }
-        .swatch-success { background: var(--pb-success); color: var(--pb-text-primary); }
-        .swatch-warning { background: var(--pb-warning); color: var(--pb-background); }
-        .swatch-error { background: var(--pb-error); color: var(--pb-text-primary); }
-        .swatch-accent { background: var(--pb-accent); color: var(--pb-text-primary); }
+
+        .swatch-primary {
+            background: var(--pb-primary);
+            color: var(--pb-text-primary);
+        }
+
+        .swatch-secondary {
+            background: var(--pb-secondary);
+            color: var(--pb-text-primary);
+        }
+
+        .swatch-success {
+            background: var(--pb-success);
+            color: var(--pb-text-primary);
+        }
+
+        .swatch-warning {
+            background: var(--pb-warning);
+            color: var(--pb-background);
+        }
+
+        .swatch-error {
+            background: var(--pb-error);
+            color: var(--pb-text-primary);
+        }
+
+        .swatch-accent {
+            background: var(--pb-accent);
+            color: var(--pb-text-primary);
+        }
     </style>
 </head>
+
 <body>
     <div class="test-container">
         <header class="test-section">
             <h1>Pandora PWA Theme System Test</h1>
             <p class="text-secondary">Testing the OTT-inspired theme system with all 6 theme variations</p>
         </header>
-        
+
         <section class="test-section">
             <h2>Quick Theme Switcher</h2>
             <div class="test-buttons">
@@ -112,7 +137,7 @@
             </div>
             <p id="current-theme" class="text-muted">Current theme: Netflix</p>
         </section>
-        
+
         <section class="test-section">
             <h2>Color Palette</h2>
             <div class="color-grid">
@@ -124,7 +149,7 @@
                 <div class="color-swatch swatch-error">Error</div>
             </div>
         </section>
-        
+
         <section class="test-section">
             <h2>Typography & Components</h2>
             <h3>Heading Level 3</h3>
@@ -134,7 +159,7 @@
                 <button class="test-button secondary">Secondary Button</button>
             </div>
         </section>
-        
+
         <section class="test-section">
             <h2>Theme Switcher Component</h2>
             <div id="theme-switcher-container"></div>
@@ -143,7 +168,7 @@
 
     <script type="module">
         // Simple theme switching for testing
-        window.switchTheme = async function(themeId) {
+        window.switchTheme = async function (themeId) {
             try {
                 // Remove existing theme stylesheets
                 const existingThemeLinks = document.querySelectorAll('link[data-theme-css]');
@@ -169,9 +194,9 @@
                     'disney-plus': 'Disney+',
                     'apple-tv': 'Apple TV+'
                 };
-                
+
                 document.getElementById('current-theme').textContent = `Current theme: ${themeNames[themeId]}`;
-                
+
                 // Update meta theme-color
                 const themeColors = {
                     'netflix': '#e50914',
@@ -181,12 +206,12 @@
                     'disney-plus': '#113ccf',
                     'apple-tv': '#007aff'
                 };
-                
+
                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
                 if (metaThemeColor) {
                     metaThemeColor.content = themeColors[themeId];
                 }
-                
+
                 console.log(`Switched to ${themeNames[themeId]} theme`);
             } catch (error) {
                 console.error('Failed to switch theme:', error);
@@ -212,4 +237,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -73,10 +73,15 @@ class Router {
       this.showLoading();
 
       // Check authentication if required
-      if (route.requiresAuth && !this.isAuthenticated()) {
-        console.log('Route requires authentication, redirecting to login');
-        this.navigate('/login', false);
-        return;
+      if (route.requiresAuth) {
+        const isAuth = this.isAuthenticated();
+        console.log(`Route ${path} requires auth. Authenticated: ${isAuth}`);
+        
+        if (!isAuth) {
+          console.log('Route requires authentication, redirecting to login');
+          this.navigate('/login', false);
+          return;
+        }
       }
 
       // Cleanup current page
@@ -236,9 +241,9 @@ class Router {
    * @returns {boolean} - Authentication status
    */
   isAuthenticated() {
-    // This will be implemented when we create the auth service
-    // For now, return true to allow navigation during development
-    return true;
+    // This will be overridden by the app during initialization
+    // Default to false for security
+    return false;
   }
 
   /**

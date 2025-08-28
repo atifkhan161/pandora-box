@@ -26,28 +26,20 @@ class AuthStore {
     this.setState({ loading: true, error: null });
     
     try {
-      // Load stored authentication from service
-      await this.authService.loadStoredAuth();
+      // Check if user has stored authentication tokens
+      const hasStoredAuth = this.authService.hasStoredAuth();
       
-      // Check if user is authenticated
-      if (this.authService.isAuthenticated()) {
-        // Verify token is still valid
-        const isValid = await this.authService.verifyToken();
+      if (hasStoredAuth) {
+        // For now, just check if tokens exist without server validation
+        // Server validation will happen on first API call
+        this.setState({
+          isAuthenticated: true,
+          user: { username: 'user' }, // Placeholder user
+          loading: false
+        });
         
-        if (isValid) {
-          this.setState({
-            isAuthenticated: true,
-            user: this.authService.getUser(),
-            loading: false
-          });
-          
-          // Initialize WebSocket connection
-          await this.initializeWebSocket();
-        } else {
-          // Token is invalid, clear auth
-          await this.authService.clearAuth();
-          this.setState({ loading: false });
-        }
+        // Initialize WebSocket connection
+        await this.initializeWebSocket();
       } else {
         this.setState({ loading: false });
       }

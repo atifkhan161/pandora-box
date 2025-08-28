@@ -1,12 +1,16 @@
 /**
  * JWT Token Management Utility
- * Handles JWT token parsing, validation, and refresh scheduling
+ * Handles JWT token parsing, validation, refresh scheduling, and storage
  */
 
-class JWTManager {
+export class JWTManager {
   constructor() {
     this.refreshTimer = null;
     this.refreshThreshold = 5 * 60 * 1000; // Refresh 5 minutes before expiry
+    this.storageKeys = {
+      accessToken: 'pb_access_token',
+      refreshToken: 'pb_refresh_token'
+    };
   }
 
   /**
@@ -40,6 +44,15 @@ class JWTManager {
 
     const now = Math.floor(Date.now() / 1000);
     return payload.exp <= now;
+  }
+
+  /**
+   * Decode JWT token (alias for parseToken for compatibility)
+   * @param {string} token 
+   * @returns {object|null}
+   */
+  decodeToken(token) {
+    return this.parseToken(token);
   }
 
   /**
@@ -201,9 +214,156 @@ class JWTManager {
       return `${seconds}s`;
     }
   }
+
+  /**
+   * Store tokens in localStorage
+   * @param {string} accessToken 
+   * @param {string} refreshToken 
+   */
+  async setTokens(accessToken, refreshToken) {
+    try {
+      if (accessToken) {
+        localStorage.setItem(this.storageKeys.accessToken, accessToken);
+      }
+      if (refreshToken) {
+        localStorage.setItem(this.storageKeys.refreshToken, refreshToken);
+      }
+    } catch (error) {
+      console.error('Error storing tokens:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get access token from storage
+   * @returns {string|null}
+   */
+  async getAccessToken() {
+    try {
+      return localStorage.getItem(this.storageKeys.accessToken);
+    } catch (error) {
+      console.error('Error getting access token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get refresh token from storage
+   * @returns {string|null}
+   */
+  async getRefreshToken() {
+    try {
+      return localStorage.getItem(this.storageKeys.refreshToken);
+    } catch (error) {
+      console.error('Error getting refresh token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get valid access token (refresh if needed)
+   * @returns {string|null}
+   */
+  async getValidToken() {
+    try {
+      const accessToken = await this.getAccessToken();
+      
+      if (!accessToken) {
+        return null;
+      }
+
+      // Check if token is expired
+      if (this.isTokenExpired(accessToken)) {
+        // Try to refresh token
+        const refreshed = await this.refreshToken();
+        if (refreshed) {
+          return await this.getAccessToken();
+        }
+        return null;
+      }
+
+      return accessToken;
+    } catch (error) {
+      console.error('Error getting valid token:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Refresh access token using refresh token
+   * @returns {boolean} Success status
+   */
+  async refreshToken() {
+    try {
+      const refreshToken = await this.getRefreshToken();
+      
+      if (!refreshToken) {
+        return false;
+      }
+
+      // Check if refresh token is expired
+      if (this.isTokenExpired(refreshToken)) {
+        this.clearTokens();
+        return false;
+      }
+
+      // Make refresh request
+      const response = await fetch('/api/v1/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ refreshToken })
+      });
+
+      if (!response.ok) {
+        this.clearTokens();
+        return false;
+      }
+
+      const data = await response.json();
+      
+      if (data.accessToken) {
+        await this.setTokens(data.accessToken, data.refreshToken || refreshToken);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      this.clearTokens();
+      return false;
+    }
+  }
+
+  /**
+   * Clear all stored tokens
+   */
+  clearTokens() {
+    try {
+      localStorage.removeItem(this.storageKeys.accessToken);
+      localStorage.removeItem(this.storageKeys.refreshToken);
+      this.clearRefreshTimer();
+    } catch (error) {
+      console.error('Error clearing tokens:', error);
+    }
+  }
+
+  /**
+   * Check if user is authenticated
+   * @returns {boolean}
+   */
+  async isAuthenticated() {
+    try {
+      const token = await this.getValidToken();
+      return !!token;
+    } catch (error) {
+      return false;
+    }
+  }
 }
 
 // Create singleton instance
-const jwtManager = new JWTManager();
+export const jwtManager = new JWTManager();
 
-export default jwtManager;
+export default JWTManager;

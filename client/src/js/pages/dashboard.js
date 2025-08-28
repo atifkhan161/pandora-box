@@ -569,11 +569,16 @@ class DashboardPage extends BasePage {
   handleMediaDetails(detail) {
     console.log('View media details:', detail);
     
-    // TODO: Navigate to media details page (will be implemented in task 4.3)
-    // For now, show a simple alert
     const { mediaData } = detail;
-    const title = mediaData.title || mediaData.name;
-    alert(`View details for: ${title}\n\nThis will open the media details page when implemented.`);
+    const mediaType = mediaData.media_type || (mediaData.title ? 'movie' : 'tv');
+    
+    // Navigate to media details page
+    const detailsUrl = `/media-details?id=${mediaData.id}&type=${mediaType}`;
+    if (window.router) {
+      window.router.navigate(detailsUrl);
+    } else {
+      window.location.href = detailsUrl;
+    }
   }
 
   /**

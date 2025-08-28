@@ -16,9 +16,7 @@ import { createAuthRoutes } from '@/routes/auth.js'
 import { createMediaRoutes } from '@/routes/media.js'
 import { createStreamingRoutes } from '@/routes/streaming.js'
 import { createDownloadsRoutes } from '@/routes/downloads.js'
-import healthRoutes from '@/routes/health.js'
-import mediaRoutes from '@/routes/media.js'
-import downloadRoutes from '@/routes/downloads.js'
+import { createHealthRoutes } from '@/routes/health.js'
 import { createFilesRoutes } from '@/routes/files.js'
 import { createDockerRoutes } from '@/routes/docker.js'
 import { createJellyfinRoutes } from '@/routes/jellyfin.js'
@@ -40,29 +38,42 @@ class PandoraBoxServer {
   // Initialize the server
   public async init(): Promise<void> {
     try {
+      logger.info('Starting server initialization...')
+      
       // Initialize database
+      logger.info('Initializing database...')
       await this.databaseService.init()
       logger.info('Database initialized successfully')
 
       // Initialize authentication middleware
+      logger.info('Initializing authentication middleware...')
       initAuthMiddleware(this.databaseService)
+      logger.info('Authentication middleware initialized successfully')
 
       // Initialize API proxy service
+      logger.info('Initializing API proxy service...')
       await this.apiProxyService.init()
       logger.info('API Proxy Service initialized successfully')
 
       // Initialize WebSocket service
+      logger.info('Initializing WebSocket service...')
       await this.wsService.init()
       logger.info('WebSocket service initialized successfully')
 
       // Setup middleware
+      logger.info('Setting up middleware...')
       this.setupMiddleware()
+      logger.info('Middleware setup completed')
 
       // Setup routes
+      logger.info('Setting up routes...')
       this.setupRoutes()
+      logger.info('Routes setup completed')
 
       // Setup error handling
+      logger.info('Setting up error handling...')
       this.setupErrorHandling()
+      logger.info('Error handling setup completed')
 
       logger.info('Pandora Box Server initialized successfully')
     } catch (error) {
@@ -156,7 +167,7 @@ class PandoraBoxServer {
     const router = express.Router()
 
     // Public routes (no authentication required)
-    router.use('/health', healthRoutes)
+    router.use('/health', createHealthRoutes(this.databaseService, this.wsService))
     router.use('/auth', createAuthRoutes(this.databaseService))
 
     // Protected routes (authentication required)
@@ -251,6 +262,9 @@ class PandoraBoxServer {
       const host = config.server.host
 
       this.app.listen(port, host, () => {
+        console.log(`🚀 Pandora Box Server running on http://${host}:${port}`)
+        console.log(`📚 API documentation available at http://${host}:${port}/api`)
+        console.log(`🔌 WebSocket server running on ws://${host}:${config.websocket.port}`)
         logger.info(`Pandora Box Server running on http://${host}:${port}`)
         logger.info(`API documentation available at http://${host}:${port}/api`)
         logger.info(`WebSocket server running on ws://${host}:${config.websocket.port}`)
@@ -320,7 +334,13 @@ declare global {
 const server = new PandoraBoxServer()
 
 // Start server if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+import { fileURLToPath } from 'url'
+import { resolve } from 'path'
+
+const currentFile = fileURLToPath(import.meta.url)
+const runFile = resolve(process.argv[1])
+
+if (currentFile === runFile) {
   server.start().catch((error) => {
     logger.error('Failed to start Pandora Box Server:', error)
     process.exit(1)

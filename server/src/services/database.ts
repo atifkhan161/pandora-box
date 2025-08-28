@@ -43,7 +43,7 @@ export class DatabaseService {
           autosaveInterval: config.database.autoSaveInterval,
           serializationMethod: 'normal',
           destructureDelimiter: '$<>',
-          adapter: new Loki.LokiFileSystemAdapter()
+          // adapter: new (Loki as any).LokiFileSystemAdapter()
         })
       } catch (error) {
         logger.error('Database initialization failed:', error)
@@ -97,7 +97,7 @@ export class DatabaseService {
       
       if (existingUsers.length === 0) {
         const bcrypt = await import('bcryptjs')
-        const hashedPassword = await bcrypt.hash('admin123', config.auth.bcryptRounds)
+        const hashedPassword = await bcrypt.default.hash('admin123', config.auth.bcryptRounds)
         
         const defaultUser: User = {
           id: randomUUID(),
@@ -160,7 +160,7 @@ export class DatabaseService {
   }
 
   // Get collection
-  private getCollection<T>(name: string): Collection<T> {
+  private getCollection<T extends object>(name: string): Collection<T> {
     const collection = this.collections.get(name)
     if (!collection) {
       throw new Error(`Collection ${name} not found`)
@@ -169,7 +169,7 @@ export class DatabaseService {
   }
 
   // Generic CRUD operations
-  async create<T extends { id: string }>(collectionName: string, data: Omit<T, 'id' | '$loki'>): Promise<T> {
+  async create<T extends { id: string }>(collectionName: string, data: any): Promise<T> {
     const start = Date.now()
     
     try {
@@ -199,7 +199,7 @@ export class DatabaseService {
     
     try {
       const collection = this.getCollection<T>(collectionName)
-      const result = collection.findOne({ id })
+      const result = collection.findOne({ id } as any)
       
       logHelpers.logDatabase('findById', collectionName, Date.now() - start, result ? 1 : 0)
       return result
@@ -238,12 +238,12 @@ export class DatabaseService {
     }
   }
 
-  async update<T extends { id: string }>(collectionName: string, id: string, data: Partial<T>): Promise<T | null> {
+  async update<T extends { id: string }>(collectionName: string, id: string, data: any): Promise<T | null> {
     const start = Date.now()
     
     try {
       const collection = this.getCollection<T>(collectionName)
-      const existing = collection.findOne({ id })
+      const existing = collection.findOne({ id } as any)
       
       if (!existing) {
         return null
@@ -270,7 +270,7 @@ export class DatabaseService {
     
     try {
       const collection = this.getCollection(collectionName)
-      const record = collection.findOne({ id })
+      const record = collection.findOne({ id } as any)
       
       if (!record) {
         return false
@@ -289,14 +289,16 @@ export class DatabaseService {
   // User-specific methods
   async createUser(userData: UserCreateData): Promise<User> {
     const bcrypt = await import('bcryptjs')
-    const hashedPassword = await bcrypt.hash(userData.password, config.auth.bcryptRounds)
+    const hashedPassword = await bcrypt.default.hash(userData.password, config.auth.bcryptRounds)
     
     return this.create<User>(COLLECTIONS.USERS, {
       username: userData.username,
       email: userData.email,
       password: hashedPassword,
       role: userData.role || 'team',
-      isActive: true
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     })
   }
 
@@ -313,10 +315,10 @@ export class DatabaseService {
   // Session methods
   async createSession(userId: string, rememberMe: boolean, ipAddress: string, userAgent: string): Promise<Session> {
     const jwt = await import('jsonwebtoken')
-    const token = jwt.sign({ userId }, config.auth.jwtSecret, {
+    const token = jwt.default.sign({ userId }, config.auth.jwtSecret, {
       expiresIn: config.auth.jwtExpiry
     })
-    const refreshToken = jwt.sign({ userId, type: 'refresh' }, config.auth.jwtSecret, {
+    const refreshToken = jwt.default.sign({ userId, type: 'refresh' }, config.auth.jwtSecret, {
       expiresIn: config.auth.jwtRefreshExpiry
     })
 
@@ -334,7 +336,8 @@ export class DatabaseService {
       ipAddress,
       userAgent,
       lastAccessedAt: now.toISOString(),
-      isActive: true
+      isActive: true,
+      createdAt: now.toISOString()
     })
   }
 

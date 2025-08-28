@@ -41,7 +41,7 @@ export class AuthMiddleware {
       const token = this.extractToken(req)
       
       if (!token) {
-        logHelpers.logAuthEvent('missing_token', 'unknown', req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('missing_token', 'unknown', req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthenticationError('Authentication token required')
       }
 
@@ -51,27 +51,28 @@ export class AuthMiddleware {
       // Find session in database
       const session = await this.dbService.findSessionByToken(token)
       if (!session || !session.isActive) {
-        logHelpers.logAuthEvent('invalid_session', decoded.userId, req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('invalid_session', decoded.userId, req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthenticationError('Invalid or expired session')
       }
 
       // Check if session is expired
       if (new Date(session.expiresAt) < new Date()) {
         await this.dbService.invalidateSession(token)
-        logHelpers.logAuthEvent('session_expired', decoded.userId, req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('session_expired', decoded.userId, req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthenticationError('Session expired')
       }
 
       // Find user
       const user = await this.dbService.findById<User>('users', decoded.userId)
       if (!user || !user.isActive) {
-        logHelpers.logAuthEvent('user_not_found', decoded.userId, req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('user_not_found', decoded.userId, req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthenticationError('User not found or inactive')
       }
 
       // Update session last accessed time
       await this.dbService.update('sessions', session.id, {
-        lastAccessedAt: new Date().toISOString()
+        lastAccessedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       })
 
       // Set user and session in request
@@ -83,7 +84,7 @@ export class AuthMiddleware {
       }
       req.session = session
 
-      logHelpers.logAuthEvent('authentication_success', user.id, req.ip, req.get('User-Agent'), true)
+      logHelpers.logAuthEvent('authentication_success', user.id, req.ip || '', req.get('User-Agent') || '', true)
       next()
 
     } catch (error) {
@@ -136,7 +137,7 @@ export class AuthMiddleware {
     }
 
     if (req.user.role !== 'admin') {
-      logHelpers.logAuthEvent('authorization_failed', req.user.id, req.ip, req.get('User-Agent'), false)
+      logHelpers.logAuthEvent('authorization_failed', req.user.id, req.ip || '', req.get('User-Agent') || '', false)
       throw new AuthorizationError('Admin access required')
     }
 
@@ -151,7 +152,7 @@ export class AuthMiddleware {
       }
 
       if (!roles.includes(req.user.role)) {
-        logHelpers.logAuthEvent('authorization_failed', req.user.id, req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('authorization_failed', req.user.id, req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthorizationError(`Required role: ${roles.join(' or ')}`)
       }
 
@@ -169,7 +170,7 @@ export class AuthMiddleware {
       const resourceUserId = req.params[userIdField] || req.body[userIdField] || req.query[userIdField]
       
       if (req.user.role !== 'admin' && req.user.id !== resourceUserId) {
-        logHelpers.logAuthEvent('ownership_check_failed', req.user.id, req.ip, req.get('User-Agent'), false)
+        logHelpers.logAuthEvent('ownership_check_failed', req.user.id, req.ip || '', req.get('User-Agent') || '', false)
         throw new AuthorizationError('Access denied: resource ownership required')
       }
 

@@ -16,6 +16,7 @@
 /* Import page-specific styles */
 @import './pages/login.css';
 @import './pages/dashboard.css';
+@import './pages/media-details.css';
 
 /* Global App Styles */
 body {

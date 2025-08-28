@@ -70,7 +70,7 @@ export default defineConfig({
         host: true,
         proxy: {
             '/api': {
-                target: 'http://localhost:3001',
+                target: 'http://localhost:8080',
                 changeOrigin: true,
                 secure: false,
                 configure: (proxy, _options) => {
@@ -83,7 +83,7 @@ export default defineConfig({
                 }
             },
             '/ws': {
-                target: 'ws://localhost:3001',
+                target: 'ws://localhost:8081',
                 ws: true,
                 changeOrigin: true,
                 secure: false

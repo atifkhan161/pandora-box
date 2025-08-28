@@ -1,0 +1,6 @@
+# Utils Directory
+# 
+# This directory will contain utility functions:
+# - storage.js - IndexedDB operations
+# - websocket.js - WebSocket client
+# - theme.js - Theme management

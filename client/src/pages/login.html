@@ -1,0 +1,46 @@
+<template>
+  <div class="page no-navbar" data-name="login">
+    <div class="page-content login-screen-content">
+      <div class="login-screen-title">
+        <h1>Pandora Box</h1>
+        <p>Self-hosted Media Management</p>
+      </div>
+      
+      <form class="list" id="login-form">
+        <ul>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Username</div>
+              <div class="item-input-wrap">
+                <input type="text" name="username" placeholder="Enter username" required validate>
+                <span class="input-clear-button"></span>
+              </div>
+            </div>
+          </li>
+          <li class="item-content item-input">
+            <div class="item-inner">
+              <div class="item-title item-label">Password</div>
+              <div class="item-input-wrap">
+                <input type="password" name="password" placeholder="Enter password" required validate>
+                <span class="input-clear-button"></span>
+              </div>
+            </div>
+          </li>
+          <li>
+            <label class="item-checkbox item-content">
+              <input type="checkbox" name="remember" value="1">
+              <i class="icon icon-checkbox"></i>
+              <div class="item-inner">
+                <div class="item-title">Remember Me</div>
+              </div>
+            </label>
+          </li>
+        </ul>
+        
+        <div class="block">
+          <button type="submit" class="button button-large button-fill">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>

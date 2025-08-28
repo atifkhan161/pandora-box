@@ -1,0 +1,10 @@
+# Services Directory
+# 
+# This directory will contain API service classes:
+# - api.js - Base API client
+# - auth.js - Authentication service
+# - media.js - Media discovery API
+# - torrents.js - Torrent management API
+# - files.js - File operations API
+# - containers.js - Container management API
+# - jellyfin.js - Jellyfin API

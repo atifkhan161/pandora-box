@@ -1,0 +1,9 @@
+# Page Styles Directory
+# 
+# This directory will contain page-specific styles:
+# - dashboard.css - Dashboard page styles
+# - downloads.css - Downloads page styles
+# - files.css - Files page styles
+# - containers.css - Containers page styles
+# - jellyfin.css - Jellyfin page styles
+# - settings.css - Settings page styles

@@ -1,0 +1,7 @@
+# Component Styles Directory
+# 
+# This directory will contain component-specific styles:
+# - media-card.css - Media card component styles
+# - download-item.css - Download item component styles
+# - file-browser.css - File browser component styles
+# - container-status.css - Container status component styles

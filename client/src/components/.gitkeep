@@ -1,0 +1,7 @@
+# Components Templates Directory
+# 
+# This directory will contain reusable UI component templates:
+# - media-card.html - Media content card template
+# - download-item.html - Download progress item template
+# - file-browser.html - File system browser template
+# - container-status.html - Container status indicator template

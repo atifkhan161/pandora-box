@@ -560,6 +560,7 @@ const errorHandler = (error: ApiError, req: Request, res: Response, next: NextFu
    - Use Framework7's routing system: https://framework7.io/docs/routes
    - Follow component creation patterns: https://framework7.io/docs/page
    - Implement proper page lifecycle: https://framework7.io/docs/page#page-events
+   - Dont use Service worker
 
 3. **File Organization Standards**:
    - Create separate HTML, JS, and CSS files for each component/page

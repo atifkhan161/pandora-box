@@ -1,0 +1,7 @@
+# Store Directory
+# 
+# This directory will contain application state management:
+# - auth.js - Authentication state
+# - media.js - Media discovery state
+# - downloads.js - Download management state
+# - settings.js - Application settings

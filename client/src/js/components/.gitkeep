@@ -1,0 +1,7 @@
+# Components Directory
+# 
+# This directory will contain reusable UI component controllers:
+# - media-card.js - Media content card logic
+# - download-item.js - Download progress item logic
+# - file-browser.js - File system browser logic
+# - container-status.js - Container status indicator logic

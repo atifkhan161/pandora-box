@@ -217,6 +217,24 @@ class PandoraApp {
       title: 'Settings - Pandora Box' 
     });
 
+    // Add 404 route
+    this.router.addRoute('/404', class NotFoundPage {
+      init() {}
+      render(container) {
+        container.innerHTML = `
+          <div class="error-page">
+            <h1>404 - Page Not Found</h1>
+            <p>The page you're looking for doesn't exist.</p>
+            <a href="/" class="btn btn-primary">Go to Dashboard</a>
+          </div>
+        `;
+      }
+      destroy() {}
+    }, { 
+      requiresAuth: false, 
+      title: '404 - Page Not Found' 
+    });
+
     console.log('Routes registered, initializing router...');
     
     // Initialize router after auth is set up
@@ -252,8 +270,8 @@ class PandoraApp {
     this.router.isAuthenticated = () => {
       const currentPath = window.location.pathname;
       
-      // Always allow access to login page to prevent redirect loops
-      if (currentPath === '/login') {
+      // Always allow access to login and 404 pages to prevent redirect loops
+      if (currentPath === '/login' || currentPath === '/404') {
         return true;
       }
       
@@ -266,8 +284,8 @@ class PandoraApp {
       // Check if auth store is still loading
       const authState = this.authStore.getState();
       if (authState.loading) {
-        console.log('Auth store still loading, allowing navigation');
-        return true; // Allow navigation while loading
+        console.log('Auth store still loading, denying access to prevent issues');
+        return false; // Deny access while loading to prevent race conditions
       }
       
       const isAuth = this.authStore.isAuthenticated();

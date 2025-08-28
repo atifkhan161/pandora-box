@@ -136,10 +136,10 @@ class LoginPage extends BasePage {
           // Redirect to dashboard after short delay
           setTimeout(() => {
             if (window.router) {
-              window.router.navigate('/dashboard');
+              window.router.navigate('/');
             } else {
               // Fallback navigation
-              window.location.href = '/dashboard';
+              window.location.href = '/';
             }
           }, 1000);
         } else {

@@ -21,13 +21,13 @@ class Router {
 
     // Listen for browser navigation events
     window.addEventListener('popstate', () => this.handleRoute());
-    
+
     // Listen for navigation clicks
     document.addEventListener('click', (e) => this.handleNavClick(e));
-    
+
     // Handle initial route
     this.handleRoute();
-    
+
     this.isInitialized = true;
     console.log('Router initialized');
   }
@@ -67,7 +67,22 @@ class Router {
 
     if (!route) {
       console.warn(`No route found for path: ${path}`);
-      this.navigate('/404', false);
+      // Prevent infinite redirect loops
+      if (path !== '/404') {
+        this.navigate('/404', false);
+      } else {
+        // If even 404 route is missing, show basic error
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+          mainContent.innerHTML = `
+            <div class="error-page">
+              <h1>404 - Page Not Found</h1>
+              <p>The page you're looking for doesn't exist.</p>
+              <a href="/" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+          `;
+        }
+      }
       return;
     }
 
@@ -79,7 +94,7 @@ class Router {
       if (route.requiresAuth) {
         const isAuth = this.isAuthenticated();
         console.log(`Route ${path} requires auth. Authenticated: ${isAuth}`);
-        
+
         if (!isAuth) {
           // Prevent infinite redirect loops by checking current path
           if (path === '/login') {
@@ -87,24 +102,29 @@ class Router {
             // Reset redirect counter since we're on login page
             this.redirectCount = 0;
           } else {
-            // Prevent rapid redirects
+            // Prevent rapid redirects and infinite loops
             const now = Date.now();
-            if (now - this.lastRedirectTime < 2000) { // Increased to 2 seconds
+            if (now - this.lastRedirectTime < 1000) { // Reduced to 1 second
               this.redirectCount++;
             } else {
               this.redirectCount = 1;
             }
             this.lastRedirectTime = now;
-            
+
             if (this.redirectCount > this.maxRedirects) {
               console.error('Too many authentication redirects, stopping to prevent infinite loop');
               this.showError('Authentication error: Too many redirects. Please refresh the page.');
               return;
             }
-            
-            console.log(`Route requires authentication, redirecting to login (attempt ${this.redirectCount})`);
-            this.navigate('/login', true);
-            return;
+
+            // Only redirect if we're not already navigating to login
+            if (path !== '/login') {
+              console.log(`Route requires authentication, redirecting to login (attempt ${this.redirectCount})`);
+              // Use replace instead of navigate to avoid adding to history
+              history.replaceState(null, '', '/login');
+              this.handleRoute();
+              return;
+            }
           }
         } else {
           // User is authenticated, reset redirect counter
@@ -122,7 +142,7 @@ class Router {
 
       // Initialize new page
       this.currentPage = new route.pageClass();
-      
+
       if (typeof this.currentPage.init === 'function') {
         await this.currentPage.init();
       }
@@ -178,26 +198,26 @@ class Router {
    */
   handleNavClick(e) {
     const link = e.target.closest('a[href]');
-    
+
     if (!link) return;
 
     const href = link.getAttribute('href');
-    
+
     // Skip external links and non-route links
-    if (!href || 
-        href.startsWith('http') || 
-        href.startsWith('mailto:') || 
-        href.startsWith('tel:') ||
-        link.hasAttribute('target')) {
+    if (!href ||
+      href.startsWith('http') ||
+      href.startsWith('mailto:') ||
+      href.startsWith('tel:') ||
+      link.hasAttribute('target')) {
       return;
     }
 
     // Handle internal navigation
     e.preventDefault();
-    
+
     // Close mobile navigation if open
     this.closeMobileNav();
-    
+
     this.navigate(href);
   }
 
@@ -207,13 +227,13 @@ class Router {
    */
   updateNavigation(currentPath) {
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     navLinks.forEach(link => {
       const href = link.getAttribute('href');
-      const isActive = href === currentPath || 
-                      (href === '/' && currentPath === '/') ||
-                      (href !== '/' && currentPath.startsWith(href));
-      
+      const isActive = href === currentPath ||
+        (href === '/' && currentPath === '/') ||
+        (href !== '/' && currentPath.startsWith(href));
+
       link.classList.toggle('active', isActive);
       link.setAttribute('aria-current', isActive ? 'page' : 'false');
     });
@@ -225,11 +245,11 @@ class Router {
   closeMobileNav() {
     const nav = document.getElementById('main-navigation');
     const backdrop = document.getElementById('nav-backdrop');
-    
+
     if (nav) {
       nav.classList.remove('nav-open');
     }
-    
+
     if (backdrop) {
       backdrop.classList.remove('active');
     }
@@ -306,11 +326,11 @@ class Router {
   destroy() {
     window.removeEventListener('popstate', this.handleRoute);
     document.removeEventListener('click', this.handleNavClick);
-    
+
     if (this.currentPage && typeof this.currentPage.destroy === 'function') {
       this.currentPage.destroy();
     }
-    
+
     this.isInitialized = false;
   }
 }

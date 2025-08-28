@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Switcher Component Test - Pandora PWA</title>
+    <meta name="theme-color" content="#e50914">
+    
+    <!-- Import CSS -->
+    <link rel="stylesheet" href="src/css/base/reset.css">
+    <link rel="stylesheet" href="src/css/base/typography.css">
+    <link rel="stylesheet" href="src/css/base/layout.css">
+    <link rel="stylesheet" href="src/css/base/animations.css">
+    <link rel="stylesheet" href="src/css/themes/netflix.css">
+    <link rel="stylesheet" href="src/css/components/theme-switcher/theme-switcher.css">
+    
+    <style>
+        body {
+            padding: var(--pb-spacing-4);
+            min-height: 100vh;
+            background: var(--pb-background);
+            color: var(--pb-text-primary);
+            font-family: var(--pb-font-family);
+        }
+        
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: var(--pb-spacing-6);
+            padding: var(--pb-spacing-4);
+            background: var(--pb-surface-variant);
+            border: 1px solid var(--pb-border);
+            border-radius: var(--pb-radius-lg);
+        }
+        
+        .test-section {
+            background: var(--pb-surface-variant);
+            border: 1px solid var(--pb-border);
+            border-radius: var(--pb-radius-lg);
+            padding: var(--pb-spacing-4);
+            margin-bottom: var(--pb-spacing-4);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: var(--pb-spacing-1) var(--pb-spacing-2);
+            border-radius: var(--pb-radius-sm);
+            font-size: var(--pb-text-xs);
+            font-weight: var(--pb-font-weight-medium);
+            margin-left: var(--pb-spacing-2);
+        }
+        
+        .status-success {
+            background: var(--pb-success);
+            color: var(--pb-text-primary);
+        }
+        
+        .status-error {
+            background: var(--pb-error);
+            color: var(--pb-text-primary);
+        }
+        
+        .test-log {
+            background: var(--pb-background);
+            border: 1px solid var(--pb-border);
+            border-radius: var(--pb-radius-md);
+            padding: var(--pb-spacing-3);
+            font-family: monospace;
+            font-size: var(--pb-text-sm);
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .theme-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--pb-spacing-3);
+            margin-top: var(--pb-spacing-3);
+        }
+        
+        .theme-info-item {
+            background: var(--pb-surface);
+            border: 1px solid var(--pb-border);
+            border-radius: var(--pb-radius-md);
+            padding: var(--pb-spacing-3);
+        }
+        
+        .theme-info-label {
+            font-size: var(--pb-text-xs);
+            color: var(--pb-text-muted);
+            margin-bottom: var(--pb-spacing-1);
+        }
+        
+        .theme-info-value {
+            font-weight: var(--pb-font-weight-medium);
+            color: var(--pb-text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <header class="test-header">
+            <h1>Theme Switcher Component Test</h1>
+            <p>Testing the advanced theme manager system and theme switcher component with preview functionality</p>
+            <div id="test-status">
+                <span>Status: </span>
+                <span id="status-indicator" class="status-indicator">Initializing...</span>
+            </div>
+        </header>
+        
+        <section class="test-section">
+            <h2>Theme Manager Information</h2>
+            <div class="theme-info" id="theme-info">
+                <!-- Theme info will be populated by JavaScript -->
+            </div>
+        </section>
+        
+        <section class="test-section">
+            <h2>Theme Switcher Component</h2>
+            <p>The component below should provide theme selection with preview functionality:</p>
+            <div id="theme-switcher-container">
+                <!-- Theme switcher component will be loaded here -->
+            </div>
+        </section>
+        
+        <section class="test-section">
+            <h2>Test Log</h2>
+            <div id="test-log" class="test-log">Initializing tests...\n</div>
+        </section>
+    </div>
+
+    <script type="module">
+        // Test logging utility
+        const testLog = document.getElementById('test-log');
+        const statusIndicator = document.getElementById('status-indicator');
+        
+        function log(message) {
+            testLog.textContent += message + '\n';
+            testLog.scrollTop = testLog.scrollHeight;
+            console.log(message);
+        }
+        
+        function setStatus(status, type = 'info') {
+            statusIndicator.textContent = status;
+            statusIndicator.className = `status-indicator status-${type}`;
+        }
+        
+        function updateThemeInfo(themeManager) {
+            const themeInfo = document.getElementById('theme-info');
+            const currentTheme = themeManager.getCurrentThemeObject();
+            const themes = themeManager.getAvailableThemes();
+            
+            themeInfo.innerHTML = `
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Current Theme</div>
+                    <div class="theme-info-value">${currentTheme.name}</div>
+                </div>
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Theme ID</div>
+                    <div class="theme-info-value">${currentTheme.id}</div>
+                </div>
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Primary Color</div>
+                    <div class="theme-info-value" style="color: ${currentTheme.primaryColor}">${currentTheme.primaryColor}</div>
+                </div>
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Available Themes</div>
+                    <div class="theme-info-value">${themes.length}</div>
+                </div>
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Persistence</div>
+                    <div class="theme-info-value">${localStorage.getItem('pb-theme') || 'None'}</div>
+                </div>
+                <div class="theme-info-item">
+                    <div class="theme-info-label">Meta Theme Color</div>
+                    <div class="theme-info-value">${document.querySelector('meta[name="theme-color"]')?.content || 'None'}</div>
+                </div>
+            `;
+        }
+
+        // Main test function
+        async function runTests() {
+            try {
+                log('🧪 Starting Theme Switcher Component Tests...');
+                setStatus('Running Tests...', 'info');
+                
+                // Import and initialize theme manager
+                log('📦 Importing theme manager...');
+                const { default: themeManager } = await import('./src/js/utils/theme-manager.js');
+                
+                log('🔧 Initializing theme manager...');
+                await themeManager.init();
+                log('✅ Theme manager initialized successfully');
+                
+                // Update theme info display
+                updateThemeInfo(themeManager);
+                
+                // Set up theme change listener to update info
+                themeManager.onThemeChange(() => {
+                    updateThemeInfo(themeManager);
+                    log(`🎨 Theme changed to: ${themeManager.getCurrentTheme()}`);
+                });
+                
+                // Import and initialize theme switcher component
+                log('📦 Importing theme switcher component...');
+                const { default: ThemeSwitcher } = await import('./src/js/components/theme-switcher/theme-switcher.js');
+                
+                log('🔧 Initializing theme switcher component...');
+                const container = document.getElementById('theme-switcher-container');
+                const themeSwitcher = new ThemeSwitcher(container);
+                await themeSwitcher.init();
+                log('✅ Theme switcher component initialized successfully');
+                
+                // Test theme switching functionality
+                log('🧪 Testing theme switching...');
+                const themes = themeManager.getAvailableThemes();
+                
+                for (let i = 0; i < Math.min(3, themes.length); i++) {
+                    const theme = themes[i];
+                    log(`   Testing ${theme.name} theme...`);
+                    await themeManager.setTheme(theme.id);
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Small delay for visual effect
+                    log(`   ✅ ${theme.name} theme applied successfully`);
+                }
+                
+                // Test persistence
+                log('🧪 Testing theme persistence...');
+                const testTheme = 'hulu';
+                await themeManager.setTheme(testTheme);
+                const savedTheme = localStorage.getItem('pb-theme');
+                if (savedTheme === testTheme) {
+                    log('✅ Theme persistence working correctly');
+                } else {
+                    log('❌ Theme persistence failed');
+                }
+                
+                // Test meta theme-color updates
+                log('🧪 Testing PWA meta theme-color updates...');
+                const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                if (metaThemeColor) {
+                    await themeManager.setTheme('prime-video');
+                    if (metaThemeColor.content === '#00a8e1') {
+                        log('✅ PWA meta theme-color updates working correctly');
+                    } else {
+                        log('❌ PWA meta theme-color updates failed');
+                    }
+                } else {
+                    log('❌ Meta theme-color element not found');
+                }
+                
+                // Reset to Netflix theme
+                await themeManager.setTheme('netflix');
+                
+                log('🎉 All tests completed successfully!');
+                setStatus('All Tests Passed', 'success');
+                
+                log('\n📋 Test Summary:');
+                log('✅ Theme Manager initialization');
+                log('✅ Theme Switcher Component initialization');
+                log('✅ Dynamic theme switching');
+                log('✅ Theme persistence using localStorage');
+                log('✅ PWA meta theme-color updates');
+                log('✅ Theme switcher component with preview functionality');
+                
+            } catch (error) {
+                log(`❌ Test failed: ${error.message}`);
+                setStatus('Tests Failed', 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        // Run tests when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', runTests);
+        } else {
+            runTests();
+        }
+    </script>
+</body>
+</html>

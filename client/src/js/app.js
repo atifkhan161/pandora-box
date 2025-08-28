@@ -5,7 +5,7 @@
 
 // Import core modules
 import Router from './router.js';
-import ThemeManager from './utils/theme-manager.js';
+import themeManager from './utils/theme-manager.js';
 import AuthStore from './store/auth.js';
 import WebSocketClient from './services/websocket.js';
 
@@ -76,8 +76,8 @@ class PandoraApp {
     // Initialize router
     this.router = new Router();
 
-    // Initialize theme manager
-    this.themeManager = new ThemeManager();
+    // Use singleton theme manager
+    this.themeManager = themeManager;
 
     // Initialize auth store
     this.authStore = new AuthStore();

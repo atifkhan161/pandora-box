@@ -106,6 +106,19 @@ class WebSocketClient {
   }
 
   /**
+   * Reconnect to WebSocket server
+   * Forces a fresh connection by disconnecting first
+   */
+  reconnect() {
+    console.log('Reconnecting to WebSocket')
+    this.disconnect()
+    // Small delay to ensure clean disconnect
+    setTimeout(() => {
+      this.connect()
+    }, 100)
+  }
+
+  /**
    * Handle WebSocket open event
    */
   onOpen() {

@@ -303,16 +303,22 @@ export class ApiClient {
    * @returns {Promise<any>} Response data
    */
   async get(endpoint, params = {}, options = {}) {
-    const url = new URL(this.createURL(endpoint))
+    let fullUrl = this.createURL(endpoint)
     
     // Add query parameters
-    Object.keys(params).forEach(key => {
-      if (params[key] !== undefined && params[key] !== null) {
-        url.searchParams.append(key, params[key])
-      }
-    })
+    if (Object.keys(params).length > 0) {
+      const urlParams = new URLSearchParams()
+      Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== null) {
+          urlParams.append(key, params[key])
+        }
+      })
+      
+      const separator = fullUrl.includes('?') ? '&' : '?'
+      fullUrl = `${fullUrl}${separator}${urlParams.toString()}`
+    }
     
-    const response = await this.request(url.toString(), {
+    const response = await this.request(fullUrl, {
       method: 'GET',
       ...options
     })

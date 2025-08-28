@@ -75,10 +75,13 @@ export default defineConfig({
                 secure: false,
                 configure: (proxy, _options) => {
                     proxy.on('error', (err, _req, _res) => {
-                        console.log('proxy error', err);
+                        console.log('API proxy error:', err);
                     });
                     proxy.on('proxyRes', (proxyRes, req, _res) => {
-                        console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+                        console.log('API Response:', proxyRes.statusCode, req.url);
+                    });
+                    proxy.on('proxyReq', (proxyReq, req, _res) => {
+                        console.log('API Request:', req.method, req.url);
                     });
                 }
             },

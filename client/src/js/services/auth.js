@@ -21,7 +21,7 @@ export class AuthService {
    */
   async login(username, password, rememberMe = false) {
     try {
-      const response = await this.client.post('/auth/login', {
+      const response = await this.client.post('auth/login', {
         username,
         password,
         rememberMe
@@ -42,6 +42,18 @@ export class AuthService {
           // Store in sessionStorage for session-only login
           await this.jwtManager.setSessionTokens(accessToken, refreshToken)
           console.log('Tokens stored for session only')
+        }
+        
+        // Store the rememberMe preference for future reference
+        try {
+          if (rememberMe) {
+            localStorage.setItem('pb_remember_me', 'true')
+          } else {
+            localStorage.removeItem('pb_remember_me')
+            sessionStorage.setItem('pb_remember_me', 'false')
+          }
+        } catch (storageError) {
+          console.warn('Could not store rememberMe preference:', storageError)
         }
       }
 
@@ -66,7 +78,7 @@ export class AuthService {
    */
   async logout() {
     try {
-      await this.client.post('/auth/logout')
+      await this.client.post('auth/logout')
     } catch (error) {
       console.error('Logout request failed:', error)
       // Continue with local cleanup even if server request fails
@@ -84,19 +96,35 @@ export class AuthService {
     try {
       const refreshToken = await this.jwtManager.getRefreshToken()
       if (!refreshToken) {
+        console.log('No refresh token available')
         return false
       }
 
-      const response = await this.client.post('/auth/refresh', {
+      console.log('Attempting to refresh token...')
+      const response = await this.client.post('auth/refresh', {
         refreshToken
       })
 
+      // Handle server response format
+      const accessToken = response.data?.token || response.accessToken
+      const newRefreshToken = response.data?.refreshToken || response.refreshToken
+
       // Update stored tokens
-      if (response.accessToken) {
-        await this.jwtManager.setTokens(response.accessToken, response.refreshToken)
+      if (accessToken) {
+        // Determine storage type based on existing token location
+        const hasLocalToken = localStorage.getItem('pb_access_token')
+        
+        if (hasLocalToken) {
+          await this.jwtManager.setTokens(accessToken, newRefreshToken || refreshToken)
+        } else {
+          await this.jwtManager.setSessionTokens(accessToken, newRefreshToken || refreshToken)
+        }
+        
+        console.log('Token refreshed successfully')
         return true
       }
 
+      console.log('No access token in refresh response')
       return false
     } catch (error) {
       console.error('Token refresh failed:', error)
@@ -111,7 +139,7 @@ export class AuthService {
    */
   async verifyToken() {
     try {
-      const response = await this.client.get('/auth/verify')
+      const response = await this.client.get('auth/verify')
       return response.data || response
     } catch (error) {
       console.error('Token verification failed:', error)
@@ -125,7 +153,7 @@ export class AuthService {
    */
   async getProfile() {
     try {
-      const response = await this.client.get('/auth/profile')
+      const response = await this.client.get('auth/profile')
       return response.data?.user || response.user || response
     } catch (error) {
       console.error('Failed to get user profile:', error)
@@ -140,7 +168,7 @@ export class AuthService {
    */
   async updateProfile(profileData) {
     try {
-      return await this.client.put('/auth/profile', profileData)
+      return await this.client.put('auth/profile', profileData)
     } catch (error) {
       console.error('Failed to update profile:', error)
       throw error
@@ -155,7 +183,7 @@ export class AuthService {
    */
   async changePassword(currentPassword, newPassword) {
     try {
-      return await this.client.put('/auth/password', {
+      return await this.client.put('auth/password', {
         currentPassword,
         newPassword
       })
@@ -172,7 +200,7 @@ export class AuthService {
    */
   async registerUser(userData) {
     try {
-      return await this.client.post('/auth/register', userData)
+      return await this.client.post('auth/register', userData)
     } catch (error) {
       console.error('Failed to register user:', error)
       throw error
@@ -185,7 +213,7 @@ export class AuthService {
    */
   async getUsers() {
     try {
-      return await this.client.get('/auth/users')
+      return await this.client.get('auth/users')
     } catch (error) {
       console.error('Failed to get users:', error)
       throw error
@@ -199,7 +227,7 @@ export class AuthService {
    */
   async deleteUser(userId) {
     try {
-      return await this.client.delete(`/auth/users/${userId}`)
+      return await this.client.delete(`auth/users/${userId}`)
     } catch (error) {
       console.error('Failed to delete user:', error)
       throw error
@@ -214,8 +242,13 @@ export class AuthService {
     try {
       const localToken = localStorage.getItem('pb_access_token')
       const sessionToken = sessionStorage.getItem('pb_access_token')
-      return !!(localToken || sessionToken)
+      const hasTokens = !!(localToken || sessionToken)
+      
+      console.log(`Checking stored auth - localStorage: ${!!localToken}, sessionStorage: ${!!sessionToken}, hasTokens: ${hasTokens}`)
+      
+      return hasTokens
     } catch (error) {
+      console.error('Error checking stored auth:', error)
       return false
     }
   }
@@ -225,6 +258,14 @@ export class AuthService {
    */
   clearTokens() {
     this.jwtManager.clearTokens()
+    
+    // Also clear rememberMe preference
+    try {
+      localStorage.removeItem('pb_remember_me')
+      sessionStorage.removeItem('pb_remember_me')
+    } catch (error) {
+      console.warn('Could not clear rememberMe preference:', error)
+    }
   }
 
   /**

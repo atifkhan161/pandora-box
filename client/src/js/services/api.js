@@ -90,11 +90,14 @@ export class ApiClient {
    * @returns {Response|Promise<Response>} Response or retry promise
    */
   async tokenRefreshInterceptor(response, url, options) {
-    if (response.status === 401) {
+    // Prevent infinite loops by checking if this is already a retry
+    if (response.status === 401 && !options._isRetry) {
       const refreshed = await this.jwtManager.refreshToken()
       if (refreshed) {
+        // Mark this as a retry to prevent infinite loops
+        const retryOptions = { ...options, _isRetry: true }
         // Retry the original request with new token
-        return this.request(url, options)
+        return this.request(url, retryOptions)
       } else {
         // Refresh failed, redirect to login
         this.handleAuthenticationFailure()
@@ -538,7 +541,7 @@ export class ApiClient {
    * @returns {Promise<Object>} Health status
    */
   async healthCheck() {
-    return this.get('/health')
+    return this.get('health')
   }
 
   /**

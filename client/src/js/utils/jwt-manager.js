@@ -7,6 +7,7 @@ export class JWTManager {
   constructor() {
     this.refreshTimer = null;
     this.refreshThreshold = 5 * 60 * 1000; // Refresh 5 minutes before expiry
+    this.refreshPromise = null; // Track ongoing refresh attempts
     this.storageKeys = {
       accessToken: 'pb_access_token',
       refreshToken: 'pb_refresh_token'
@@ -222,12 +223,17 @@ export class JWTManager {
    */
   async setTokens(accessToken, refreshToken) {
     try {
+      // Clear session storage when using persistent storage
+      this.clearSessionTokens();
+      
       if (accessToken) {
         localStorage.setItem(this.storageKeys.accessToken, accessToken);
       }
       if (refreshToken) {
         localStorage.setItem(this.storageKeys.refreshToken, refreshToken);
       }
+      
+      console.log('Tokens stored in localStorage (persistent)');
     } catch (error) {
       console.error('Error storing tokens:', error);
       throw error;
@@ -241,12 +247,17 @@ export class JWTManager {
    */
   async setSessionTokens(accessToken, refreshToken) {
     try {
+      // Clear localStorage when using session storage
+      this.clearPersistentTokens();
+      
       if (accessToken) {
         sessionStorage.setItem(this.storageKeys.accessToken, accessToken);
       }
       if (refreshToken) {
         sessionStorage.setItem(this.storageKeys.refreshToken, refreshToken);
       }
+      
+      console.log('Tokens stored in sessionStorage (session-only)');
     } catch (error) {
       console.error('Error storing session tokens:', error);
       throw error;
@@ -325,19 +336,46 @@ export class JWTManager {
    * @returns {boolean} Success status
    */
   async refreshToken() {
+    // If there's already a refresh in progress, wait for it
+    if (this.refreshPromise) {
+      console.log('Token refresh already in progress, waiting...');
+      return await this.refreshPromise;
+    }
+
+    // Create a new refresh promise
+    this.refreshPromise = this._performTokenRefresh();
+    
+    try {
+      const result = await this.refreshPromise;
+      return result;
+    } finally {
+      // Clear the refresh promise when done
+      this.refreshPromise = null;
+    }
+  }
+
+  /**
+   * Internal method to perform the actual token refresh
+   * @returns {boolean} Success status
+   */
+  async _performTokenRefresh() {
     try {
       const refreshToken = await this.getRefreshToken();
       
       if (!refreshToken) {
+        console.log('No refresh token available for refresh');
         return false;
       }
 
       // Check if refresh token is expired
       if (this.isTokenExpired(refreshToken)) {
+        console.log('Refresh token is expired');
         this.clearTokens();
         return false;
       }
 
+      console.log('Making token refresh request...');
+      
       // Make refresh request
       const response = await fetch('/api/v1/auth/refresh', {
         method: 'POST',
@@ -348,21 +386,33 @@ export class JWTManager {
       });
 
       if (!response.ok) {
+        console.error('Token refresh request failed:', response.status, response.statusText);
         this.clearTokens();
         return false;
       }
 
       const data = await response.json();
+      console.log('Token refresh response received');
       
       // Handle server response format
       const accessToken = data.data?.token || data.accessToken;
       const newRefreshToken = data.data?.refreshToken || data.refreshToken;
       
       if (accessToken) {
-        await this.setTokens(accessToken, newRefreshToken || refreshToken);
+        // Determine storage type based on existing token location
+        const hasLocalToken = localStorage.getItem(this.storageKeys.accessToken);
+        
+        if (hasLocalToken) {
+          await this.setTokens(accessToken, newRefreshToken || refreshToken);
+        } else {
+          await this.setSessionTokens(accessToken, newRefreshToken || refreshToken);
+        }
+        
+        console.log('Tokens updated after refresh');
         return true;
       }
 
+      console.log('No access token in refresh response');
       return false;
     } catch (error) {
       console.error('Error refreshing token:', error);
@@ -372,19 +422,51 @@ export class JWTManager {
   }
 
   /**
+   * Clear tokens from localStorage only
+   */
+  clearPersistentTokens() {
+    try {
+      localStorage.removeItem(this.storageKeys.accessToken);
+      localStorage.removeItem(this.storageKeys.refreshToken);
+    } catch (error) {
+      console.error('Error clearing persistent tokens:', error);
+    }
+  }
+
+  /**
+   * Clear tokens from sessionStorage only
+   */
+  clearSessionTokens() {
+    try {
+      sessionStorage.removeItem(this.storageKeys.accessToken);
+      sessionStorage.removeItem(this.storageKeys.refreshToken);
+    } catch (error) {
+      console.error('Error clearing session tokens:', error);
+    }
+  }
+
+  /**
    * Clear all stored tokens
    */
   clearTokens() {
     try {
       // Clear from localStorage
-      localStorage.removeItem(this.storageKeys.accessToken);
-      localStorage.removeItem(this.storageKeys.refreshToken);
+      this.clearPersistentTokens();
       
       // Clear from sessionStorage
-      sessionStorage.removeItem(this.storageKeys.accessToken);
-      sessionStorage.removeItem(this.storageKeys.refreshToken);
+      this.clearSessionTokens();
+      
+      // Clear rememberMe preference
+      try {
+        localStorage.removeItem('pb_remember_me');
+        sessionStorage.removeItem('pb_remember_me');
+      } catch (prefError) {
+        console.warn('Could not clear rememberMe preference:', prefError);
+      }
       
       this.clearRefreshTimer();
+      
+      console.log('All tokens cleared from storage');
     } catch (error) {
       console.error('Error clearing tokens:', error);
     }

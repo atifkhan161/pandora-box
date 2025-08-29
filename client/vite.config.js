@@ -69,8 +69,8 @@ export default defineConfig({
         port: 3000,
         host: true,
         proxy: {
-            '/api': {
-                target: 'http://localhost:8080',
+            '/api/v1': {
+                target: 'http://localhost:3030',
                 changeOrigin: true,
                 secure: false,
                 configure: (proxy, _options) => {
@@ -86,7 +86,7 @@ export default defineConfig({
                 }
             },
             '/ws': {
-                target: 'ws://localhost:8081',
+                target: 'ws://localhost:3030',
                 ws: true,
                 changeOrigin: true,
                 secure: false

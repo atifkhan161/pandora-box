@@ -16,7 +16,7 @@ export class JellyfinService {
      */
     async getServerInfo() {
         try {
-            const response = await this.client.get('/jellyfin/info')
+            const response = await this.client.get('jellyfin/info')
             return response
         } catch (error) {
             console.error('Failed to get Jellyfin server info:', error)
@@ -30,7 +30,7 @@ export class JellyfinService {
      */
     async getSystemInfo() {
         try {
-            const response = await this.client.get('/jellyfin/system/info')
+            const response = await this.client.get('jellyfin/system/info')
             return response
         } catch (error) {
             console.error('Failed to get Jellyfin system info:', error)
@@ -44,7 +44,7 @@ export class JellyfinService {
      */
     async getLibraries() {
         try {
-            const response = await this.client.get('/jellyfin/libraries')
+            const response = await this.client.get('jellyfin/libraries')
             return response
         } catch (error) {
             console.error('Failed to get libraries:', error)
@@ -59,7 +59,7 @@ export class JellyfinService {
      */
     async getLibraryDetails(libraryId) {
         try {
-            const response = await this.client.get(`/jellyfin/libraries/${libraryId}`)
+            const response = await this.client.get(`jellyfin/libraries/${libraryId}`)
             return response
         } catch (error) {
             console.error('Failed to get library details:', error)
@@ -74,7 +74,7 @@ export class JellyfinService {
      */
     async scanLibrary(libraryId) {
         try {
-            const response = await this.client.post(`/jellyfin/libraries/${libraryId}/scan`)
+            const response = await this.client.post(`jellyfin/libraries/${libraryId}/scan`)
             return response
         } catch (error) {
             console.error('Failed to scan library:', error)
@@ -88,7 +88,7 @@ export class JellyfinService {
      */
     async scanAllLibraries() {
         try {
-            const response = await this.client.post('/jellyfin/libraries/scan-all')
+            const response = await this.client.post('jellyfin/libraries/scan-all')
             return response
         } catch (error) {
             console.error('Failed to scan all libraries:', error)
@@ -103,7 +103,7 @@ export class JellyfinService {
      */
     async refreshLibraryMetadata(libraryId) {
         try {
-            const response = await this.client.post(`/jellyfin/libraries/${libraryId}/refresh`)
+            const response = await this.client.post(`jellyfin/libraries/${libraryId}/refresh`)
             return response
         } catch (error) {
             console.error('Failed to refresh library metadata:', error)
@@ -117,7 +117,7 @@ export class JellyfinService {
      */
     async getScanStatus() {
         try {
-            const response = await this.client.get('/jellyfin/scan/status')
+            const response = await this.client.get('jellyfin/scan/status')
             return response
         } catch (error) {
             console.error('Failed to get scan status:', error)
@@ -131,7 +131,7 @@ export class JellyfinService {
      */
     async getActiveTasks() {
         try {
-            const response = await this.client.get('/jellyfin/tasks/active')
+            const response = await this.client.get('jellyfin/tasks/active')
             return response
         } catch (error) {
             console.error('Failed to get active tasks:', error)
@@ -145,7 +145,7 @@ export class JellyfinService {
      */
     async getScheduledTasks() {
         try {
-            const response = await this.client.get('/jellyfin/tasks/scheduled')
+            const response = await this.client.get('jellyfin/tasks/scheduled')
             return response
         } catch (error) {
             console.error('Failed to get scheduled tasks:', error)
@@ -160,7 +160,7 @@ export class JellyfinService {
      */
     async startTask(taskId) {
         try {
-            const response = await this.client.post(`/jellyfin/tasks/${taskId}/start`)
+            const response = await this.client.post(`jellyfin/tasks/${taskId}/start`)
             return response
         } catch (error) {
             console.error('Failed to start task:', error)
@@ -175,7 +175,7 @@ export class JellyfinService {
      */
     async stopTask(taskId) {
         try {
-            const response = await this.client.post(`/jellyfin/tasks/${taskId}/stop`)
+            const response = await this.client.post(`jellyfin/tasks/${taskId}/stop`)
             return response
         } catch (error) {
             console.error('Failed to stop task:', error)
@@ -189,7 +189,7 @@ export class JellyfinService {
      */
     async getUsers() {
         try {
-            const response = await this.client.get('/jellyfin/users')
+            const response = await this.client.get('jellyfin/users')
             return response
         } catch (error) {
             console.error('Failed to get users:', error)
@@ -204,7 +204,7 @@ export class JellyfinService {
      */
     async getUserDetails(userId) {
         try {
-            const response = await this.client.get(`/jellyfin/users/${userId}`)
+            const response = await this.client.get(`jellyfin/users/${userId}`)
             return response
         } catch (error) {
             console.error('Failed to get user details:', error)
@@ -219,7 +219,7 @@ export class JellyfinService {
      */
     async createUser(userData) {
         try {
-            const response = await this.client.post('/jellyfin/users', userData)
+            const response = await this.client.post('jellyfin/users', userData)
             return response
         } catch (error) {
             console.error('Failed to create user:', error)
@@ -235,7 +235,7 @@ export class JellyfinService {
      */
     async updateUser(userId, userData) {
         try {
-            const response = await this.client.put(`/jellyfin/users/${userId}`, userData)
+            const response = await this.client.put(`jellyfin/users/${userId}`, userData)
             return response
         } catch (error) {
             console.error('Failed to update user:', error)
@@ -250,7 +250,7 @@ export class JellyfinService {
      */
     async deleteUser(userId) {
         try {
-            await this.client.delete(`/jellyfin/users/${userId}`)
+            await this.client.delete(`jellyfin/users/${userId}`)
         } catch (error) {
             console.error('Failed to delete user:', error)
             throw error
@@ -263,7 +263,7 @@ export class JellyfinService {
      */
     async getServerConfiguration() {
         try {
-            const response = await this.client.get('/jellyfin/configuration')
+            const response = await this.client.get('jellyfin/configuration')
             return response
         } catch (error) {
             console.error('Failed to get server configuration:', error)
@@ -278,7 +278,7 @@ export class JellyfinService {
      */
     async updateServerConfiguration(config) {
         try {
-            const response = await this.client.put('/jellyfin/configuration', config)
+            const response = await this.client.put('jellyfin/configuration', config)
             return response
         } catch (error) {
             console.error('Failed to update server configuration:', error)
@@ -292,7 +292,7 @@ export class JellyfinService {
      */
     async getPlugins() {
         try {
-            const response = await this.client.get('/jellyfin/plugins')
+            const response = await this.client.get('jellyfin/plugins')
             return response
         } catch (error) {
             console.error('Failed to get plugins:', error)
@@ -308,7 +308,7 @@ export class JellyfinService {
      */
     async installPlugin(pluginId, version) {
         try {
-            const response = await this.client.post('/jellyfin/plugins/install', {
+            const response = await this.client.post('jellyfin/plugins/install', {
                 pluginId,
                 version
             })
@@ -326,7 +326,7 @@ export class JellyfinService {
      */
     async uninstallPlugin(pluginId) {
         try {
-            const response = await this.client.delete(`/jellyfin/plugins/${pluginId}`)
+            const response = await this.client.delete(`jellyfin/plugins/${pluginId}`)
             return response
         } catch (error) {
             console.error('Failed to uninstall plugin:', error)
@@ -340,7 +340,7 @@ export class JellyfinService {
      */
     async restartServer() {
         try {
-            const response = await this.client.post('/jellyfin/system/restart')
+            const response = await this.client.post('jellyfin/system/restart')
             return response
         } catch (error) {
             console.error('Failed to restart server:', error)
@@ -354,7 +354,7 @@ export class JellyfinService {
      */
     async shutdownServer() {
         try {
-            const response = await this.client.post('/jellyfin/system/shutdown')
+            const response = await this.client.post('jellyfin/system/shutdown')
             return response
         } catch (error) {
             console.error('Failed to shutdown server:', error)
@@ -374,7 +374,7 @@ export class JellyfinService {
                 ...options
             }
 
-            const response = await this.client.get('/jellyfin/system/logs', params)
+            const response = await this.client.get('jellyfin/system/logs', params)
             return response
         } catch (error) {
             console.error('Failed to get server logs:', error)
@@ -388,7 +388,7 @@ export class JellyfinService {
      */
     async getLibraryStatistics() {
         try {
-            const response = await this.client.get('/jellyfin/statistics')
+            const response = await this.client.get('jellyfin/statistics')
             return response
         } catch (error) {
             console.error('Failed to get library statistics:', error)
@@ -409,7 +409,7 @@ export class JellyfinService {
                 params.libraryId = libraryId
             }
 
-            const response = await this.client.get('/jellyfin/items/recent', params)
+            const response = await this.client.get('jellyfin/items/recent', params)
             return response
         } catch (error) {
             console.error('Failed to get recent items:', error)
@@ -431,7 +431,7 @@ export class JellyfinService {
                 ...options
             }
 
-            const response = await this.client.get('/jellyfin/search', params)
+            const response = await this.client.get('jellyfin/search', params)
             return response
         } catch (error) {
             console.error('Failed to search items:', error)

@@ -28,7 +28,7 @@ export class MediaService {
     }
 
     try {
-      const response = await this.client.get(`/media/trending/${type}/${timeWindow}`)
+      const response = await this.client.get(`media/trending/${type}/${timeWindow}`)
       
       // Cache the response
       this.setCache(cacheKey, response)
@@ -55,7 +55,7 @@ export class MediaService {
     }
 
     try {
-      const response = await this.client.get(`/media/popular/${type}`)
+      const response = await this.client.get(`media/popular/${type}`)
       
       // Cache the response
       this.setCache(cacheKey, response)
@@ -82,7 +82,7 @@ export class MediaService {
     }
 
     try {
-      const response = await this.client.get(`/media/top-rated/${type}`)
+      const response = await this.client.get(`media/top-rated/${type}`)
       
       // Cache the response
       this.setCache(cacheKey, response)
@@ -115,7 +115,7 @@ export class MediaService {
         ...options
       }
 
-      const response = await this.client.get('/media/search', params)
+      const response = await this.client.get('media/search', params)
       
       // Apply client-side sorting if results need additional sorting
       if (response.results && options.sort_by) {
@@ -145,7 +145,7 @@ export class MediaService {
     }
 
     try {
-      const response = await this.client.get(`/media/${type}/${id}`)
+      const response = await this.client.get(`media/${type}/${id}`)
       
       // Cache the response
       this.setCache(cacheKey, response)
@@ -172,7 +172,7 @@ export class MediaService {
     }
 
     try {
-      const response = await this.client.get(`/media/genres/${type}`)
+      const response = await this.client.get(`media/genres/${type}`)
       
       // Cache the response with longer timeout for genres
       this.setCache(cacheKey, response, 60 * 60 * 1000) // 1 hour
@@ -192,7 +192,7 @@ export class MediaService {
    */
   async discover(type = 'movie', filters = {}) {
     try {
-      const response = await this.client.get(`/media/discover/${type}`, filters)
+      const response = await this.client.get(`media/discover/${type}`, filters)
       return response
     } catch (error) {
       console.error('Failed to discover content:', error)
@@ -228,7 +228,7 @@ export class MediaService {
    */
   async getStreamingAvailability(type, id) {
     try {
-      const response = await this.client.get(`/media/${type}/${id}/watch-providers`)
+      const response = await this.client.get(`media/${type}/${id}/watch-providers`)
       return response
     } catch (error) {
       console.error('Failed to get streaming availability:', error)
@@ -244,7 +244,7 @@ export class MediaService {
    */
   async getSimilar(type, id) {
     try {
-      const response = await this.client.get(`/media/${type}/${id}/similar`)
+      const response = await this.client.get(`media/${type}/${id}/similar`)
       return response
     } catch (error) {
       console.error('Failed to get similar content:', error)
@@ -260,7 +260,7 @@ export class MediaService {
    */
   async getRecommendations(type, id) {
     try {
-      const response = await this.client.get(`/media/${type}/${id}/recommendations`)
+      const response = await this.client.get(`media/${type}/${id}/recommendations`)
       return response
     } catch (error) {
       console.error('Failed to get recommendations:', error)
@@ -276,7 +276,7 @@ export class MediaService {
    */
   async getCredits(type, id) {
     try {
-      const response = await this.client.get(`/media/${type}/${id}/credits`)
+      const response = await this.client.get(`media/${type}/${id}/credits`)
       return response
     } catch (error) {
       console.error('Failed to get credits:', error)
@@ -292,7 +292,7 @@ export class MediaService {
    */
   async getVideos(type, id) {
     try {
-      const response = await this.client.get(`/media/${type}/${id}/videos`)
+      const response = await this.client.get(`media/${type}/${id}/videos`)
       return response
     } catch (error) {
       console.error('Failed to get videos:', error)
@@ -307,7 +307,7 @@ export class MediaService {
   async clearCache() {
     try {
       // Clear server-side cache
-      await this.client.delete('/media/cache')
+      await this.client.delete('media/cache')
       
       // Clear local cache
       this.cache.clear()
@@ -323,7 +323,7 @@ export class MediaService {
    */
   async getCacheStats() {
     try {
-      const serverStats = await this.client.get('/media/cache/stats')
+      const serverStats = await this.client.get('media/cache/stats')
       
       const localStats = {
         entries: this.cache.size,

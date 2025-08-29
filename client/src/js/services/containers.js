@@ -16,7 +16,7 @@ export class ContainersService {
    */
   async getContainers() {
     try {
-      const response = await this.client.get('/docker/containers')
+      const response = await this.client.get('docker/containers')
       return response
     } catch (error) {
       console.error('Failed to get containers:', error)
@@ -31,7 +31,7 @@ export class ContainersService {
    */
   async getContainerDetails(containerId) {
     try {
-      const response = await this.client.get(`/docker/containers/${containerId}`)
+      const response = await this.client.get(`docker/containers/${containerId}`)
       return response
     } catch (error) {
       console.error('Failed to get container details:', error)
@@ -46,7 +46,7 @@ export class ContainersService {
    */
   async startContainer(containerId) {
     try {
-      const response = await this.client.post(`/docker/containers/${containerId}/start`)
+      const response = await this.client.post(`docker/containers/${containerId}/start`)
       return response
     } catch (error) {
       console.error('Failed to start container:', error)
@@ -61,7 +61,7 @@ export class ContainersService {
    */
   async stopContainer(containerId) {
     try {
-      const response = await this.client.post(`/docker/containers/${containerId}/stop`)
+      const response = await this.client.post(`docker/containers/${containerId}/stop`)
       return response
     } catch (error) {
       console.error('Failed to stop container:', error)
@@ -76,7 +76,7 @@ export class ContainersService {
    */
   async restartContainer(containerId) {
     try {
-      const response = await this.client.post(`/docker/containers/${containerId}/restart`)
+      const response = await this.client.post(`docker/containers/${containerId}/restart`)
       return response
     } catch (error) {
       console.error('Failed to restart container:', error)
@@ -92,7 +92,7 @@ export class ContainersService {
    */
   async removeContainer(containerId, force = false) {
     try {
-      const response = await this.client.delete(`/docker/containers/${containerId}`, {
+      const response = await this.client.delete(`docker/containers/${containerId}`, {
         force
       })
       return response
@@ -116,7 +116,7 @@ export class ContainersService {
         ...options
       }
       
-      const response = await this.client.get(`/docker/containers/${containerId}/logs`, params)
+      const response = await this.client.get(`docker/containers/${containerId}/logs`, params)
       return response
     } catch (error) {
       console.error('Failed to get container logs:', error)
@@ -131,7 +131,7 @@ export class ContainersService {
    */
   async getContainerStats(containerId) {
     try {
-      const response = await this.client.get(`/docker/containers/${containerId}/stats`)
+      const response = await this.client.get(`docker/containers/${containerId}/stats`)
       return response
     } catch (error) {
       console.error('Failed to get container stats:', error)
@@ -145,7 +145,7 @@ export class ContainersService {
    */
   async getStacks() {
     try {
-      const response = await this.client.get('/docker/stacks')
+      const response = await this.client.get('docker/stacks')
       return response
     } catch (error) {
       console.error('Failed to get stacks:', error)
@@ -160,7 +160,7 @@ export class ContainersService {
    */
   async getStackDetails(stackId) {
     try {
-      const response = await this.client.get(`/docker/stacks/${stackId}`)
+      const response = await this.client.get(`docker/stacks/${stackId}`)
       return response
     } catch (error) {
       console.error('Failed to get stack details:', error)
@@ -175,7 +175,7 @@ export class ContainersService {
    */
   async deployStack(stackData) {
     try {
-      const response = await this.client.post('/docker/stacks', stackData)
+      const response = await this.client.post('docker/stacks', stackData)
       return response
     } catch (error) {
       console.error('Failed to deploy stack:', error)
@@ -191,7 +191,7 @@ export class ContainersService {
    */
   async updateStack(stackId, stackData) {
     try {
-      const response = await this.client.put(`/docker/stacks/${stackId}`, stackData)
+      const response = await this.client.put(`docker/stacks/${stackId}`, stackData)
       return response
     } catch (error) {
       console.error('Failed to update stack:', error)
@@ -206,7 +206,7 @@ export class ContainersService {
    */
   async removeStack(stackId) {
     try {
-      const response = await this.client.delete(`/docker/stacks/${stackId}`)
+      const response = await this.client.delete(`docker/stacks/${stackId}`)
       return response
     } catch (error) {
       console.error('Failed to remove stack:', error)
@@ -221,7 +221,7 @@ export class ContainersService {
    */
   async startStack(stackId) {
     try {
-      const response = await this.client.post(`/docker/stacks/${stackId}/start`)
+      const response = await this.client.post(`docker/stacks/${stackId}/start`)
       return response
     } catch (error) {
       console.error('Failed to start stack:', error)
@@ -236,7 +236,7 @@ export class ContainersService {
    */
   async stopStack(stackId) {
     try {
-      const response = await this.client.post(`/docker/stacks/${stackId}/stop`)
+      const response = await this.client.post(`docker/stacks/${stackId}/stop`)
       return response
     } catch (error) {
       console.error('Failed to stop stack:', error)
@@ -250,7 +250,7 @@ export class ContainersService {
    */
   async getSystemInfo() {
     try {
-      const response = await this.client.get('/docker/system/info')
+      const response = await this.client.get('docker/system/info')
       return response
     } catch (error) {
       console.error('Failed to get system info:', error)
@@ -265,7 +265,7 @@ export class ContainersService {
    */
   async getSystemEvents(filters = {}) {
     try {
-      const response = await this.client.get('/docker/system/events', filters)
+      const response = await this.client.get('docker/system/events', filters)
       return response
     } catch (error) {
       console.error('Failed to get system events:', error)
@@ -279,7 +279,7 @@ export class ContainersService {
    */
   async getImages() {
     try {
-      const response = await this.client.get('/docker/images')
+      const response = await this.client.get('docker/images')
       return response
     } catch (error) {
       console.error('Failed to get images:', error)
@@ -295,7 +295,7 @@ export class ContainersService {
    */
   async removeImage(imageId, force = false) {
     try {
-      const response = await this.client.delete(`/docker/images/${imageId}`, {
+      const response = await this.client.delete(`docker/images/${imageId}`, {
         force
       })
       return response
@@ -311,7 +311,7 @@ export class ContainersService {
    */
   async getNetworks() {
     try {
-      const response = await this.client.get('/docker/networks')
+      const response = await this.client.get('docker/networks')
       return response
     } catch (error) {
       console.error('Failed to get networks:', error)
@@ -325,7 +325,7 @@ export class ContainersService {
    */
   async getVolumes() {
     try {
-      const response = await this.client.get('/docker/volumes')
+      const response = await this.client.get('docker/volumes')
       return response
     } catch (error) {
       console.error('Failed to get volumes:', error)
@@ -340,7 +340,7 @@ export class ContainersService {
    */
   async pruneSystem(options = {}) {
     try {
-      const response = await this.client.post('/docker/system/prune', options)
+      const response = await this.client.post('docker/system/prune', options)
       return response
     } catch (error) {
       console.error('Failed to prune system:', error)

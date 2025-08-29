@@ -17,7 +17,7 @@ export class TorrentsService {
    */
   async getTorrents(filters = {}) {
     try {
-      const response = await this.client.get('/downloads', filters)
+      const response = await this.client.get('downloads', filters)
       return response
     } catch (error) {
       console.error('Failed to get torrents:', error)
@@ -31,7 +31,7 @@ export class TorrentsService {
    */
   async getTransferInfo() {
     try {
-      const response = await this.client.get('/downloads/transfer-info')
+      const response = await this.client.get('downloads/transfer-info')
       return response
     } catch (error) {
       console.error('Failed to get transfer info:', error)
@@ -45,7 +45,7 @@ export class TorrentsService {
    */
   async getPreferences() {
     try {
-      const response = await this.client.get('/downloads/preferences')
+      const response = await this.client.get('downloads/preferences')
       return response
     } catch (error) {
       console.error('Failed to get preferences:', error)
@@ -60,7 +60,7 @@ export class TorrentsService {
    */
   async getTorrentDetails(hash) {
     try {
-      const response = await this.client.get(`/downloads/${hash}/details`)
+      const response = await this.client.get(`downloads/${hash}/details`)
       return response
     } catch (error) {
       console.error('Failed to get torrent details:', error)
@@ -87,7 +87,7 @@ export class TorrentsService {
         params.indexers = indexers.join(',')
       }
       
-      const response = await this.client.get('/downloads/search-torrents', params)
+      const response = await this.client.get('downloads/search-torrents', params)
       return response
     } catch (error) {
       console.error('Failed to search torrents:', error)
@@ -101,7 +101,7 @@ export class TorrentsService {
    */
   async getIndexers() {
     try {
-      const response = await this.client.get('/downloads/indexers')
+      const response = await this.client.get('downloads/indexers')
       return response
     } catch (error) {
       console.error('Failed to get indexers:', error)
@@ -115,7 +115,7 @@ export class TorrentsService {
    */
   async getCategories() {
     try {
-      const response = await this.client.get('/downloads/categories')
+      const response = await this.client.get('downloads/categories')
       return response
     } catch (error) {
       console.error('Failed to get categories:', error)
@@ -129,7 +129,7 @@ export class TorrentsService {
    */
   async getSearchHistory() {
     try {
-      const response = await this.client.get('/downloads/search-history')
+      const response = await this.client.get('downloads/search-history')
       return response
     } catch (error) {
       console.error('Failed to get search history:', error)
@@ -143,7 +143,7 @@ export class TorrentsService {
    */
   async clearSearchHistory() {
     try {
-      await this.client.delete('/downloads/search-history')
+      await this.client.delete('downloads/search-history')
     } catch (error) {
       console.error('Failed to clear search history:', error)
       throw error
@@ -157,7 +157,7 @@ export class TorrentsService {
    */
   async addTorrent(torrentData) {
     try {
-      const response = await this.client.post('/downloads/add', torrentData)
+      const response = await this.client.post('downloads/add', torrentData)
       return response
     } catch (error) {
       console.error('Failed to add torrent:', error)
@@ -201,7 +201,7 @@ export class TorrentsService {
         formData.append(key, options[key])
       })
       
-      const response = await this.client.post('/downloads/add', formData)
+      const response = await this.client.post('downloads/add', formData)
       return response
     } catch (error) {
       console.error('Failed to add torrent file:', error)
@@ -218,7 +218,7 @@ export class TorrentsService {
    */
   async controlTorrent(hash, action, options = {}) {
     try {
-      const response = await this.client.post(`/downloads/${hash}/control`, {
+      const response = await this.client.post(`downloads/${hash}/control`, {
         action,
         ...options
       })
@@ -312,7 +312,7 @@ export class TorrentsService {
    */
   async getTorrentFiles(hash) {
     try {
-      const response = await this.client.get(`/downloads/${hash}/files`)
+      const response = await this.client.get(`downloads/${hash}/files`)
       return response
     } catch (error) {
       console.error('Failed to get torrent files:', error)
@@ -329,7 +329,7 @@ export class TorrentsService {
    */
   async setFilePriority(hash, fileId, priority) {
     try {
-      const response = await this.client.post(`/downloads/${hash}/files/${fileId}/priority`, {
+      const response = await this.client.post(`downloads/${hash}/files/${fileId}/priority`, {
         priority
       })
       return response
@@ -346,7 +346,7 @@ export class TorrentsService {
    */
   async getTorrentTrackers(hash) {
     try {
-      const response = await this.client.get(`/downloads/${hash}/trackers`)
+      const response = await this.client.get(`downloads/${hash}/trackers`)
       return response
     } catch (error) {
       console.error('Failed to get torrent trackers:', error)
@@ -362,7 +362,7 @@ export class TorrentsService {
    */
   async addTracker(hash, trackerUrl) {
     try {
-      const response = await this.client.post(`/downloads/${hash}/trackers`, {
+      const response = await this.client.post(`downloads/${hash}/trackers`, {
         url: trackerUrl
       })
       return response
@@ -380,7 +380,7 @@ export class TorrentsService {
    */
   async removeTracker(hash, trackerUrl) {
     try {
-      const response = await this.client.delete(`/downloads/${hash}/trackers`, {
+      const response = await this.client.delete(`downloads/${hash}/trackers`, {
         url: trackerUrl
       })
       return response

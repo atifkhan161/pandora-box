@@ -294,17 +294,22 @@ class PandoraApp {
     };
     
     try {
+      // Initialize auth store and wait for completion
       await this.authStore.init();
       console.log('Authentication initialized successfully');
       
+      // Wait a bit more to ensure auth state is fully settled
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // After auth initialization, check if we need to redirect to login
       const currentPath = window.location.pathname;
-      const isAuthenticated = this.authStore.isAuthenticated();
+      const authState = this.authStore.getState();
+      const isAuthenticated = authState.isAuthenticated;
       
-      console.log(`Post-auth check - Path: ${currentPath}, Authenticated: ${isAuthenticated}`);
+      console.log(`Post-auth check - Path: ${currentPath}, Authenticated: ${isAuthenticated}, Loading: ${authState.loading}`);
       
       // If user is not authenticated and not already on login page, redirect to login
-      if (!isAuthenticated && currentPath !== '/login') {
+      if (!isAuthenticated && currentPath !== '/login' && !authState.loading) {
         console.log('User not authenticated, will redirect to login after router initialization');
         // Store the redirect intention to be handled after router init
         this.pendingLoginRedirect = true;
@@ -313,9 +318,7 @@ class PandoraApp {
     } catch (error) {
       console.error('Authentication initialization failed:', error);
       // On auth failure, redirect to login
-      setTimeout(() => {
-        this.router.navigate('/login', true);
-      }, 100);
+      this.pendingLoginRedirect = true;
     }
   }
 

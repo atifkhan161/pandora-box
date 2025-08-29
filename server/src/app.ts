@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
+import path from 'path'
 import { config } from '@/config/config.js'
 import { logger } from '@/utils/logger.js'
 import { errorHandler } from '@/middleware/errorHandler.js'
@@ -184,15 +185,10 @@ class PandoraBoxServer {
 
   // Setup routes
   private setupRoutes(): void {
-    // Root endpoint
+    // Root endpoint - serve the PWA
     this.app.get('/', (req: Request, res: Response) => {
-      res.json({
-        name: 'Pandora Box API',
-        version: '1.0.0',
-        status: 'running',
-        timestamp: new Date().toISOString(),
-        documentation: '/api/v1/health'
-      })
+      const clientPath = path.join(process.cwd(), '..', 'client', 'dist')
+      res.sendFile(path.join(clientPath, 'index.html'))
     })
 
     // API documentation
@@ -214,14 +210,34 @@ class PandoraBoxServer {
       })
     })
 
-    // 404 handler for API routes
-    this.app.use('/api/*', (req: Request, res: Response) => {
-      res.status(404).json({
-        success: false,
-        message: 'API endpoint not found',
-        path: req.path
-      })
+    // Serve static files from client build
+    const clientPath = path.join(process.cwd(), '..', 'client', 'dist')
+    this.app.use(express.static(clientPath))
+
+    // Serve PWA files at root
+    this.app.get('/manifest.json', (req: Request, res: Response) => {
+      res.sendFile(path.join(clientPath, 'manifest.json'))
     })
+
+    this.app.get('/sw.js', (req: Request, res: Response) => {
+      res.sendFile(path.join(clientPath, 'sw.js'))
+    })
+
+    // SPA fallback - serve index.html for all non-API routes
+    this.app.get('*', (req: Request, res: Response) => {
+      // Don't serve index.html for API routes
+      if (req.path.startsWith('/api/')) {
+        return res.status(404).json({
+          error: 'API endpoint not found',
+          path: req.path,
+          method: req.method
+        })
+      }
+      
+      res.sendFile(path.join(clientPath, 'index.html'))
+    })
+
+
   }
 
   // Setup error handling

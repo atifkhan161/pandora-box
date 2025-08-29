@@ -16,7 +16,7 @@ export class SettingsService {
    */
   async getSettings() {
     try {
-      const response = await this.client.get('/settings')
+      const response = await this.client.get('settings')
       return response
     } catch (error) {
       console.error('Failed to get settings:', error)
@@ -31,7 +31,7 @@ export class SettingsService {
    */
   async updateSettings(settings) {
     try {
-      const response = await this.client.put('/settings', settings)
+      const response = await this.client.put('settings', settings)
       return response
     } catch (error) {
       console.error('Failed to update settings:', error)
@@ -45,7 +45,7 @@ export class SettingsService {
    */
   async getApiKeys() {
     try {
-      const response = await this.client.get('/settings/api-keys')
+      const response = await this.client.get('settings/api-keys')
       return response
     } catch (error) {
       console.error('Failed to get API keys:', error)
@@ -60,7 +60,7 @@ export class SettingsService {
    */
   async updateApiKeys(apiKeys) {
     try {
-      const response = await this.client.put('/settings/api-keys', apiKeys)
+      const response = await this.client.put('settings/api-keys', apiKeys)
       return response
     } catch (error) {
       console.error('Failed to update API keys:', error)
@@ -76,7 +76,7 @@ export class SettingsService {
    */
   async testApiKey(service, apiKey) {
     try {
-      const response = await this.client.post('/settings/api-keys/test', {
+      const response = await this.client.post('settings/api-keys/test', {
         service,
         apiKey
       })
@@ -93,7 +93,7 @@ export class SettingsService {
    */
   async getNotificationSettings() {
     try {
-      const response = await this.client.get('/settings/notifications')
+      const response = await this.client.get('settings/notifications')
       return response
     } catch (error) {
       console.error('Failed to get notification settings:', error)
@@ -108,7 +108,7 @@ export class SettingsService {
    */
   async updateNotificationSettings(settings) {
     try {
-      const response = await this.client.put('/settings/notifications', settings)
+      const response = await this.client.put('settings/notifications', settings)
       return response
     } catch (error) {
       console.error('Failed to update notification settings:', error)
@@ -122,7 +122,7 @@ export class SettingsService {
    */
   async getDownloadSettings() {
     try {
-      const response = await this.client.get('/settings/downloads')
+      const response = await this.client.get('settings/downloads')
       return response
     } catch (error) {
       console.error('Failed to get download settings:', error)
@@ -137,7 +137,7 @@ export class SettingsService {
    */
   async updateDownloadSettings(settings) {
     try {
-      const response = await this.client.put('/settings/downloads', settings)
+      const response = await this.client.put('settings/downloads', settings)
       return response
     } catch (error) {
       console.error('Failed to update download settings:', error)
@@ -151,7 +151,7 @@ export class SettingsService {
    */
   async getMediaSettings() {
     try {
-      const response = await this.client.get('/settings/media')
+      const response = await this.client.get('settings/media')
       return response
     } catch (error) {
       console.error('Failed to get media settings:', error)
@@ -166,7 +166,7 @@ export class SettingsService {
    */
   async updateMediaSettings(settings) {
     try {
-      const response = await this.client.put('/settings/media', settings)
+      const response = await this.client.put('settings/media', settings)
       return response
     } catch (error) {
       console.error('Failed to update media settings:', error)
@@ -180,7 +180,7 @@ export class SettingsService {
    */
   async getSystemSettings() {
     try {
-      const response = await this.client.get('/settings/system')
+      const response = await this.client.get('settings/system')
       return response
     } catch (error) {
       console.error('Failed to get system settings:', error)
@@ -195,7 +195,7 @@ export class SettingsService {
    */
   async updateSystemSettings(settings) {
     try {
-      const response = await this.client.put('/settings/system', settings)
+      const response = await this.client.put('settings/system', settings)
       return response
     } catch (error) {
       console.error('Failed to update system settings:', error)
@@ -209,7 +209,7 @@ export class SettingsService {
    */
   async exportSettings() {
     try {
-      const response = await this.client.download('/settings/export')
+      const response = await this.client.download('settings/export')
       return response
     } catch (error) {
       console.error('Failed to export settings:', error)
@@ -227,7 +227,7 @@ export class SettingsService {
       const formData = new FormData()
       formData.append('settings', settingsFile)
       
-      const response = await this.client.post('/settings/import', formData)
+      const response = await this.client.post('settings/import', formData)
       return response
     } catch (error) {
       console.error('Failed to import settings:', error)
@@ -242,7 +242,7 @@ export class SettingsService {
    */
   async resetSettings(categories = []) {
     try {
-      const response = await this.client.post('/settings/reset', { categories })
+      const response = await this.client.post('settings/reset', { categories })
       return response
     } catch (error) {
       console.error('Failed to reset settings:', error)
@@ -256,7 +256,7 @@ export class SettingsService {
    */
   async getAppInfo() {
     try {
-      const response = await this.client.get('/settings/app-info')
+      const response = await this.client.get('settings/app-info')
       return response
     } catch (error) {
       console.error('Failed to get app info:', error)
@@ -270,7 +270,7 @@ export class SettingsService {
    */
   async checkForUpdates() {
     try {
-      const response = await this.client.get('/settings/updates/check')
+      const response = await this.client.get('settings/updates/check')
       return response
     } catch (error) {
       console.error('Failed to check for updates:', error)
@@ -284,7 +284,7 @@ export class SettingsService {
    */
   async getSystemStatus() {
     try {
-      const response = await this.client.get('/settings/system/status')
+      const response = await this.client.get('settings/system/status')
       return response
     } catch (error) {
       console.error('Failed to get system status:', error)
@@ -305,7 +305,7 @@ export class SettingsService {
         ...options
       }
       
-      const response = await this.client.get('/settings/logs', params)
+      const response = await this.client.get('settings/logs', params)
       return response
     } catch (error) {
       console.error('Failed to get logs:', error)
@@ -319,7 +319,7 @@ export class SettingsService {
    */
   async clearLogs() {
     try {
-      const response = await this.client.delete('/settings/logs')
+      const response = await this.client.delete('settings/logs')
       return response
     } catch (error) {
       console.error('Failed to clear logs:', error)
@@ -333,7 +333,7 @@ export class SettingsService {
    */
   async getBackupSettings() {
     try {
-      const response = await this.client.get('/settings/backup')
+      const response = await this.client.get('settings/backup')
       return response
     } catch (error) {
       console.error('Failed to get backup settings:', error)
@@ -348,7 +348,7 @@ export class SettingsService {
    */
   async createBackup(options = {}) {
     try {
-      const response = await this.client.post('/settings/backup/create', options)
+      const response = await this.client.post('settings/backup/create', options)
       return response
     } catch (error) {
       console.error('Failed to create backup:', error)
@@ -366,7 +366,7 @@ export class SettingsService {
       const formData = new FormData()
       formData.append('backup', backupFile)
       
-      const response = await this.client.post('/settings/backup/restore', formData)
+      const response = await this.client.post('settings/backup/restore', formData)
       return response
     } catch (error) {
       console.error('Failed to restore backup:', error)
@@ -380,7 +380,7 @@ export class SettingsService {
    */
   async getAvailableThemes() {
     try {
-      const response = await this.client.get('/settings/themes')
+      const response = await this.client.get('settings/themes')
       return response
     } catch (error) {
       console.error('Failed to get available themes:', error)
@@ -394,7 +394,7 @@ export class SettingsService {
    */
   async getCurrentTheme() {
     try {
-      const response = await this.client.get('/settings/themes/current')
+      const response = await this.client.get('settings/themes/current')
       return response
     } catch (error) {
       console.error('Failed to get current theme:', error)
@@ -409,7 +409,7 @@ export class SettingsService {
    */
   async setTheme(themeId) {
     try {
-      const response = await this.client.post('/settings/themes/set', { themeId })
+      const response = await this.client.post('settings/themes/set', { themeId })
       return response
     } catch (error) {
       console.error('Failed to set theme:', error)
@@ -424,7 +424,7 @@ export class SettingsService {
    */
   async validateSettings(settings) {
     try {
-      const response = await this.client.post('/settings/validate', settings)
+      const response = await this.client.post('settings/validate', settings)
       return response
     } catch (error) {
       console.error('Failed to validate settings:', error)
@@ -440,7 +440,7 @@ export class SettingsService {
   async getDefaultSettings(category = null) {
     try {
       const params = category ? { category } : {}
-      const response = await this.client.get('/settings/defaults', params)
+      const response = await this.client.get('settings/defaults', params)
       return response
     } catch (error) {
       console.error('Failed to get default settings:', error)
@@ -454,7 +454,7 @@ export class SettingsService {
    */
   async getSettingsSchema() {
     try {
-      const response = await this.client.get('/settings/schema')
+      const response = await this.client.get('settings/schema')
       return response
     } catch (error) {
       console.error('Failed to get settings schema:', error)

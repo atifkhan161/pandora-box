@@ -17,7 +17,7 @@ export class FilesService {
    */
   async listDirectory(path = '/') {
     try {
-      const response = await this.client.get('/files/list', { path })
+      const response = await this.client.get('files/list', { path })
       return response
     } catch (error) {
       console.error('Failed to list directory:', error)
@@ -32,7 +32,7 @@ export class FilesService {
    */
   async getFileInfo(path) {
     try {
-      const response = await this.client.get('/files/info', { path })
+      const response = await this.client.get('files/info', { path })
       return response
     } catch (error) {
       console.error('Failed to get file info:', error)
@@ -47,7 +47,7 @@ export class FilesService {
    */
   async createDirectory(path) {
     try {
-      const response = await this.client.post('/files/mkdir', { path })
+      const response = await this.client.post('files/mkdir', { path })
       return response
     } catch (error) {
       console.error('Failed to create directory:', error)
@@ -63,7 +63,7 @@ export class FilesService {
    */
   async delete(path, recursive = false) {
     try {
-      const response = await this.client.delete('/files/delete', {
+      const response = await this.client.delete('files/delete', {
         path,
         recursive
       })
@@ -82,7 +82,7 @@ export class FilesService {
    */
   async move(sourcePath, destinationPath) {
     try {
-      const response = await this.client.post('/files/move', {
+      const response = await this.client.post('files/move', {
         source: sourcePath,
         destination: destinationPath
       })
@@ -101,7 +101,7 @@ export class FilesService {
    */
   async copy(sourcePath, destinationPath) {
     try {
-      const response = await this.client.post('/files/copy', {
+      const response = await this.client.post('files/copy', {
         source: sourcePath,
         destination: destinationPath
       })
@@ -120,7 +120,7 @@ export class FilesService {
    */
   async rename(path, newName) {
     try {
-      const response = await this.client.post('/files/rename', {
+      const response = await this.client.post('files/rename', {
         path,
         newName
       })
@@ -189,7 +189,7 @@ export class FilesService {
    */
   async downloadFile(path, onProgress = null) {
     try {
-      const response = await this.client.download('/files/download', onProgress, {
+      const response = await this.client.download('files/download', onProgress, {
         method: 'POST',
         body: JSON.stringify({ path })
       })
@@ -207,7 +207,7 @@ export class FilesService {
    */
   async getFileContent(path) {
     try {
-      const response = await this.client.get('/files/content', { path })
+      const response = await this.client.get('files/content', { path })
       return response
     } catch (error) {
       console.error('Failed to get file content:', error)
@@ -223,7 +223,7 @@ export class FilesService {
    */
   async saveFileContent(path, content) {
     try {
-      const response = await this.client.post('/files/content', {
+      const response = await this.client.post('files/content', {
         path,
         content
       })
@@ -243,7 +243,7 @@ export class FilesService {
    */
   async searchFiles(query, path = '/', options = {}) {
     try {
-      const response = await this.client.get('/files/search', {
+      const response = await this.client.get('files/search', {
         query,
         path,
         ...options
@@ -262,7 +262,7 @@ export class FilesService {
    */
   async getDiskUsage(path = '/') {
     try {
-      const response = await this.client.get('/files/disk-usage', { path })
+      const response = await this.client.get('files/disk-usage', { path })
       return response
     } catch (error) {
       console.error('Failed to get disk usage:', error)
@@ -278,7 +278,7 @@ export class FilesService {
    */
   async createArchive(paths, archiveName) {
     try {
-      const response = await this.client.post('/files/archive', {
+      const response = await this.client.post('files/archive', {
         paths,
         archiveName
       })
@@ -297,7 +297,7 @@ export class FilesService {
    */
   async extractArchive(archivePath, extractPath) {
     try {
-      const response = await this.client.post('/files/extract', {
+      const response = await this.client.post('files/extract', {
         archivePath,
         extractPath
       })
@@ -315,7 +315,7 @@ export class FilesService {
    */
   async moveToMovies(paths) {
     try {
-      const response = await this.client.post('/files/organize/movies', { paths })
+      const response = await this.client.post('files/organize/movies', { paths })
       return response
     } catch (error) {
       console.error('Failed to move to movies:', error)
@@ -330,7 +330,7 @@ export class FilesService {
    */
   async moveToTVShows(paths) {
     try {
-      const response = await this.client.post('/files/organize/tv-shows', { paths })
+      const response = await this.client.post('files/organize/tv-shows', { paths })
       return response
     } catch (error) {
       console.error('Failed to move to TV shows:', error)

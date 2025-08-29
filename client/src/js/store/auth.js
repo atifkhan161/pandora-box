@@ -17,12 +17,33 @@ class AuthStore {
     this.listeners = new Set();
     this.authChangeListeners = new Set();
     this.authService = authService;
+    this.initPromise = null; // Track initialization to prevent multiple calls
   }
 
   /**
    * Initialize the auth store
    */
   async init() {
+    // If initialization is already in progress, wait for it
+    if (this.initPromise) {
+      console.log('Auth store initialization already in progress, waiting...');
+      return await this.initPromise;
+    }
+
+    // Create initialization promise
+    this.initPromise = this._performInit();
+    
+    try {
+      await this.initPromise;
+    } finally {
+      this.initPromise = null;
+    }
+  }
+
+  /**
+   * Internal method to perform the actual initialization
+   */
+  async _performInit() {
     this.setState({ loading: true, error: null });
     
     try {
@@ -32,45 +53,71 @@ class AuthStore {
       
       if (hasStoredAuth) {
         try {
-          // First check if we can get a valid token
+          // First try to get a valid token (this will attempt refresh if needed)
           const token = await this.authService.getToken();
           console.log('Retrieved token:', token ? 'Token exists' : 'No token found');
           
           if (token) {
-            // Validate stored tokens and get user data
+            // Validate token with server
             console.log('Validating stored authentication...');
-            const authState = await this.authService.getAuthState();
             
-            if (authState.isAuthenticated && authState.user) {
-              this.setState({
-                isAuthenticated: true,
-                user: authState.user,
-                loading: false
-              });
+            try {
+              // Try to verify token with server
+              const verifyResponse = await this.authService.verifyToken();
               
-              console.log('User authenticated with stored tokens:', authState.user);
+              if (verifyResponse && verifyResponse.success && verifyResponse.data?.user) {
+                this.setState({
+                  isAuthenticated: true,
+                  user: verifyResponse.data.user,
+                  loading: false
+                });
+                
+                console.log('User authenticated with stored tokens:', verifyResponse.data.user);
+                
+                // Initialize WebSocket connection
+                await this.initializeWebSocket();
+                return;
+              }
+            } catch (verifyError) {
+              console.log('Token verification failed, attempting refresh...');
               
-              // Initialize WebSocket connection
-              await this.initializeWebSocket();
-            } else {
-              // Stored tokens are invalid, clear them
-              console.log('Stored tokens are invalid, clearing...');
-              this.authService.clearTokens();
-              this.setState({ 
-                isAuthenticated: false,
-                user: null,
-                loading: false 
-              });
+              // Try to refresh token
+              const refreshSuccess = await this.authService.refreshToken();
+              
+              if (refreshSuccess) {
+                // Try verification again after refresh
+                try {
+                  const verifyResponse = await this.authService.verifyToken();
+                  
+                  if (verifyResponse && verifyResponse.success && verifyResponse.data?.user) {
+                    this.setState({
+                      isAuthenticated: true,
+                      user: verifyResponse.data.user,
+                      loading: false
+                    });
+                    
+                    console.log('User authenticated after token refresh:', verifyResponse.data.user);
+                    
+                    // Initialize WebSocket connection
+                    await this.initializeWebSocket();
+                    return;
+                  }
+                } catch (secondVerifyError) {
+                  console.error('Token verification failed after refresh:', secondVerifyError);
+                }
+              }
             }
-          } else {
-            // No valid token found
-            console.log('No valid token found');
-            this.setState({ 
-              isAuthenticated: false,
-              user: null,
-              loading: false 
-            });
           }
+          
+          // If we reach here, authentication failed
+          console.log('Authentication failed, clearing tokens');
+          this.authService.clearTokens();
+          this.setState({ 
+            isAuthenticated: false,
+            user: null,
+            loading: false 
+          });
+          
         } catch (validationError) {
           console.error('Token validation failed:', validationError);
           // Clear invalid tokens

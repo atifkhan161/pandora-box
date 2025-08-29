@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Downloads</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/downloads.css">
+</head>
+<body>
+    <header>
+        <h1>Downloads</h1>
+    </header>
+    <main>
+        <section id="downloads-list">
+            <section id="torrent-search">
+                <h2>Torrent Search</h2>
+                <div class="search-controls">
+                    <input type="text" id="torrent-search-input" placeholder="Search for torrents...">
+                    <button id="torrent-search-button">Search</button>
+                </div>
+                <div id="search-results">
+                    <!-- Search results will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <h2>Your Downloads</h2>
+            <ul id="download-items">
+                <!-- Download items will be dynamically loaded here -->
+            </ul>
+
+            <section id="download-progress">
+                <h2>Real-time Download Progress</h2>
+                <div id="progress-display">
+                    <!-- Download progress will be dynamically loaded here -->
+                </div>
+            </section>
+
+            <section id="download-history">
+                <h2>Download History</h2>
+                <ul id="history-list">
+                    <!-- Download history items will be dynamically loaded here -->
+                </ul>
+            </section>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Pandora PWA</p>
+    </footer>
+    <script type="module" src="../js/downloads.js"></script>
+</body>
+</html>

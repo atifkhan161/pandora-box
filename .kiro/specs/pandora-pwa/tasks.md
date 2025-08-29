@@ -136,14 +136,14 @@ This implementation plan converts the Pandora PWA design into actionable coding 
     - _Requirements: 2.2, 2.5_
 
 - [ ] 5. Implement Download Management System
-  - [ ] 5.1 Create downloads page structure with vanilla components
+  - [x] 5.1 Create downloads page structure with vanilla components
     - Build downloads.html template with semantic list structures
     - Create downloads.js controller using vanilla JavaScript classes
     - Add downloads.css with CSS Grid and theme-aware styling
     - Implement responsive layout for different screen sizes
     - _Requirements: 3.1, 4.1_
 
-  - [ ] 5.2 Implement torrent search and management interface
+  - [x] 5.2 Implement torrent search and management interface
     - Integrate with existing `/api/v1/downloads` endpoints using fetch API
     - Create torrent search modal with Jackett integration
     - Build torrent results table with sorting and filtering
@@ -151,7 +151,7 @@ This implementation plan converts the Pandora PWA design into actionable coding 
     - Implement search history management
     - _Requirements: 3.1, 3.2, 3.3_
 
-  - [ ] 5.3 Add real-time download progress tracking
+  - [x] 5.3 Add real-time download progress tracking
     - Connect to WebSocket service for live download updates
     - Create download progress components with CSS animations
     - Implement torrent control actions (pause/resume/delete)
@@ -159,7 +159,7 @@ This implementation plan converts the Pandora PWA design into actionable coding 
     - Create download completion notifications
     - _Requirements: 3.4, 4.2, 4.3, 4.4_
 
-  - [ ] 5.4 Implement download history and file management
+  - [x] 5.4 Implement download history and file management
     - Display download history with filtering capabilities
     - Create download statistics dashboard
     - Add file organization tools for completed downloads

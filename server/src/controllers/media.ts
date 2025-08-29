@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import Joi from 'joi'
 import { ApiProxyService } from '@/services/apiProxy.js'
 import { DatabaseService } from '@/services/database.js'
+import { TmdbService } from '@/services/tmdb.js'
 import { asyncHandler, ValidationError, ExternalServiceError } from '@/middleware/errorHandler.js'
 import { logger, logHelpers } from '@/utils/logger.js'
 import { getCacheConfig } from '@/config/config.js'
@@ -9,10 +10,12 @@ import { getCacheConfig } from '@/config/config.js'
 export class MediaController {
   private apiProxy: ApiProxyService
   private dbService: DatabaseService
+  private tmdbService: TmdbService
 
-  constructor(apiProxy: ApiProxyService, dbService: DatabaseService) {
+  constructor(apiProxy: ApiProxyService, dbService: DatabaseService, tmdbService: TmdbService) {
     this.apiProxy = apiProxy
     this.dbService = dbService
+    this.tmdbService = tmdbService
   }
 
   // Validation schemas
@@ -68,7 +71,7 @@ export class MediaController {
       }
 
       // Fetch from TMDB
-      const data = await this.apiProxy.getTMDBTrending(type, timeWindow)
+      const data = await this.tmdbService.getTrending(type, timeWindow)
       
       // Transform and enrich data
       const transformedData = await this.transformMediaList(data.results || [])
@@ -84,6 +87,178 @@ export class MediaController {
 
       res.json({
         success: true,
+        data: { ...data, results: transformedData },
+        cached: false
+      })
+
+    } catch (error) {
+      logger.error('Error searching content:', error)
+      throw new ExternalServiceError('TMDB', 'Failed to search content')
+    }
+  })
+
+  // Get content details
+  getDetails = asyncHandler(async (req: Request, res: Response) => {
+    const { error, value } = this.detailsSchema.validate({
+      type: req.params.type,
+      id: req.params.id
+    })
+
+    if (error) {
+      throw new ValidationError(error.details[0].message)
+    }
+
+    const { type, id } = value
+
+    try {
+      // Check cache first
+      const cacheKey = `details_${type}_${id}`
+      const cached = await this.dbService.getCachedData('details', type, id.toString())
+
+      if (cached) {
+        logHelpers.logExternalApi('tmdb', `/${type}/${id}`, 'GET', 200, 0, true)
+        return res.json({
+          success: true,
+          data: cached.data,
+          cached: true,
+          cacheTime: cached.createdAt
+        })
+      }
+
+      // Fetch from TMDB
+      const data = await this.tmdbService.getDetails(type, id)
+
+      // Transform and enrich data
+      const transformedData = this.transformMediaDetails(data)
+
+      // Cache the response
+      await this.dbService.setCachedData(
+        'details',
+        type,
+        transformedData,
+        getCacheConfig().ttlDetails,
+        id.toString()
+      )
+
+      res.json({
+        success: true,
+        data: transformedData,
+        cached: false
+      })
+
+    } catch (error) {
+      logger.error(`Error fetching ${type} details for ID ${id}:`, error)
+      throw new ExternalServiceError('TMDB', `Failed to fetch ${type} details`)
+    }
+  })
+
+  // Get genres
+  getGenres = asyncHandler(async (req: Request, res: Response) => {
+    const { error, value } = Joi.object({ type: Joi.string().valid('movie', 'tv').required() }).validate(req.params)
+
+    if (error) {
+      throw new ValidationError(error.details[0].message)
+    }
+
+    const { type } = value
+
+    try {
+      // Check cache first
+      const cacheKey = `genres_${type}`
+      const cached = await this.dbService.getCachedData('genres', type, 'list')
+
+      if (cached) {
+        logHelpers.logExternalApi('tmdb', `/genre/${type}/list`, 'GET', 200, 0, true)
+        return res.json({
+          success: true,
+          data: cached.data,
+          cached: true,
+          cacheTime: cached.createdAt
+        })
+      }
+
+      // Fetch from TMDB
+      const data = await this.tmdbService.getGenres(type)
+
+      // Cache the response
+      await this.dbService.setCachedData(
+        'genres',
+        type,
+        data,
+        getCacheConfig().ttlDetails,
+        'list'
+      )
+
+      res.json({ success: true, data, cached: false })
+
+    } catch (error) {
+      logger.error(`Error fetching ${type} genres:`, error)
+      throw new ExternalServiceError('TMDB', `Failed to fetch ${type} genres`)
+    }
+  })
+
+  // Get image URL
+  getImageUrl = asyncHandler(async (req: Request, res: Response) => {
+    const { path, size } = req.params
+    if (!path) {
+      throw new ValidationError('Image path is required')
+    }
+    const imageUrl = this.tmdbService.getImageUrl(`/${path}`, size)
+    res.json({ success: true, url: imageUrl })
+  })
+
+  // Transform media list for consistent frontend display
+  private async transformMediaList(mediaList: any[]): Promise<any[]> {
+    const genres = await this.dbService.getCollection('genres').find()
+    const genreMap = new Map()
+    genres.forEach((g: any) => genreMap.set(g.id, g.name))
+
+    return mediaList.map(item => ({
+      id: item.id,
+      title: item.title || item.name,
+      overview: item.overview,
+      poster_path: item.poster_path,
+      backdrop_path: item.backdrop_path,
+      release_date: item.release_date || item.first_air_date,
+      vote_average: item.vote_average,
+      media_type: item.media_type || (item.title ? 'movie' : 'tv'),
+      genre_names: item.genre_ids ? item.genre_ids.map((id: number) => genreMap.get(id)).filter(Boolean) : []
+    }))
+  }
+
+  // Transform media details for consistent frontend display
+  private transformMediaDetails(details: any): any {
+    return {
+      id: details.id,
+      title: details.title || details.name,
+      overview: details.overview,
+      poster_path: details.poster_path,
+      backdrop_path: details.backdrop_path,
+      release_date: details.release_date || details.first_air_date,
+      vote_average: details.vote_average,
+      runtime: details.runtime || details.episode_run_time?.[0],
+      genres: details.genres,
+      tagline: details.tagline,
+      status: details.status,
+      media_type: details.media_type || (details.title ? 'movie' : 'tv'),
+      // Add more fields as needed
+    }
+  }
+
+  // Clear all media cache
+  clearCache = asyncHandler(async (req: Request, res: Response) => {
+    await this.dbService.clearCollection('media_cache')
+    res.json({ success: true, message: 'Media cache cleared' })
+  })
+
+  // Get media cache stats
+  getCacheStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await this.dbService.getCollection('media_cache').stats()
+    res.json({ success: true, stats })
+  })
+}
+
+export default MediaController
         data: { ...data, results: transformedData },
         cached: false
       })
@@ -123,7 +298,7 @@ export class MediaController {
       }
 
       // Fetch from TMDB
-      const data = await this.apiProxy.getTMDBPopular(type, page)
+      const data = await this.tmdbService.getPopular(type, page)
       
       // Transform and enrich data
       const transformedData = await this.transformMediaList(data.results || [])
@@ -179,7 +354,7 @@ export class MediaController {
       if (year) searchParams.year = year
 
       // Fetch from TMDB
-      const data = await this.apiProxy.searchTMDB(query, type === 'multi' ? undefined : type, page)
+      const data = await this.tmdbService.search(query, type)
       
       // Transform and enrich data
       const transformedData = await this.transformMediaList(data.results || [])

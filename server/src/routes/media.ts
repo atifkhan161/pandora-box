@@ -1,11 +1,13 @@
 import { Router } from 'express'
 import MediaController from '@/controllers/media.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
+import { TmdbService } from '@/services/tmdb.js'
 
 const router = Router()
 
 // Create a function to initialize routes with services
-export const createMediaRoutes = (apiProxy: ApiProxyService, dbService: any) => {
+export const createMediaRoutes = (apiProxy: ApiProxyService, dbService: any, tmdbService: TmdbService) => {
+  const mediaController = new MediaController(apiProxy, dbService, tmdbService)
   const mediaController = new MediaController(apiProxy, dbService)
 
   // Trending content
@@ -25,6 +27,9 @@ export const createMediaRoutes = (apiProxy: ApiProxyService, dbService: any) => 
 
   // Genres
   router.get('/genres/:type', mediaController.getGenres)
+
+  // Image URL helper
+  router.get('/image/:path', mediaController.getImageUrl)
 
   // Cache management
   router.delete('/cache', mediaController.clearCache)

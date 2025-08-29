@@ -11,6 +11,7 @@ import { initAuthMiddleware, authenticate } from '@/middleware/auth.js'
 import { DatabaseService } from '@/services/database.js'
 import { WebSocketService } from '@/services/websocket.js'
 import { ApiProxyService } from '@/services/apiProxy.js'
+import { TmdbService } from '@/services/tmdb.js'
 
 // Import routes
 import { createAuthRoutes } from '@/routes/auth.js'
@@ -28,12 +29,17 @@ class PandoraBoxServer {
   private databaseService: DatabaseService
   private wsService: WebSocketService
   private apiProxyService: ApiProxyService
+  private tmdbService: TmdbService
 
   constructor() {
     this.app = express()
     this.databaseService = new DatabaseService()
     this.wsService = new WebSocketService()
     this.apiProxyService = new ApiProxyService(this.databaseService)
+    this.tmdbService = new TmdbService({
+      apiKey: config.apis.tmdb.apiKey,
+      baseUrl: config.apis.tmdb.baseUrl,
+    })
   }
 
   // Initialize the server
@@ -172,7 +178,7 @@ class PandoraBoxServer {
     router.use('/auth', createAuthRoutes(this.databaseService))
 
     // Protected routes (authentication required)
-    router.use('/media', authenticate, createMediaRoutes(this.apiProxyService, this.databaseService))
+    router.use('/media', authenticate, createMediaRoutes(this.apiProxyService, this.databaseService, this.tmdbService))
     router.use('/streaming', authenticate, createStreamingRoutes(this.apiProxyService, this.databaseService))
     router.use('/downloads', authenticate, createDownloadsRoutes(this.apiProxyService, this.databaseService, this.wsService))
     router.use('/files', authenticate, createFilesRoutes(this.apiProxyService, this.databaseService, this.wsService))

@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.10",
+    "@types/node": "^24.4.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "lokijs": "^1.5.12"
+  }
+}

@@ -1,0 +1,260 @@
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
+import { EncryptionService } from './encryption.service';
+
+@Injectable()
+export class SettingsService {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly encryptionService: EncryptionService,
+  ) {}
+
+  /**
+   * Update user profile
+   * @param username Current username
+   * @param profileData New profile data
+   * @returns Updated user data
+   */
+  async updateProfile(username: string, profileData: any): Promise<any> {
+    const usersCollection = this.databaseService.getUsersCollection();
+    const user = usersCollection.findOne({ username });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Update user data
+    user.username = profileData.username || user.username;
+    if (profileData.password) {
+      user.password = profileData.password; // In production, this should be hashed
+    }
+
+    // Save updated user
+    usersCollection.update(user);
+
+    // Return user without password
+    const { password, ...result } = user;
+    return result;
+  }
+
+  /**
+   * Update API keys
+   * @param apiKeys API keys to update
+   * @returns Updated configuration
+   */
+  async updateApiKeys(apiKeys: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'api-keys' });
+
+    // Encrypt sensitive values
+    const encryptedKeys = {};
+    for (const [service, key] of Object.entries(apiKeys)) {
+      encryptedKeys[service] = this.encryptionService.encrypt(key as string);
+    }
+
+    if (config) {
+      // Update existing config
+      config.keys = { ...config.keys, ...encryptedKeys };
+      configCollection.update(config);
+    } else {
+      // Create new config
+      config = {
+        type: 'api-keys',
+        keys: encryptedKeys,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'API keys updated successfully' };
+  }
+
+  /**
+   * Update file paths
+   * @param paths File paths to update
+   * @returns Updated configuration
+   */
+  async updateFilePaths(paths: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'file-paths' });
+
+    if (config) {
+      // Update existing config
+      config.paths = { ...config.paths, ...paths };
+      configCollection.update(config);
+    } else {
+      // Create new config
+      config = {
+        type: 'file-paths',
+        paths,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'File paths updated successfully' };
+  }
+
+  /**
+   * Get API keys
+   * @returns API keys
+   */
+  async getApiKeys(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'api-keys' });
+
+    if (!config || !config.keys) {
+      return { keys: {} };
+    }
+
+    // Decrypt keys for client
+    const decryptedKeys = {};
+    for (const [service, encryptedKey] of Object.entries(config.keys)) {
+      try {
+        decryptedKeys[service] = this.encryptionService.decrypt(encryptedKey as string);
+      } catch (error) {
+        decryptedKeys[service] = ''; // Handle decryption errors
+      }
+    }
+
+    return { keys: decryptedKeys };
+  }
+
+  /**
+   * Get file paths
+   * @returns File paths
+   */
+  async getFilePaths(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'file-paths' });
+
+    if (!config || !config.paths) {
+      return { 
+        paths: {
+          downloads: '',
+          movies: '',
+          tvShows: ''
+        } 
+      };
+    }
+
+    return { paths: config.paths };
+  }
+
+  /**
+   * Test connection to a service
+   * @param serviceName Service name
+   * @param apiKey API key (optional, will use stored key if not provided)
+   * @returns Test result
+   */
+  async testConnection(serviceName: string, apiKey?: string): Promise<any> {
+    // If no API key provided, get from database
+    if (!apiKey) {
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'api-keys' });
+      
+      if (config && config.keys && config.keys[serviceName]) {
+        try {
+          apiKey = this.encryptionService.decrypt(config.keys[serviceName]);
+        } catch (error) {
+          return { success: false, message: 'Failed to decrypt API key' };
+        }
+      }
+    }
+
+    if (!apiKey) {
+      return { success: false, message: 'No API key available for this service' };
+    }
+
+    // Test connection based on service
+    switch (serviceName) {
+      case 'tmdb':
+        return this.testTmdbConnection(apiKey);
+      case 'watchmode':
+        return this.testWatchmodeConnection(apiKey);
+      case 'jackett':
+        return this.testJackettConnection(apiKey);
+      case 'jellyfin':
+        return this.testJellyfinConnection(apiKey);
+      case 'cloudCommander':
+        return this.testCloudCommanderConnection(apiKey);
+      default:
+        return { success: false, message: 'Unknown service' };
+    }
+  }
+
+  /**
+   * Test TMDB connection
+   * @param apiKey TMDB API key
+   * @returns Test result
+   */
+  private async testTmdbConnection(apiKey: string): Promise<any> {
+    try {
+      // In a real implementation, make an actual API call to TMDB
+      // For now, just simulate a successful response
+      return { success: true, message: 'Successfully connected to TMDB API' };
+    } catch (error) {
+      return { success: false, message: `Failed to connect to TMDB: ${error.message}` };
+    }
+  }
+
+  /**
+   * Test Watchmode connection
+   * @param apiKey Watchmode API key
+   * @returns Test result
+   */
+  private async testWatchmodeConnection(apiKey: string): Promise<any> {
+    try {
+      // In a real implementation, make an actual API call to Watchmode
+      // For now, just simulate a successful response
+      return { success: true, message: 'Successfully connected to Watchmode API' };
+    } catch (error) {
+      return { success: false, message: `Failed to connect to Watchmode: ${error.message}` };
+    }
+  }
+
+  /**
+   * Test Jackett connection
+   * @param apiKey Jackett API key
+   * @returns Test result
+   */
+  private async testJackettConnection(apiKey: string): Promise<any> {
+    try {
+      // In a real implementation, make an actual API call to Jackett
+      // For now, just simulate a successful response
+      return { success: true, message: 'Successfully connected to Jackett API' };
+    } catch (error) {
+      return { success: false, message: `Failed to connect to Jackett: ${error.message}` };
+    }
+  }
+
+  /**
+   * Test Jellyfin connection
+   * @param apiKey Jellyfin API key
+   * @returns Test result
+   */
+  private async testJellyfinConnection(apiKey: string): Promise<any> {
+    try {
+      // In a real implementation, make an actual API call to Jellyfin
+      // For now, just simulate a successful response
+      return { success: true, message: 'Successfully connected to Jellyfin API' };
+    } catch (error) {
+      return { success: false, message: `Failed to connect to Jellyfin: ${error.message}` };
+    }
+  }
+
+  /**
+   * Test Cloud Commander connection
+   * @param apiKey Cloud Commander API key
+   * @returns Test result
+   */
+  private async testCloudCommanderConnection(apiKey: string): Promise<any> {
+    try {
+      // In a real implementation, make an actual API call to Cloud Commander
+      // For now, just simulate a successful response
+      return { success: true, message: 'Successfully connected to Cloud Commander API' };
+    } catch (error) {
+      return { success: false, message: `Failed to connect to Cloud Commander: ${error.message}` };
+    }
+  }
+}

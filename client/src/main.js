@@ -10,7 +10,10 @@ import './services/auth.js';
 
 
 
+import { Navigation } from './components/navigation.js';
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Pandora Box application initialized');
+  Navigation.init();
 });

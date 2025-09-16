@@ -1,0 +1,129 @@
+/**
+ * Side Navigation Component Styles
+ */
+
+/* Navigation Container */
+.side-nav {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  box-shadow: var(--shadow-right);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+}
+
+/* Navigation Header */
+.nav-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.nav-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+
+/* Navigation Links */
+.nav-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.nav-links li {
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-links a:hover {
+  background-color: var(--sidebar-hover);
+  color: var(--primary-color);
+}
+
+.nav-links a.active {
+  background-color: var(--sidebar-active);
+  color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Navigation Icons */
+.nav-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+}
+
+/* Logout Button */
+#logout-btn {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  color: var(--danger-color);
+}
+
+#logout-btn:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Main Content Adjustment */
+.app-with-nav {
+  display: flex;
+}
+
+.app-with-nav > *:not(.side-nav) {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .side-nav {
+    width: 200px;
+  }
+  
+  .app-with-nav > *:not(.side-nav) {
+    margin-left: 200px;
+    width: calc(100% - 200px);
+  }
+}
+
+@media (max-width: 576px) {
+  .side-nav {
+    width: 60px;
+  }
+  
+  .nav-header h1 {
+    display: none;
+  }
+  
+  .nav-links a span:not(.nav-icon) {
+    display: none;
+  }
+  
+  .nav-icon {
+    margin-right: 0;
+    font-size: 1.5rem;
+  }
+  
+  .app-with-nav > *:not(.side-nav) {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
+}

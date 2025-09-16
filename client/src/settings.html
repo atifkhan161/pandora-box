@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Settings - Pandora Box</title>
+    <link rel="stylesheet" href="./styles/theme.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/settings.css">
+    <link rel="stylesheet" href="./styles/navigation.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app" class="app-container">
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Settings</h1>
+            </header>
+
+            <div id="notification-container"></div>
+
+            <div class="settings-container">
+                <!-- Password Update Section -->
+                <section class="settings-section">
+                    <h2>Password Update</h2>
+                    <form id="password-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="current-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </form>
+                </section>
+
+                <!-- API Keys Section -->
+                <section class="settings-section">
+                    <h2>API Keys</h2>
+                    <form id="api-keys-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="tmdb-key">TMDB API Key</label>
+                            <div class="input-with-buttons">
+                                <input type="password" id="tmdb-key" name="tmdb-key">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-api-key-btn" data-service="tmdb">Save</button>
+                                    <button type="button" class="btn btn-secondary test-connection-btn" data-service="tmdb">Test Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="watchmode-key">Watchmode API Key</label>
+                            <div class="input-with-buttons">
+                                <input type="password" id="watchmode-key" name="watchmode-key">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-api-key-btn" data-service="watchmode">Save</button>
+                                    <button type="button" class="btn btn-secondary test-connection-btn" data-service="watchmode">Test Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jackett-key">Jackett API Key</label>
+                            <div class="input-with-buttons">
+                                <input type="password" id="jackett-key" name="jackett-key">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-api-key-btn" data-service="jackett">Save</button>
+                                    <button type="button" class="btn btn-secondary test-connection-btn" data-service="jackett">Test Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="jellyfin-key">Jellyfin API Key</label>
+                            <div class="input-with-buttons">
+                                <input type="password" id="jellyfin-key" name="jellyfin-key">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-api-key-btn" data-service="jellyfin">Save</button>
+                                    <button type="button" class="btn btn-secondary test-connection-btn" data-service="jellyfin">Test Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cloud-commander-key">Cloud Commander API Key</label>
+                            <div class="input-with-buttons">
+                                <input type="password" id="cloud-commander-key" name="cloud-commander-key">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-api-key-btn" data-service="cloudCommander">Save</button>
+                                    <button type="button" class="btn btn-secondary test-connection-btn" data-service="cloudCommander">Test Connection</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Environment Configuration Section -->
+                <section class="settings-section">
+                    <h2>Environment Configuration</h2>
+                    <form id="env-config-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="server-port">Server Port</label>
+                            <div class="input-with-buttons">
+                                <input type="number" id="server-port" name="server-port" min="1" max="65535">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-env-config-btn" data-config="serverPort">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="db-path">LokiJS Database File Path</label>
+                            <div class="input-with-buttons">
+                                <input type="text" id="db-path" name="db-path">
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-primary save-env-config-btn" data-config="dbPath">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./pages/settings.js"></script>
+</body>
+</html>

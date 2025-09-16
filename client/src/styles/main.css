@@ -6,7 +6,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background-color: var(--pb-background);
     color: var(--pb-text-primary);
     line-height: 1.6;
@@ -21,13 +21,107 @@ body {
     padding: var(--pb-spacing-md);
 }
 
+/* App Layout with Navigation */
+.app-with-nav {
+    min-height: 100vh;
+}
+
+.app-with-nav .container {
+    padding: var(--pb-spacing-xl);
+    padding-top: 80px;
+}
+
+/* App Header */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: var(--pb-background-light);
+    border-bottom: 1px solid var(--pb-secondary-light);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--pb-spacing-lg);
+    z-index: 1001;
+}
+
+.hamburger-btn {
+    background: none;
+    border: none;
+    color: var(--pb-text-primary);
+    font-size: 24px;
+    cursor: pointer;
+    padding: var(--pb-spacing-sm);
+    border-radius: var(--pb-border-radius-sm);
+    transition: background-color var(--pb-transition-fast);
+}
+
+.hamburger-btn:hover {
+    background-color: var(--pb-secondary-light);
+}
+
+/* Side Navigation */
+.side-nav {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(180deg, var(--pb-secondary) 0%, var(--pb-secondary-dark) 100%);
+    padding: var(--pb-spacing-xl);
+    z-index: 1000;
+    transition: left var(--pb-transition-medium);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.side-nav.nav-open {
+    left: 0;
+}
+
+.nav-header h1 {
+    color: var(--pb-primary);
+    font-size: var(--pb-font-size-xl);
+    font-weight: var(--pb-font-weight-bold);
+    margin-bottom: var(--pb-spacing-xl);
+    text-align: left;
+}
+
+.nav-links {
+    list-style: none;
+}
+
+.nav-links li {
+    margin-bottom: var(--pb-spacing-sm);
+}
+
+.nav-links a {
+    display: block;
+    padding: var(--pb-spacing-md);
+    color: var(--pb-text-secondary);
+    text-decoration: none;
+    border-radius: var(--pb-border-radius-md);
+    transition: all var(--pb-transition-fast);
+    font-weight: var(--pb-font-weight-medium);
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 102, 0, 0.1);
+    color: var(--pb-primary);
+    transform: translateX(4px);
+}
+
+.nav-links a.active {
+    background-color: var(--pb-primary);
+    color: var(--pb-secondary);
+}
+
 /* Typography */
 h1 {
     font-size: var(--pb-font-size-xxl);
     font-weight: var(--pb-font-weight-bold);
     margin-bottom: var(--pb-spacing-lg);
-    color: var(--pb-secondary);
-    text-align: center;
+    color: var(--pb-primary);
 }
 
 h2 {
@@ -38,6 +132,7 @@ h2 {
 
 p {
     margin-bottom: var(--pb-spacing-md);
+    color: var(--pb-text-secondary);
 }
 
 /* Forms */
@@ -58,11 +153,13 @@ input[type="email"],
 textarea,
 select {
     width: 100%;
-    padding: var(--pb-spacing-sm);
-    border: 1px solid var(--pb-border);
-    border-radius: var(--pb-border-radius-sm);
+    padding: var(--pb-spacing-md);
+    background-color: var(--pb-background-light);
+    border: 2px solid transparent;
+    border-radius: var(--pb-border-radius-md);
     font-size: var(--pb-font-size-md);
-    transition: border-color var(--pb-transition-fast);
+    color: var(--pb-text-primary);
+    transition: all var(--pb-transition-fast);
 }
 
 input[type="text"]:focus,
@@ -71,47 +168,49 @@ input[type="email"]:focus,
 textarea:focus,
 select:focus {
     outline: none;
-    border-color: var(--pb-secondary);
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    border-color: var(--pb-primary);
+    background-color: var(--pb-background-light);
 }
 
 /* Buttons */
 .btn {
     display: inline-block;
-    padding: var(--pb-spacing-sm) var(--pb-spacing-lg);
+    padding: var(--pb-spacing-md) var(--pb-spacing-xl);
     border: none;
-    border-radius: var(--pb-border-radius-sm);
+    border-radius: var(--pb-border-radius-md);
     font-size: var(--pb-font-size-md);
     font-weight: var(--pb-font-weight-medium);
     text-align: center;
     cursor: pointer;
-    transition: background-color var(--pb-transition-fast), transform var(--pb-transition-fast);
+    transition: all var(--pb-transition-fast);
+    text-decoration: none;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn:active {
-    transform: translateY(1px);
+    transform: translateY(0);
 }
 
 .btn-primary {
-    background-color: var(--pb-secondary);
+    background: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-dark) 100%);
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: var(--pb-secondary-dark);
+    background: linear-gradient(135deg, var(--pb-primary-light) 0%, var(--pb-primary) 100%);
 }
 
 .btn-secondary {
-    background-color: var(--pb-primary-light);
+    background-color: var(--pb-secondary-light);
     color: var(--pb-text-primary);
 }
 
 .btn-secondary:hover {
-    background-color: var(--pb-primary-dark);
+    background-color: var(--pb-secondary);
 }
 
 /* Login Page */
@@ -120,19 +219,26 @@ select:focus {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    background: linear-gradient(135deg, var(--pb-background) 0%, var(--pb-background-light) 100%);
 }
 
 .login-form {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
     padding: var(--pb-spacing-xl);
-    background-color: var(--pb-background);
-    border-radius: var(--pb-border-radius-md);
-    box-shadow: var(--pb-shadow-medium);
+    background-color: var(--pb-background-light);
+    border-radius: var(--pb-border-radius-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--pb-secondary-light);
 }
 
 .login-form h1 {
     margin-bottom: var(--pb-spacing-xl);
+    text-align: center;
+    background: linear-gradient(135deg, var(--pb-primary) 0%, var(--pb-primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .login-form .btn {
@@ -144,23 +250,86 @@ select:focus {
 .error-message {
     color: var(--pb-error);
     background-color: rgba(244, 67, 54, 0.1);
-    padding: var(--pb-spacing-sm);
-    border-radius: var(--pb-border-radius-sm);
+    padding: var(--pb-spacing-md);
+    border-radius: var(--pb-border-radius-md);
     margin-bottom: var(--pb-spacing-md);
     display: none;
+    border-left: 4px solid var(--pb-error);
 }
 
 .error-message.show {
     display: block;
 }
 
+/* Dashboard Content */
+.dashboard-content {
+    padding: var(--pb-spacing-lg);
+}
+
+/* API Keys Section */
+.input-with-buttons {
+    display: flex;
+    gap: var(--pb-spacing-sm);
+    align-items: flex-start;
+}
+
+.input-with-buttons input {
+    flex: 1;
+}
+
+.button-group {
+    display: flex;
+    gap: var(--pb-spacing-xs);
+    flex-shrink: 0;
+}
+
+.button-group .btn {
+    padding: var(--pb-spacing-sm) var(--pb-spacing-md);
+    font-size: var(--pb-font-size-sm);
+    white-space: nowrap;
+}
+
+/* Settings Sections */
+.settings-section {
+    margin-bottom: var(--pb-spacing-xl);
+    padding: var(--pb-spacing-lg);
+    background-color: var(--pb-background-light);
+    border-radius: var(--pb-border-radius-lg);
+    border: 1px solid var(--pb-secondary-light);
+}
+
+.settings-section h2 {
+    color: var(--pb-primary);
+    margin-bottom: var(--pb-spacing-lg);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-    .container {
-        padding: var(--pb-spacing-sm);
+    .app-with-nav .container {
+        padding: var(--pb-spacing-md);
+        padding-top: 80px;
     }
     
     .login-form {
         padding: var(--pb-spacing-lg);
+        margin: var(--pb-spacing-md);
+    }
+    
+    .input-with-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .button-group {
+        justify-content: stretch;
+    }
+    
+    .button-group .btn {
+        flex: 1;
+        text-align: center;
+    }
+    
+    .settings-section {
+        padding: var(--pb-spacing-md);
     }
 }

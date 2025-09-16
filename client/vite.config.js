@@ -1,24 +1,32 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [],
+  root: 'src',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
     },
   },
   server: {
-    port: 3001,
+    port: 5172,
     open: true,
+    // hmr: {
+    //   port: 3102,
+    // },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
     emptyOutDir: true,
     sourcemap: true,
-    // Explicitly exclude service worker functionality
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/index.html'),

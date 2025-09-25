@@ -24,26 +24,65 @@ body {
 /* App Layout with Navigation */
 .app-with-nav {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-.app-with-nav .container {
-    padding: var(--pb-spacing-xl);
-    padding-top: 80px;
-}
-
-/* App Header */
 .app-header {
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
     height: 60px;
     background-color: var(--pb-background-light);
-    border-bottom: 1px solid var(--pb-secondary-light);
+    border-bottom: 1px solid var(--pb-border-color);
     display: flex;
     align-items: center;
     padding: 0 var(--pb-spacing-lg);
-    z-index: 1001;
+    z-index: 1001; /* Ensure header is above side-nav */
+}
+
+.app-header .hamburger-btn {
+    margin-right: var(--pb-spacing-md);
+}
+
+.app-header .app-title {
+    font-size: var(--pb-font-size-xl);
+    color: var(--pb-primary);
+    font-weight: var(--pb-font-weight-bold);
+    flex-grow: 1;
+}
+
+.app-with-nav .main-content {
+    margin-top: 60px; /* Height of the app-header */
+    padding-left: 280px; /* Width of the side-nav */
+    flex-grow: 1;
+    padding: var(--pb-spacing-lg);
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: var(--pb-spacing-lg);
+}
+
+.content-header {
+    margin-bottom: var(--pb-spacing-lg);
+}
+
+.content-header h1 {
+    font-size: var(--pb-font-size-xxl);
+    color: var(--pb-primary);
+}
+
+/* Responsive adjustments for main content */
+@media (max-width: 768px) {
+    .app-with-nav .main-content {
+        padding-left: 0;
+    }
+
+    .app-header .app-title {
+        font-size: var(--pb-font-size-lg);
+    }
 }
 
 .hamburger-btn {
@@ -65,9 +104,9 @@ body {
 .side-nav {
     position: fixed;
     left: -280px;
-    top: 0;
+    top: 60px; /* Start below the app-header */
     width: 280px;
-    height: 100vh;
+    height: calc(100vh - 60px); /* Take up remaining height */
     background: linear-gradient(180deg, var(--pb-secondary) 0%, var(--pb-secondary-dark) 100%);
     padding: var(--pb-spacing-xl);
     z-index: 1000;

@@ -14,6 +14,13 @@ import { Navigation } from './components/navigation.js';
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('Pandora Box application initialized');
+  console.log('DOM fully loaded and parsed');
   Navigation.init();
+
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      Navigation.toggleNavigation();
+    });
+  }
 });

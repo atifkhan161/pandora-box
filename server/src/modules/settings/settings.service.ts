@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { EncryptionService } from './encryption.service';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class SettingsService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly encryptionService: EncryptionService,
+    private readonly httpService: HttpService,
   ) {}
 
   /**
@@ -256,5 +258,51 @@ export class SettingsService {
     } catch (error) {
       return { success: false, message: `Failed to connect to Cloud Commander: ${error.message}` };
     }
+  }
+
+  /**
+   * Get environment configuration
+   * @returns Environment configuration
+   */
+  async getEnvironmentConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'env-config' });
+
+    if (!config || !config.config) {
+      return { 
+        config: {
+          serverPort: '',
+          dbPath: ''
+        } 
+      };
+    }
+
+    return { config: config.config };
+  }
+
+  /**
+   * Update environment configuration
+   * @param envConfig Environment configuration to update
+   * @returns Updated configuration
+   */
+  async updateEnvironmentConfig(envConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'env-config' });
+
+    if (config) {
+      // Update existing config
+      config.config = { ...config.config, ...envConfig };
+      configCollection.update(config);
+    } else {
+      // Create new config
+      config = {
+        type: 'env-config',
+        config: envConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'Environment configuration updated successfully' };
   }
 }

@@ -32,6 +32,16 @@ export class SettingsController {
     return this.settingsService.getFilePaths();
   }
 
+  @Get('env-config')
+  async getEnvironmentConfig() {
+    return this.settingsService.getEnvironmentConfig();
+  }
+
+  @Put('env-config')
+  async updateEnvironmentConfig(@Body() envConfig: any) {
+    return this.settingsService.updateEnvironmentConfig(envConfig);
+  }
+
   @Get('test-connection/:serviceName')
   async testConnection(@Param('serviceName') serviceName: string) {
     return this.settingsService.testConnection(serviceName);

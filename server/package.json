@@ -16,9 +16,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^9.4.3",
     "@nestjs/core": "^9.4.3",
     "@nestjs/platform-express": "^9.4.3",
+    "axios": "^1.12.2",
     "lokijs": "^1.5.12",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",

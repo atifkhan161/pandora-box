@@ -74,6 +74,7 @@ function initializeEventListeners() {
   if (saveApiKeyButtons) {
     saveApiKeyButtons.forEach(button => {
       button.addEventListener('click', async () => {
+        console.log('Save API Key button clicked for service:', button.dataset.service); // Added console.log
         const service = button.dataset.service;
         const inputId = service === 'cloudCommander' ? 'cloud-commander-key' : `${service}-key`;
         const apiKey = document.getElementById(inputId).value.trim();
@@ -154,6 +155,7 @@ function initializeEventListeners() {
   if (testConnectionButtons) {
     testConnectionButtons.forEach(button => {
       button.addEventListener('click', async () => {
+        console.log('Test Connection button clicked for service:', button.dataset.service); // Added console.log
         const service = button.dataset.service;
         button.disabled = true;
         button.textContent = 'Testing...';
@@ -189,14 +191,30 @@ function initializeEventListeners() {
 function loadApiKeys() {
   api.get('/settings/api-keys')
     .then(response => {
-      if (response && response.success) {
-        const keys = response.data;
+      if (response && response.keys) {
+        const keys = response.keys;
+        console.log('API Keys loaded:', keys); // Added console.log
         
-        if (keys.tmdb) document.getElementById('tmdb-key').value = keys.tmdb;
-        if (keys.watchmode) document.getElementById('watchmode-key').value = keys.watchmode;
-        if (keys.jackett) document.getElementById('jackett-key').value = keys.jackett;
-        if (keys.jellyfin) document.getElementById('jellyfin-key').value = keys.jellyfin;
-        if (keys.cloudCommander) document.getElementById('cloud-commander-key').value = keys.cloudCommander;
+        if (keys.tmdb) {
+          document.getElementById('tmdb-key').value = keys.tmdb;
+          console.log('TMDB Key assigned:', keys.tmdb); // Added console.log
+        }
+        if (keys.watchmode) {
+          document.getElementById('watchmode-key').value = keys.watchmode;
+          console.log('Watchmode Key assigned:', keys.watchmode); // Added console.log
+        }
+        if (keys.jackett) {
+          document.getElementById('jackett-key').value = keys.jackett;
+          console.log('Jackett Key assigned:', keys.jackett); // Added console.log
+        }
+        if (keys.jellyfin) {
+          document.getElementById('jellyfin-key').value = keys.jellyfin;
+          console.log('Jellyfin Key assigned:', keys.jellyfin); // Added console.log
+        }
+        if (keys.cloudCommander) {
+          document.getElementById('cloud-commander-key').value = keys.cloudCommander;
+          console.log('Cloud Commander Key assigned:', keys.cloudCommander); // Added console.log
+        }
       }
     })
     .catch(error => {
@@ -224,47 +242,24 @@ function loadEnvironmentConfig() {
 
 /**
  * Show notification
- * @param {string} type - Notification type (success, error)
+ * @param {string} type - Notification type ('success' or 'error')
  * @param {string} message - Notification message
  */
 function showNotification(type, message) {
+  const notificationContainer = document.getElementById('notification-container');
+  if (!notificationContainer) return;
+  
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
   notification.textContent = message;
   
-  document.body.appendChild(notification);
+  notificationContainer.appendChild(notification);
   
-  // Remove notification after 3 seconds
+  // Auto-remove notification after 5 seconds
   setTimeout(() => {
     notification.classList.add('fade-out');
     setTimeout(() => {
-      document.body.removeChild(notification);
+      notificationContainer.removeChild(notification);
     }, 500);
-  }, 3000);
+  }, 5000);
 }
-
-  
-  /**
-   * Show notification
-   * @param {string} type - Notification type ('success' or 'error')
-   * @param {string} message - Notification message
-   */
-  function showNotification(type, message) {
-    const notificationContainer = document.getElementById('notification-container');
-    if (!notificationContainer) return;
-    
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    
-    notificationContainer.appendChild(notification);
-    
-    // Auto-remove notification after 5 seconds
-    setTimeout(() => {
-      notification.classList.add('fade-out');
-      setTimeout(() => {
-        notificationContainer.removeChild(notification);
-      }, 500);
-    }, 5000);
-  }
-// This closing bracket appears to be orphaned and should be removed

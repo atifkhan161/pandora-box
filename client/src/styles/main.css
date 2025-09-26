@@ -189,6 +189,33 @@ label {
 input[type="text"],
 input[type="password"],
 input[type="email"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: var(--pb-spacing-sm);
+    background-color: var(--pb-background-light);
+    border: 1px solid var(--pb-border); /* Ensure a visible border */
+    border-radius: var(--pb-border-radius-sm);
+    font-size: var(--pb-font-size-md);
+    color: var(--pb-text-primary);
+    transition: all var(--pb-transition-fast);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--pb-primary);
+    box-shadow: 0 0 0 2px rgba(var(--pb-primary-rgb), 0.2);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
 textarea,
 select {
     width: 100%;

@@ -3,6 +3,7 @@
     --pb-primary: #ff6600;
     --pb-primary-light: #ff8533;
     --pb-primary-dark: #cc5200;
+    --pb-primary-rgb: 255, 102, 0; /* Added RGB for primary color */
     
     /* Secondary Colors - Dark Theme */
     --pb-secondary: #1a1a1a;

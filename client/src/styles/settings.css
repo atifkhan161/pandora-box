@@ -191,6 +191,7 @@
     }
     
     .nav-links {
+        display: flex;
         justify-content: space-around;
     }
     

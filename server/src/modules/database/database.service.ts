@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import * as Loki from 'lokijs';
 import { Collection } from 'lokijs';
+import * as path from 'path';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit {
@@ -9,7 +10,10 @@ export class DatabaseService implements OnModuleInit {
   private config: Collection<any>;
 
   async onModuleInit() {
-    this.db = new Loki('pandora-box.db', {
+    // Database file path - use environment variable for Docker volume mounting
+    let dbPath = process.env.DB_PATH || path.join(__dirname, '../../../../../data');
+    let dbFile = path.join(dbPath, 'pandora-box.db');
+    this.db = new Loki(dbFile, {
       autoload: true,
       autoloadCallback: this.databaseInitialize.bind(this),
       autosave: true,
@@ -25,7 +29,7 @@ export class DatabaseService implements OnModuleInit {
         unique: ['username'],
         indices: ['role'],
       });
-      
+
       // Add default admin user
       this.users.insert({
         username: 'admin',

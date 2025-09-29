@@ -33,6 +33,8 @@ export class Navigation {
     // Define navigation items
     const navItems = [
       { href: 'dashboard.html', text: 'Dashboard' },
+      { href: 'movies.html', text: 'Movies' },
+      { href: 'tvshows.html', text: 'TV Shows' },
       { href: 'search.html', text: 'Search' },
       { href: 'settings.html', text: 'Settings' }
     ];
@@ -83,6 +85,10 @@ export class Navigation {
     
     if (currentPath.includes('dashboard.html')) {
       activeLink = 'dashboard';
+    } else if (currentPath.includes('movies.html')) {
+      activeLink = 'movies';
+    } else if (currentPath.includes('tvshows.html')) {
+      activeLink = 'tvshows';
     } else if (currentPath.includes('search.html')) {
       activeLink = 'search';
     } else if (currentPath.includes('settings.html')) {

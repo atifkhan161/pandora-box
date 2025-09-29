@@ -147,6 +147,32 @@ export class MediaService {
     };
   }
 
+  async getMoviesByCategory(category: string, page = 1): Promise<any> {
+    const cacheKey = `movies_${category}_${page}`;
+    let cached = await this.getCachedData('tmdb', cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+    
+    const data = await this.tmdbService.getMoviesByCategory(category, page);
+    await this.setCachedData('tmdb', cacheKey, data, 'movie', 6);
+    return data;
+  }
+
+  async getTvShowsByCategory(category: string, page = 1): Promise<any> {
+    const cacheKey = `tv_${category}_${page}`;
+    let cached = await this.getCachedData('tmdb', cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+    
+    const data = await this.tmdbService.getTvShowsByCategory(category, page);
+    await this.setCachedData('tmdb', cacheKey, data, 'tv', 6);
+    return data;
+  }
+
   async searchMedia(query: string, type?: 'movie' | 'tv' | 'person', page = 1): Promise<any> {
     const cacheKey = `search_${query}_${type || 'all'}_${page}`;
     let cached = await this.getCachedData('tmdb', cacheKey);

@@ -122,6 +122,90 @@ export class MediaController {
     }
   }
 
+  @Get('movies/:category')
+  async getMoviesByCategory(@Param('category') category: string, @Query('page') page = 1) {
+    try {
+      const validCategories = ['popular', 'top_rated', 'now_playing', 'upcoming'];
+      
+      if (!validCategories.includes(category)) {
+        throw new HttpException(
+          {
+            success: false,
+            message: 'Invalid movie category'
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      
+      const data = await this.mediaService.getMoviesByCategory(category, page);
+      
+      return {
+        success: true,
+        data,
+        pagination: {
+          page: data.page || page,
+          totalPages: data.total_pages || 1,
+          totalResults: data.total_results || 0
+        }
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to fetch movies',
+          error: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  @Get('tv/:category')
+  async getTvShowsByCategory(@Param('category') category: string, @Query('page') page = 1) {
+    try {
+      const validCategories = ['popular', 'top_rated', 'on_the_air', 'airing_today'];
+      
+      if (!validCategories.includes(category)) {
+        throw new HttpException(
+          {
+            success: false,
+            message: 'Invalid TV show category'
+          },
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      
+      const data = await this.mediaService.getTvShowsByCategory(category, page);
+      
+      return {
+        success: true,
+        data,
+        pagination: {
+          page: data.page || page,
+          totalPages: data.total_pages || 1,
+          totalResults: data.total_results || 0
+        }
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to fetch TV shows',
+          error: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get('search')
   async searchMedia(@Query() query: MediaSearchDto) {
     try {

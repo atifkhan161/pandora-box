@@ -145,4 +145,30 @@ export class TmdbService {
     
     return response.data;
   }
+
+  async getMoviesByCategory(category: string, page = 1): Promise<any> {
+    const apiKey = await this.getApiKey();
+    const url = `${this.baseUrl}/movie/${category}`;
+    
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        params: { api_key: apiKey, page }
+      })
+    );
+    
+    return response.data;
+  }
+
+  async getTvShowsByCategory(category: string, page = 1): Promise<any> {
+    const apiKey = await this.getApiKey();
+    const url = `${this.baseUrl}/tv/${category}`;
+    
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        params: { api_key: apiKey, page }
+      })
+    );
+    
+    return response.data;
+  }
 }

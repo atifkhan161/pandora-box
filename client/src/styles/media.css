@@ -456,6 +456,13 @@
   background-color: var(--pb-background);
   padding: var(--pb-spacing-sm);
   border-radius: var(--pb-border-radius-md);
+  cursor: pointer;
+  transition: all var(--pb-transition-fast);
+}
+
+.cast-member-inline:hover {
+  background-color: var(--pb-secondary-light);
+  transform: translateX(4px);
 }
 
 .cast-member-inline img {
@@ -478,6 +485,15 @@
 
 .cast-member {
   text-align: center;
+  cursor: pointer;
+  transition: transform var(--pb-transition-fast);
+  border-radius: var(--pb-border-radius-md);
+  padding: var(--pb-spacing-sm);
+}
+
+.cast-member:hover {
+  transform: translateY(-4px);
+  background-color: var(--pb-background-light);
 }
 
 .cast-photo {

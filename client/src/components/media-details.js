@@ -186,7 +186,7 @@ export class MediaDetailsComponent {
         <div class="accordion-content" id="cast-content">
           <div class="cast-preview">
             ${previewCast.map(person => `
-              <div class="cast-member-inline">
+              <div class="cast-member-inline" data-person-name="${person.name}">
                 <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w92${person.profile_path}` : './assets/placeholder-person.svg'}" 
                      alt="${person.name}" />
                 <span>${person.name}</span>
@@ -196,7 +196,7 @@ export class MediaDetailsComponent {
           <div class="cast-full" style="display: none;">
             <div class="cast-grid">
               ${cast.map(person => `
-                <div class="cast-member">
+                <div class="cast-member" data-person-name="${person.name}">
                   <div class="cast-photo">
                     <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : './assets/placeholder-person.svg'}" 
                          alt="${person.name}" loading="lazy" />
@@ -369,6 +369,15 @@ export class MediaDetailsComponent {
         const mediaType = item.dataset.mediaType;
         const mediaId = item.dataset.mediaId;
         window.location.href = `media-details.html?type=${mediaType}&id=${mediaId}`;
+      });
+    });
+
+    // Cast member click listeners
+    const castMembers = document.querySelectorAll('.cast-member, .cast-member-inline');
+    castMembers.forEach(member => {
+      member.addEventListener('click', () => {
+        const personName = member.dataset.personName;
+        window.location.href = `search.html?q=${encodeURIComponent(personName)}&type=person`;
       });
     });
   }

@@ -18,6 +18,11 @@ export class SearchComponent {
   render(container) {
     this.container = container;
     
+    // Check for URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialQuery = urlParams.get('q') || '';
+    const initialType = urlParams.get('type') || 'multi';
+    
     const searchHTML = `
       <div class="search-content">
         <div class="content-header">
@@ -27,25 +32,25 @@ export class SearchComponent {
         
         <div class="search-form">
           <div class="search-input-container">
-            <input type="text" id="search-input" placeholder="Search for movies, TV shows, or people..." />
+            <input type="text" id="search-input" placeholder="Search for movies, TV shows, or people..." value="${initialQuery}" />
             <button id="search-btn" class="btn btn-primary">Search</button>
           </div>
           
           <div class="search-filters">
             <label>
-              <input type="radio" name="search-type" value="multi" checked />
+              <input type="radio" name="search-type" value="multi" ${initialType === 'multi' ? 'checked' : ''} />
               All
             </label>
             <label>
-              <input type="radio" name="search-type" value="movie" />
+              <input type="radio" name="search-type" value="movie" ${initialType === 'movie' ? 'checked' : ''} />
               Movies
             </label>
             <label>
-              <input type="radio" name="search-type" value="tv" />
+              <input type="radio" name="search-type" value="tv" ${initialType === 'tv' ? 'checked' : ''} />
               TV Shows
             </label>
             <label>
-              <input type="radio" name="search-type" value="person" />
+              <input type="radio" name="search-type" value="person" ${initialType === 'person' ? 'checked' : ''} />
               People
             </label>
           </div>
@@ -61,6 +66,11 @@ export class SearchComponent {
     
     container.innerHTML = searchHTML;
     this.initEventListeners();
+    
+    // Perform initial search if query exists
+    if (initialQuery) {
+      this.performSearch(initialQuery);
+    }
   }
 
   /**

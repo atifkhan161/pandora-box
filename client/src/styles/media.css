@@ -2,7 +2,7 @@
 
 /* Dashboard Styles */
 .dashboard-content {
-  padding: var(--pb-spacing-lg);
+  padding: 0 var(--pb-spacing-lg) var(--pb-spacing-lg) var(--pb-spacing-lg);
 }
 
 .media-sections {
@@ -174,7 +174,7 @@
 .media-details-content {
   position: relative;
   z-index: 2;
-  padding: var(--pb-spacing-xl);
+  padding: 0 var(--pb-spacing-xl) var(--pb-spacing-xl) var(--pb-spacing-xl);
   margin-top: 40vh;
 }
 
@@ -397,7 +397,7 @@
 
 /* Search Styles */
 .search-content {
-  padding: var(--pb-spacing-lg);
+  padding: 0 var(--pb-spacing-lg) var(--pb-spacing-lg) var(--pb-spacing-lg);
 }
 
 .search-form {

@@ -1,10 +1,10 @@
-// Dashboard page functionality
+// Search page functionality
 
 import auth from './services/auth.js';
 import { Navigation } from './components/navigation.js';
-import { DashboardComponent } from './components/dashboard.js';
+import { SearchComponent } from './components/search.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   // Check if user is authenticated
   if (!auth.isAuthenticated()) {
     // Redirect to login page if not authenticated
@@ -15,11 +15,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize navigation
   Navigation.init('app');
   
-  // Initialize dashboard component
+  // Initialize search component
   const mainContent = document.querySelector('.main-content') || document.getElementById('app');
   if (mainContent) {
-    const dashboard = new DashboardComponent();
-    await dashboard.render(mainContent);
-    dashboard.initEventListeners();
+    const search = new SearchComponent();
+    search.render(mainContent);
   }
 });

@@ -2,7 +2,7 @@ import { Controller, Get, Query, Param, HttpException, HttpStatus } from '@nestj
 import { MediaService } from './media.service';
 import { MediaSearchDto, MediaDetailsDto, TrendingMediaDto } from './dto/media.dto';
 
-@Controller('api/v1/media')
+@Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 

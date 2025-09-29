@@ -3,6 +3,7 @@
 // Import styles
 import './styles/theme.css';
 import './styles/main.css';
+import './styles/media.css';
 
 // Import services
 import './services/api.js';

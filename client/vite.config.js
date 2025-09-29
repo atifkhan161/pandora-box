@@ -31,6 +31,8 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/index.html'),
         dashboard: resolve(__dirname, 'src/dashboard.html'),
+        search: resolve(__dirname, 'src/search.html'),
+        mediaDetails: resolve(__dirname, 'src/media-details.html'),
       },
     },
   },

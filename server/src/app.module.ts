@@ -3,6 +3,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { MediaModule } from './modules/media/media.module';
+import { DownloadsModule } from './modules/downloads/downloads.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { MediaModule } from './modules/media/media.module';
     DatabaseModule,
     SettingsModule,
     MediaModule,
+    DownloadsModule,
   ],
 })
 export class AppModule {}

@@ -9,6 +9,6 @@ import { EncryptionService } from './encryption.service';
   imports: [DatabaseModule, HttpModule],
   controllers: [SettingsController],
   providers: [SettingsService, EncryptionService],
-  exports: [SettingsService],
+  exports: [SettingsService, EncryptionService],
 })
 export class SettingsModule {}

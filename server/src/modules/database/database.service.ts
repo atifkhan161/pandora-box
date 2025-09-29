@@ -9,6 +9,7 @@ export class DatabaseService implements OnModuleInit {
   private users: Collection<any>;
   private config: Collection<any>;
   private mediaCache: Collection<any>;
+  private downloads: Collection<any>;
 
   async onModuleInit() {
     // Database file path - use environment variable for Docker volume mounting
@@ -56,6 +57,14 @@ export class DatabaseService implements OnModuleInit {
       });
     }
 
+    // Initialize Downloads collection
+    this.downloads = this.db.getCollection('downloads');
+    if (!this.downloads) {
+      this.downloads = this.db.addCollection('downloads', {
+        indices: ['type', 'status', 'timestamp'],
+      });
+    }
+
     console.log('LokiJS database initialized successfully');
   }
 
@@ -69,5 +78,9 @@ export class DatabaseService implements OnModuleInit {
 
   getMediaCacheCollection(): Collection<any> {
     return this.mediaCache;
+  }
+
+  getDownloadsCollection(): Collection<any> {
+    return this.downloads;
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { DatabaseService } from '../database/database.service';
 import { EncryptionService } from '../settings/encryption.service';
+import * as xml2js from 'xml2js';
 
 @Injectable()
 export class JackettService {
@@ -32,16 +33,18 @@ export class JackettService {
     return response.data.Results || [];
   }
 
+
+
   private async getJackettConfig(): Promise<any> {
     const configCollection = this.databaseService.getConfigCollection();
     const config = configCollection.findOne({ type: 'jackett-config' });
     
     if (!config?.config) {
-      return { url: null, apiKey: null };
+      throw new Error('Jackett configuration not found. Please configure Jackett in settings.');
     }
 
     return {
-      url: config.config.url,
+      url: config.config.url.replace(/\/$/, ''),
       apiKey: this.encryptionService.decrypt(config.config.apiKey),
     };
   }

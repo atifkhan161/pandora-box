@@ -185,6 +185,11 @@ export class SettingsService {
     if (serviceName === 'qbittorrent') {
       return this.testQbittorrentConnection();
     }
+    
+    // Jackett config uses dedicated configuration, not API key collection
+    if (serviceName === 'jackett-config') {
+      return this.testJackettConfigConnection();
+    }
 
     // If no API key provided, get from database
     if (!apiKey) {
@@ -558,10 +563,10 @@ export class SettingsService {
       }
 
       // Test connection to Jackett API
+      const baseUrl = url.replace(/\/$/, '');
       const response = await this.httpService.axiosRef.get(
-        `${url}/api/v2.0/indexers`,
+        `${baseUrl}/api/v2.0/indexers/all/results/torznab/api?apikey=${apiKey}&t=caps`,
         {
-          params: { apikey: apiKey },
           timeout: 5000
         }
       );

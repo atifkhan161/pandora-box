@@ -92,7 +92,7 @@ export class MediaDetailsComponent {
               ` : ''}
               
               <div class="media-actions">
-                <!-- Torrent search functionality will be added later -->
+                <!-- Torrent search moved to accordion section -->
               </div>
             </div>
           </div>
@@ -153,6 +153,27 @@ export class MediaDetailsComponent {
   }
 
   /**
+   * Render torrents accordion
+   */
+  renderTorrentsAccordion() {
+    return `
+      <div class="accordion-item">
+        <div class="accordion-header" data-accordion="torrents">
+          <h3>Torrents</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content" id="torrents-content" style="display: none;">
+          <div id="torrent-loading" class="torrent-loading" style="display: none;">
+            <div class="loading-spinner">Loading indexers and searching torrents...</div>
+          </div>
+          <div id="indexer-tabs" class="indexer-tabs" style="display: none;"></div>
+          <div id="torrent-results" class="torrent-results"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
    * Render accordion sections
    */
   renderAccordionSections() {
@@ -160,6 +181,7 @@ export class MediaDetailsComponent {
       <div class="accordion-sections">
         ${this.mediaType === 'tv' ? this.renderSeasonsAccordion() : ''}
         ${this.renderCastAccordion()}
+        ${this.renderTorrentsAccordion()}
         ${this.renderSimilarAccordion()}
         ${this.renderStreamingAccordion()}
       </div>
@@ -381,6 +403,8 @@ export class MediaDetailsComponent {
         window.location.href = `search.html?person_id=${personId}&person_name=${encodeURIComponent(personName)}`;
       });
     });
+
+    // Torrents accordion will trigger search automatically when opened
   }
 
   /**
@@ -405,6 +429,11 @@ export class MediaDetailsComponent {
           full.style.display = 'block';
         }
       }
+      
+      // Start torrent search when torrents accordion is opened
+      if (accordionType === 'torrents') {
+        this.loadIndexersAndSearch();
+      }
     } else {
       content.style.display = 'none';
       icon.textContent = '▼';
@@ -420,5 +449,161 @@ export class MediaDetailsComponent {
         }
       }
     }
+  }
+
+  /**
+   * Load indexers and search torrents
+   */
+  async loadIndexersAndSearch() {
+    const torrentLoading = document.getElementById('torrent-loading');
+    const indexerTabs = document.getElementById('indexer-tabs');
+    const torrentResults = document.getElementById('torrent-results');
+
+    // Show loading state
+    torrentLoading.style.display = 'block';
+    indexerTabs.style.display = 'none';
+    torrentResults.innerHTML = '';
+
+    try {
+      // Get indexers and search torrents
+      const title = this.mediaData.title || this.mediaData.name;
+      const year = this.mediaData.release_date || this.mediaData.first_air_date;
+      const searchQuery = year ? `${title} ${new Date(year).getFullYear()}` : title;
+      
+      const response = await api.get(`/downloads/search-torrents/${encodeURIComponent(searchQuery)}`);
+      
+      if (response && Array.isArray(response)) {
+        this.renderIndexerTabs(response);
+        this.renderTorrentResults(response, 'all');
+      } else {
+        this.renderTorrentError('No torrents found');
+      }
+    } catch (error) {
+      console.error('Error loading torrents:', error);
+      this.renderTorrentError('Failed to load torrents');
+    } finally {
+      torrentLoading.style.display = 'none';
+      indexerTabs.style.display = 'block';
+    }
+  }
+
+  /**
+   * Render indexer tabs
+   */
+  renderIndexerTabs(torrents) {
+    const indexerTabs = document.getElementById('indexer-tabs');
+    const indexers = [...new Set(torrents.map(t => t.Tracker || 'Unknown'))].sort();
+    
+    const tabsHTML = `
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-indexer="all">All (${torrents.length})</button>
+        ${indexers.map(indexer => {
+          const count = torrents.filter(t => (t.Tracker || 'Unknown') === indexer).length;
+          return `<button class="tab-btn" data-indexer="${indexer}">${indexer} (${count})</button>`;
+        }).join('')}
+      </div>
+    `;
+    
+    indexerTabs.innerHTML = tabsHTML;
+    
+    // Add tab click listeners
+    const tabBtns = indexerTabs.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.renderTorrentResults(torrents, btn.dataset.indexer);
+      });
+    });
+  }
+
+  /**
+   * Render torrent search results
+   */
+  renderTorrentResults(torrents, selectedIndexer = 'all') {
+    const torrentResults = document.getElementById('torrent-results');
+    
+    const filteredTorrents = selectedIndexer === 'all' 
+      ? torrents 
+      : torrents.filter(t => (t.Tracker || 'Unknown') === selectedIndexer);
+    
+    if (!filteredTorrents.length) {
+      torrentResults.innerHTML = '<p class="no-torrents">No torrents found for this indexer.</p>';
+      return;
+    }
+
+    const torrentsHTML = filteredTorrents.map(torrent => `
+      <div class="torrent-item">
+        <div class="torrent-info">
+          <h4 class="torrent-title">${torrent.Title || 'Unknown'}</h4>
+          <div class="torrent-meta">
+            <span class="torrent-size">${this.formatFileSize(torrent.Size || 0)}</span>
+            <span class="torrent-seeds">🌱 ${torrent.Seeders || 0}</span>
+            <span class="torrent-peers">🔗 ${torrent.Peers || 0}</span>
+            <span class="torrent-indexer">${torrent.Tracker || 'Unknown'}</span>
+          </div>
+        </div>
+        <div class="torrent-actions">
+          <button class="btn btn-primary download-torrent-btn" 
+                  data-magnet="${torrent.MagnetUri || torrent.Link}" 
+                  data-title="${torrent.Title || 'Unknown'}">
+            ⬇️ Download
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    torrentResults.innerHTML = torrentsHTML;
+
+    // Add download button listeners
+    const downloadBtns = torrentResults.querySelectorAll('.download-torrent-btn');
+    downloadBtns.forEach(btn => {
+      btn.addEventListener('click', () => this.downloadTorrent(btn.dataset.magnet, btn.dataset.title));
+    });
+  }
+
+  /**
+   * Render torrent error
+   */
+  renderTorrentError(message) {
+    const torrentResults = document.getElementById('torrent-results');
+    torrentResults.innerHTML = `<p class="torrent-error">${message}</p>`;
+  }
+
+  /**
+   * Download torrent
+   */
+  async downloadTorrent(magnetLink, title) {
+    if (!magnetLink) {
+      alert('Invalid torrent link');
+      return;
+    }
+
+    try {
+      const response = await api.post('/downloads/add-torrent', {
+        magnetLink,
+        title
+      });
+
+      if (response && response.success) {
+        alert('Torrent added to download queue successfully!');
+      } else {
+        alert('Failed to add torrent to download queue');
+      }
+    } catch (error) {
+      console.error('Error downloading torrent:', error);
+      alert('Failed to add torrent to download queue');
+    }
+  }
+
+  /**
+   * Format file size
+   */
+  formatFileSize(bytes) {
+    if (!bytes || bytes === 0) return 'Unknown';
+    
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
   }
 }

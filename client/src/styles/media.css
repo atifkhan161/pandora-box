@@ -652,15 +652,37 @@
   border-radius: var(--pb-border-radius-sm);
 }
 
-/* Torrents Section */
-.torrents-section {
+/* Torrent Section */
+.torrent-section {
   background-color: var(--pb-background-light);
   border-radius: var(--pb-border-radius-lg);
   padding: var(--pb-spacing-lg);
   border: 1px solid var(--pb-secondary-light);
+  margin-bottom: var(--pb-spacing-xl);
 }
 
-.torrents-list {
+.torrent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--pb-spacing-lg);
+}
+
+.torrent-header h2 {
+  color: var(--pb-primary);
+  margin: 0;
+  font-size: var(--pb-font-size-xl);
+}
+
+.torrent-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--pb-spacing-sm);
+  color: var(--pb-text-secondary);
+  font-size: var(--pb-font-size-md);
+}
+
+.torrent-results {
   display: flex;
   flex-direction: column;
   gap: var(--pb-spacing-md);
@@ -674,6 +696,12 @@
   background-color: var(--pb-background);
   border-radius: var(--pb-border-radius-md);
   border: 1px solid var(--pb-secondary);
+  transition: all var(--pb-transition-fast);
+}
+
+.torrent-item:hover {
+  border-color: var(--pb-primary);
+  transform: translateX(4px);
 }
 
 .torrent-info {
@@ -696,6 +724,26 @@
   gap: var(--pb-spacing-lg);
   font-size: var(--pb-font-size-sm);
   color: var(--pb-text-secondary);
+  flex-wrap: wrap;
+}
+
+.torrent-size {
+  font-weight: var(--pb-font-weight-medium);
+}
+
+.torrent-seeds {
+  color: var(--pb-success);
+}
+
+.torrent-peers {
+  color: var(--pb-warning);
+}
+
+.torrent-category {
+  background-color: var(--pb-secondary-light);
+  padding: var(--pb-spacing-xs) var(--pb-spacing-sm);
+  border-radius: var(--pb-border-radius-sm);
+  font-size: var(--pb-font-size-xs);
 }
 
 .torrent-actions {
@@ -703,9 +751,74 @@
   margin-left: var(--pb-spacing-md);
 }
 
-.btn-sm {
+.download-torrent-btn {
   padding: var(--pb-spacing-sm) var(--pb-spacing-md);
   font-size: var(--pb-font-size-sm);
+  min-width: 100px;
+}
+
+.no-torrents {
+  text-align: center;
+  color: var(--pb-text-secondary);
+  font-style: italic;
+  padding: var(--pb-spacing-xl);
+}
+
+.torrent-error {
+  text-align: center;
+  color: var(--pb-error);
+  padding: var(--pb-spacing-xl);
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: var(--pb-border-radius-md);
+  border: 1px solid var(--pb-error);
+}
+
+/* Indexer Tabs */
+.indexer-tabs {
+  margin-bottom: var(--pb-spacing-lg);
+}
+
+.tab-buttons {
+  display: flex;
+  gap: var(--pb-spacing-xs);
+  background-color: var(--pb-background);
+  border-radius: var(--pb-border-radius-md);
+  padding: var(--pb-spacing-xs);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: var(--pb-spacing-sm) var(--pb-spacing-md);
+  background: transparent;
+  color: var(--pb-text-secondary);
+  border: none;
+  border-radius: var(--pb-border-radius-sm);
+  cursor: pointer;
+  transition: all var(--pb-transition-fast);
+  font-weight: var(--pb-font-weight-medium);
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-size: var(--pb-font-size-sm);
+}
+
+.tab-btn:hover {
+  background-color: var(--pb-secondary);
+  color: var(--pb-text-primary);
+}
+
+.tab-btn.active {
+  background-color: var(--pb-primary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+}
+
+.torrent-indexer {
+  background-color: var(--pb-secondary-light);
+  padding: var(--pb-spacing-xs) var(--pb-spacing-sm);
+  border-radius: var(--pb-border-radius-sm);
+  font-size: var(--pb-font-size-xs);
+  color: var(--pb-primary);
+  font-weight: var(--pb-font-weight-medium);
 }
 
 /* Movies and TV Shows Styles */
@@ -1061,8 +1174,27 @@
     gap: var(--pb-spacing-md);
   }
   
+  .torrent-actions {
+    margin-left: 0;
+  }
+  
   .torrent-meta {
     flex-wrap: wrap;
+    gap: var(--pb-spacing-md);
+  }
+  
+  .torrent-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--pb-spacing-sm);
+  }
+  
+  .tab-buttons {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    text-align: left;
   }
 }
 

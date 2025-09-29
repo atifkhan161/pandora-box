@@ -33,6 +33,8 @@ function initializeEventListeners() {
   const testConnectionButtons = document.querySelectorAll('.test-connection-btn');
   const saveQbittorrentButtons = document.querySelectorAll('.save-qbittorrent-btn');
   const testQbittorrentButton = document.querySelector('.test-qbittorrent-btn');
+  const saveJackettButton = document.querySelector('.save-jackett-btn');
+  const testJackettButton = document.querySelector('.test-jackett-btn');
   
   // Password form submission
   if (passwordForm) {
@@ -251,6 +253,68 @@ function initializeEventListeners() {
   
   // Load qBittorrent configuration
   loadQbittorrentConfig();
+  
+  // Jackett save button
+  if (saveJackettButton) {
+    saveJackettButton.addEventListener('click', async () => {
+      const url = document.getElementById('jackett-url').value.trim();
+      const apiKey = document.getElementById('jackett-api-key').value.trim();
+      
+      if (!url || !apiKey) {
+        showNotification('error', 'All fields are required');
+        return;
+      }
+      
+      if (!url.match(/^https?:\/\/.+/)) {
+        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:9117)');
+        return;
+      }
+      
+      saveJackettButton.disabled = true;
+      saveJackettButton.textContent = 'Saving...';
+      
+      try {
+        const response = await api.put('/settings/jackett', { url, apiKey });
+        
+        if (response && response.success) {
+          showNotification('success', 'Jackett configuration saved successfully');
+        } else {
+          showNotification('error', `Failed to save Jackett configuration: ${response.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showNotification('error', `Error saving Jackett configuration: ${error.message}`);
+      } finally {
+        saveJackettButton.disabled = false;
+        saveJackettButton.textContent = 'Save';
+      }
+    });
+  }
+  
+  // Jackett test connection button
+  if (testJackettButton) {
+    testJackettButton.addEventListener('click', async () => {
+      testJackettButton.disabled = true;
+      testJackettButton.textContent = 'Testing...';
+      
+      try {
+        const response = await api.get('/settings/test-connection/jackett-config');
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Successfully connected to Jackett');
+        } else {
+          showNotification('error', response.message || 'Failed to connect to Jackett');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'Jackett connection test failed');
+      } finally {
+        testJackettButton.disabled = false;
+        testJackettButton.textContent = 'Test Connection';
+      }
+    });
+  }
+  
+  // Load Jackett configuration
+  loadJackettConfig();
 }
 
 /**
@@ -305,6 +369,24 @@ function loadEnvironmentConfig() {
     })
     .catch(error => {
       console.error('Failed to load environment configuration:', error);
+    });
+}
+
+/**
+ * Load Jackett configuration from server
+ */
+function loadJackettConfig() {
+  api.get('/settings/jackett')
+    .then(response => {
+      if (response && response.success) {
+        const config = response.data;
+        
+        if (config.url) document.getElementById('jackett-url').value = config.url;
+        if (config.apiKey) document.getElementById('jackett-api-key').value = config.apiKey;
+      }
+    })
+    .catch(error => {
+      console.error('Failed to load Jackett configuration:', error);
     });
 }
 

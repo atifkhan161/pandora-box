@@ -101,6 +101,25 @@
                     </form>
                 </section>
 
+                <!-- Jackett Configuration Section -->
+                <section class="settings-section">
+                    <h2>Jackett Configuration</h2>
+                    <form id="jackett-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="jackett-url">URL</label>
+                            <input type="text" id="jackett-url" name="jackett-url" placeholder="http://192.168.1.100:9117">
+                        </div>
+                        <div class="form-group">
+                            <label for="jackett-api-key">API Key</label>
+                            <input type="password" id="jackett-api-key" name="jackett-api-key">
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary save-jackett-btn">Save</button>
+                            <button type="button" class="btn btn-secondary test-jackett-btn">Test Connection</button>
+                        </div>
+                    </form>
+                </section>
+
                 <!-- qBittorrent Configuration Section -->
                 <section class="settings-section">
                     <h2>qBittorrent Configuration</h2>

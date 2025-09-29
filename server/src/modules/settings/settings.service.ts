@@ -219,6 +219,8 @@ export class SettingsService {
       case 'qbittorrent':
         // This case should not be reached due to early return above
         return this.testQbittorrentConnection();
+      case 'jackett-config':
+        return this.testJackettConfigConnection();
       default:
         return { success: false, message: 'Unknown service' };
     }
@@ -469,6 +471,111 @@ export class SettingsService {
         return { success: false, message: 'Cannot connect to qBittorrent - service may be down' };
       }
       return { success: false, message: `Failed to connect to qBittorrent: ${error.message}` };
+    }
+  }
+
+  /**
+   * Update Jackett configuration
+   * @param jackettConfig Jackett configuration to update
+   * @returns Updated configuration
+   */
+  async updateJackettConfig(jackettConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'jackett-config' });
+
+    // Encrypt API key
+    const encryptedConfig = {
+      url: jackettConfig.url,
+      apiKey: this.encryptionService.encrypt(jackettConfig.apiKey),
+    };
+
+    if (config) {
+      config.config = { ...config.config, ...encryptedConfig };
+      configCollection.update(config);
+    } else {
+      config = {
+        type: 'jackett-config',
+        config: encryptedConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'Jackett configuration updated successfully' };
+  }
+
+  /**
+   * Get Jackett configuration
+   * @returns Jackett configuration
+   */
+  async getJackettConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'jackett-config' });
+
+    if (!config || !config.config) {
+      return { 
+        success: true,
+        data: {
+          url: '',
+          apiKey: ''
+        } 
+      };
+    }
+
+    // Decrypt API key for client
+    const decryptedConfig = {
+      url: config.config.url,
+      apiKey: this.encryptionService.decrypt(config.config.apiKey),
+    };
+
+    return { success: true, data: decryptedConfig };
+  }
+
+  /**
+   * Test Jackett configuration connection
+   * @returns Test result
+   */
+  private async testJackettConfigConnection(): Promise<any> {
+    try {
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'jackett-config' });
+      
+      if (!config || !config.config) {
+        return { success: false, message: 'Jackett configuration not found' };
+      }
+
+      const { url, apiKey: encryptedApiKey } = config.config;
+      
+      if (!url || !encryptedApiKey) {
+        return { success: false, message: 'Incomplete Jackett configuration' };
+      }
+
+      let apiKey;
+      try {
+        apiKey = this.encryptionService.decrypt(encryptedApiKey);
+      } catch (error) {
+        return { success: false, message: 'Failed to decrypt Jackett API key' };
+      }
+
+      // Test connection to Jackett API
+      const response = await this.httpService.axiosRef.get(
+        `${url}/api/v2.0/indexers`,
+        {
+          params: { apikey: apiKey },
+          timeout: 5000
+        }
+      );
+
+      if (response.status === 200) {
+        return { success: true, message: 'Successfully connected to Jackett' };
+      } else {
+        return { success: false, message: 'Invalid Jackett API key or URL' };
+      }
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        return { success: false, message: 'Cannot connect to Jackett - service may be down' };
+      }
+      return { success: false, message: `Failed to connect to Jackett: ${error.message}` };
     }
   }
 }

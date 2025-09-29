@@ -63,4 +63,14 @@ export class SettingsController {
   async getQbittorrentConfig() {
     return this.settingsService.getQbittorrentConfig();
   }
+
+  @Put('jackett')
+  async updateJackettConfig(@Body() jackettConfig: any) {
+    return this.settingsService.updateJackettConfig(jackettConfig);
+  }
+
+  @Get('jackett')
+  async getJackettConfig() {
+    return this.settingsService.getJackettConfig();
+  }
 }

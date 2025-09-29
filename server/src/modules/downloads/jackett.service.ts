@@ -34,15 +34,15 @@ export class JackettService {
 
   private async getJackettConfig(): Promise<any> {
     const configCollection = this.databaseService.getConfigCollection();
-    const config = configCollection.findOne({ type: 'api-keys' });
+    const config = configCollection.findOne({ type: 'jackett-config' });
     
-    if (!config?.keys?.jackett) {
+    if (!config?.config) {
       return { url: null, apiKey: null };
     }
 
     return {
-      url: process.env.JACKETT_URL || 'http://localhost:9117',
-      apiKey: this.encryptionService.decrypt(config.keys.jackett),
+      url: config.config.url,
+      apiKey: this.encryptionService.decrypt(config.config.apiKey),
     };
   }
 }

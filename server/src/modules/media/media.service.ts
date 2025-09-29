@@ -173,6 +173,19 @@ export class MediaService {
     return data;
   }
 
+  async getPersonCredits(personId: string): Promise<any> {
+    const cacheKey = `person_credits_${personId}`;
+    let cached = await this.getCachedData('tmdb', cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+    
+    const data = await this.tmdbService.getPersonCredits(personId);
+    await this.setCachedData('tmdb', cacheKey, data, 'person', 12);
+    return data;
+  }
+
   async searchMedia(query: string, type?: 'movie' | 'tv' | 'person', page = 1): Promise<any> {
     const cacheKey = `search_${query}_${type || 'all'}_${page}`;
     let cached = await this.getCachedData('tmdb', cacheKey);

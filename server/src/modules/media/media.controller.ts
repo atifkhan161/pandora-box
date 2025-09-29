@@ -206,6 +206,27 @@ export class MediaController {
     }
   }
 
+  @Get('person/:id/credits')
+  async getPersonCredits(@Param('id') id: string) {
+    try {
+      const data = await this.mediaService.getPersonCredits(id);
+      
+      return {
+        success: true,
+        data
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to fetch person credits',
+          error: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
   @Get('search')
   async searchMedia(@Query() query: MediaSearchDto) {
     try {

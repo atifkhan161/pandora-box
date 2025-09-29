@@ -186,7 +186,7 @@ export class MediaDetailsComponent {
         <div class="accordion-content" id="cast-content">
           <div class="cast-preview">
             ${previewCast.map(person => `
-              <div class="cast-member-inline" data-person-name="${person.name}">
+              <div class="cast-member-inline" data-person-name="${person.name}" data-person-id="${person.id}">
                 <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w92${person.profile_path}` : './assets/placeholder-person.svg'}" 
                      alt="${person.name}" />
                 <span>${person.name}</span>
@@ -196,7 +196,7 @@ export class MediaDetailsComponent {
           <div class="cast-full" style="display: none;">
             <div class="cast-grid">
               ${cast.map(person => `
-                <div class="cast-member" data-person-name="${person.name}">
+                <div class="cast-member" data-person-name="${person.name}" data-person-id="${person.id}">
                   <div class="cast-photo">
                     <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : './assets/placeholder-person.svg'}" 
                          alt="${person.name}" loading="lazy" />
@@ -376,8 +376,9 @@ export class MediaDetailsComponent {
     const castMembers = document.querySelectorAll('.cast-member, .cast-member-inline');
     castMembers.forEach(member => {
       member.addEventListener('click', () => {
+        const personId = member.dataset.personId;
         const personName = member.dataset.personName;
-        window.location.href = `search.html?q=${encodeURIComponent(personName)}&type=person`;
+        window.location.href = `search.html?person_id=${personId}&person_name=${encodeURIComponent(personName)}`;
       });
     });
   }

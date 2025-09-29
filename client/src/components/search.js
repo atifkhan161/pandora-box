@@ -22,6 +22,8 @@ export class SearchComponent {
     const urlParams = new URLSearchParams(window.location.search);
     const initialQuery = urlParams.get('q') || '';
     const initialType = urlParams.get('type') || 'multi';
+    const personId = urlParams.get('person_id');
+    const personName = urlParams.get('person_name');
     
     const searchHTML = `
       <div class="search-content">
@@ -67,8 +69,10 @@ export class SearchComponent {
     container.innerHTML = searchHTML;
     this.initEventListeners();
     
-    // Perform initial search if query exists
-    if (initialQuery) {
+    // Perform initial search if query exists or show person filmography
+    if (personId && personName) {
+      this.showPersonFilmography(personId, decodeURIComponent(personName));
+    } else if (initialQuery) {
       this.performSearch(initialQuery);
     }
   }
@@ -346,6 +350,112 @@ export class SearchComponent {
   }
 
   /**
+   * Show person filmography
+   */
+  async showPersonFilmography(personId, personName) {
+    const resultsContainer = document.getElementById('search-results');
+    const searchInput = document.getElementById('search-input');
+    
+    // Update search input
+    searchInput.value = personName;
+    
+    // Show loading
+    resultsContainer.innerHTML = `
+      <div class="search-loading">
+        <div class="loading-spinner">Loading filmography...</div>
+      </div>
+    `;
+    
+    try {
+      const response = await api.get(`/media/person/${personId}/credits`);
+      
+      if (response.success && response.data) {
+        this.renderPersonFilmography(response.data, personName);
+      } else {
+        this.renderError('Failed to load filmography');
+      }
+    } catch (error) {
+      console.error('Error loading filmography:', error);
+      this.renderError('Failed to load filmography');
+    }
+  }
+
+  /**
+   * Render person filmography
+   */
+  renderPersonFilmography(data, personName) {
+    const resultsContainer = document.getElementById('search-results');
+    const movies = data.cast?.filter(item => item.media_type === 'movie') || [];
+    const tvShows = data.cast?.filter(item => item.media_type === 'tv') || [];
+    
+    let resultsHTML = `
+      <div class="search-results-header">
+        <h2>${personName} - Filmography</h2>
+        <p>${movies.length + tvShows.length} credits found</p>
+      </div>
+      
+      <div class="filmography-tabs">
+        <div class="category-filters">
+          <button class="category-btn active" data-tab="movies">Movies (${movies.length})</button>
+          <button class="category-btn" data-tab="tvshows">TV Shows (${tvShows.length})</button>
+        </div>
+        
+        <div class="tab-content">
+          <div id="movies-tab" class="tab-panel active">
+            ${movies.length > 0 ? this.renderFilmographyGrid(movies, 'movie') : '<p class="no-results">No movies found</p>'}
+          </div>
+          <div id="tvshows-tab" class="tab-panel" style="display: none;">
+            ${tvShows.length > 0 ? this.renderFilmographyGrid(tvShows, 'tv') : '<p class="no-results">No TV shows found</p>'}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    resultsContainer.innerHTML = resultsHTML;
+    this.initFilmographyTabs();
+    this.initResultsEventListeners();
+  }
+
+  /**
+   * Render filmography grid
+   */
+  renderFilmographyGrid(items, type) {
+    return `
+      <div class="results-grid ${type}-results">
+        ${items.map(item => this.renderMediaResult(item, type)).join('')}
+      </div>
+    `;
+  }
+
+  /**
+   * Initialize filmography tabs
+   */
+  initFilmographyTabs() {
+    const tabButtons = document.querySelectorAll('.filmography-tabs .category-btn');
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.dataset.tab;
+        
+        // Update active button
+        tabButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Show/hide tab panels
+        document.querySelectorAll('.tab-panel').forEach(panel => {
+          panel.style.display = 'none';
+          panel.classList.remove('active');
+        });
+        
+        const activePanel = document.getElementById(`${tabName}-tab`);
+        if (activePanel) {
+          activePanel.style.display = 'block';
+          activePanel.classList.add('active');
+        }
+      });
+    });
+  }
+
+  /**
    * Show placeholder message
    */
   showPlaceholder() {
@@ -371,13 +481,13 @@ export class SearchComponent {
       });
     });
     
-    // Add click listeners to person results (could navigate to person details in future)
+    // Add click listeners to person results
     const personResults = document.querySelectorAll('.person-result');
     personResults.forEach(result => {
       result.addEventListener('click', () => {
-        // For now, just log the person ID
-        console.log('Person clicked:', result.dataset.personId);
-        // TODO: Implement person details page
+        const personId = result.dataset.personId;
+        const personName = result.querySelector('.result-name').textContent;
+        this.showPersonFilmography(personId, personName);
       });
     });
   }

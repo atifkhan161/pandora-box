@@ -465,6 +465,18 @@
   transform: translateX(4px);
 }
 
+.cast-member-inline::after {
+  content: '→';
+  color: var(--pb-primary);
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity var(--pb-transition-fast);
+}
+
+.cast-member-inline:hover::after {
+  opacity: 1;
+}
+
 .cast-member-inline img {
   width: 40px;
   height: 40px;
@@ -486,14 +498,36 @@
 .cast-member {
   text-align: center;
   cursor: pointer;
-  transition: transform var(--pb-transition-fast);
+  transition: all var(--pb-transition-fast);
   border-radius: var(--pb-border-radius-md);
   padding: var(--pb-spacing-sm);
+  position: relative;
+}
+
+.cast-member::after {
+  content: 'View filmography';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--pb-transition-fast);
+  font-size: var(--pb-font-size-xs);
+  border-radius: var(--pb-border-radius-md);
 }
 
 .cast-member:hover {
   transform: translateY(-4px);
-  background-color: var(--pb-background-light);
+}
+
+.cast-member:hover::after {
+  opacity: 1;
 }
 
 .cast-photo {
@@ -576,6 +610,23 @@
 .similar-rating {
   font-size: var(--pb-font-size-xs);
   color: var(--pb-warning);
+}
+
+/* Filmography Tabs */
+.filmography-tabs {
+  margin-top: var(--pb-spacing-lg);
+}
+
+.tab-content {
+  margin-top: var(--pb-spacing-lg);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
 }
 
 /* Streaming Providers */
@@ -857,6 +908,29 @@
 .person-result {
   flex-direction: column;
   text-align: center;
+  position: relative;
+}
+
+.person-result::after {
+  content: 'Click to see filmography';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--pb-transition-fast);
+  font-size: var(--pb-font-size-sm);
+  border-radius: var(--pb-border-radius-lg);
+}
+
+.person-result:hover::after {
+  opacity: 1;
 }
 
 .person-result .result-photo {

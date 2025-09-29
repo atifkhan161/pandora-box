@@ -171,4 +171,17 @@ export class TmdbService {
     
     return response.data;
   }
+
+  async getPersonCredits(personId: string): Promise<any> {
+    const apiKey = await this.getApiKey();
+    const url = `${this.baseUrl}/person/${personId}/combined_credits`;
+    
+    const response = await firstValueFrom(
+      this.httpService.get(url, {
+        params: { api_key: apiKey }
+      })
+    );
+    
+    return response.data;
+  }
 }

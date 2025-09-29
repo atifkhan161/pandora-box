@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Downloads - Pandora Box</title>
+    <link rel="stylesheet" href="./styles/theme.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/downloads.css">
+    <link rel="stylesheet" href="./styles/navigation.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Downloads</h1>
+                <div class="downloads-stats">
+                    <span id="total-downloads">0 torrents</span>
+                    <span id="download-speed">↓ 0 KB/s</span>
+                    <span id="upload-speed">↑ 0 KB/s</span>
+                </div>
+            </header>
+
+            <div id="notification-container"></div>
+
+            <div class="downloads-container">
+                <div class="downloads-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="downloading">Downloading</button>
+                    <button class="filter-btn" data-filter="completed">Completed</button>
+                    <button class="filter-btn" data-filter="paused">Paused</button>
+                    <button class="filter-btn" data-filter="error">Error</button>
+                </div>
+
+                <div id="downloads-loading" class="downloads-loading">
+                    <div class="loading-spinner">Loading downloads...</div>
+                </div>
+
+                <div id="downloads-list" class="downloads-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./pages/downloads.js"></script>
+</body>
+</html>

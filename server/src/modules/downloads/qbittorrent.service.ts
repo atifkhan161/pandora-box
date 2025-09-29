@@ -103,18 +103,23 @@ export class QbittorrentService {
     if (this.sessionCookie) return;
 
     const config = await this.getQbittorrentConfig();
+    const baseUrl = config.url.replace(/\/$/, '');
+    
     const response = await this.httpService.axiosRef.post(
-      `${config.url}/api/v2/auth/login`,
-      new URLSearchParams({
-        username: config.username,
-        password: config.password,
-      }),
+      `${baseUrl}/api/v2/auth/login`,
+      `username=${encodeURIComponent(config.username)}&password=${encodeURIComponent(config.password)}`,
       {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Referer': baseUrl
+        },
       }
     );
 
-    this.sessionCookie = response.headers['set-cookie']?.[0];
+    const cookies = response.headers['set-cookie'];
+    if (cookies) {
+      this.sessionCookie = cookies.join('; ');
+    }
   }
 
   private async getQbittorrentConfig(): Promise<any> {
@@ -122,11 +127,11 @@ export class QbittorrentService {
     const config = configCollection.findOne({ type: 'qbittorrent-config' });
     
     if (!config?.config) {
-      throw new Error('qBittorrent configuration not found');
+      throw new Error('qBittorrent configuration not found. Please configure qBittorrent in settings.');
     }
 
     return {
-      url: config.config.url,
+      url: config.config.url.replace(/\/$/, ''),
       username: config.config.username,
       password: this.encryptionService.decrypt(config.config.password),
     };

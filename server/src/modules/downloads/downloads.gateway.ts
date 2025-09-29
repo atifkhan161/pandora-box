@@ -8,7 +8,7 @@ import { Server, Socket } from 'socket.io';
 import { QbittorrentService } from './qbittorrent.service';
 
 @WebSocketGateway({
-  namespace: '/downloads',
+  namespace: 'downloads',
   cors: { origin: 'http://localhost:5172', credentials: true },
 })
 export class DownloadsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -37,7 +37,10 @@ export class DownloadsGateway implements OnGatewayConnection, OnGatewayDisconnec
     this.updateInterval = setInterval(async () => {
       try {
         const torrents = await this.qbittorrentService.getTorrents();
-        this.server.emit('download_progress', torrents);
+        this.server.emit('download_progress', {
+          type: 'download_progress',
+          data: torrents
+        });
       } catch (error) {
         console.error('Failed to get torrent updates:', error);
       }

@@ -104,8 +104,7 @@ export class MediaDetailsComponent {
             </div>
           ` : ''}
           
-          ${this.renderCastSection()}
-          ${this.renderStreamingSection()}
+          ${this.renderAccordionSections()}
         </div>
       </div>
     `;
@@ -115,54 +114,148 @@ export class MediaDetailsComponent {
   }
 
   /**
-   * Render cast and crew section
+   * Render accordion sections
    */
-  renderCastSection() {
+  renderAccordionSections() {
+    return `
+      <div class="accordion-sections">
+        ${this.renderCastAccordion()}
+        ${this.renderSimilarAccordion()}
+        ${this.renderStreamingAccordion()}
+      </div>
+    `;
+  }
+
+  /**
+   * Render cast accordion
+   */
+  renderCastAccordion() {
     if (!this.mediaData.credits || !this.mediaData.credits.cast) {
       return '';
     }
 
-    const cast = this.mediaData.credits.cast.slice(0, 10); // Show first 10 cast members
+    const cast = this.mediaData.credits.cast;
+    const previewCast = cast.slice(0, 4);
     
     return `
-      <div class="media-section">
-        <h2>Cast</h2>
-        <div class="cast-grid">
-          ${cast.map(person => `
-            <div class="cast-member">
-              <div class="cast-photo">
-                <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : './assets/placeholder-person.svg'}" 
-                     alt="${person.name}" loading="lazy" />
+      <div class="accordion-item">
+        <div class="accordion-header" data-accordion="cast">
+          <h3>Cast (${cast.length})</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content" id="cast-content">
+          <div class="cast-preview">
+            ${previewCast.map(person => `
+              <div class="cast-member-inline">
+                <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w92${person.profile_path}` : './assets/placeholder-person.svg'}" 
+                     alt="${person.name}" />
+                <span>${person.name}</span>
               </div>
-              <div class="cast-info">
-                <h4 class="cast-name">${person.name}</h4>
-                <p class="cast-character">${person.character}</p>
-              </div>
+            `).join('')}
+          </div>
+          <div class="cast-full" style="display: none;">
+            <div class="cast-grid">
+              ${cast.map(person => `
+                <div class="cast-member">
+                  <div class="cast-photo">
+                    <img src="${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : './assets/placeholder-person.svg'}" 
+                         alt="${person.name}" loading="lazy" />
+                  </div>
+                  <div class="cast-info">
+                    <h4 class="cast-name">${person.name}</h4>
+                    <p class="cast-character">${person.character}</p>
+                  </div>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
+          </div>
         </div>
       </div>
     `;
   }
 
   /**
-   * Render streaming providers section
+   * Render similar media accordion
    */
-  renderStreamingSection() {
+  renderSimilarAccordion() {
+    const similar = this.mediaData.similar?.results || [];
+    const recommendations = this.mediaData.recommendations?.results || [];
+    
+    if (!similar.length && !recommendations.length) {
+      return '';
+    }
+
+    return `
+      <div class="accordion-item">
+        <div class="accordion-header" data-accordion="similar">
+          <h3>Similar & Recommended</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content" id="similar-content" style="display: none;">
+          ${similar.length ? `
+            <div class="similar-section">
+              <h4>Similar ${this.mediaType === 'movie' ? 'Movies' : 'TV Shows'}</h4>
+              <div class="similar-grid">
+                ${similar.slice(0, 8).map(item => this.renderSimilarItem(item)).join('')}
+              </div>
+            </div>
+          ` : ''}
+          ${recommendations.length ? `
+            <div class="similar-section">
+              <h4>Recommended</h4>
+              <div class="similar-grid">
+                ${recommendations.slice(0, 8).map(item => this.renderSimilarItem(item)).join('')}
+              </div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render similar item
+   */
+  renderSimilarItem(item) {
+    const title = item.title || item.name;
+    const posterPath = item.poster_path 
+      ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
+      : './assets/placeholder-poster.svg';
+    
+    return `
+      <div class="similar-item" data-media-type="${this.mediaType}" data-media-id="${item.id}">
+        <img src="${posterPath}" alt="${title}" loading="lazy" />
+        <div class="similar-info">
+          <h5>${title}</h5>
+          <span class="similar-rating">★ ${item.vote_average?.toFixed(1) || 'N/A'}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render streaming accordion
+   */
+  renderStreamingAccordion() {
     if (!this.mediaData.streaming || !this.mediaData.streaming.length) {
       return '';
     }
 
     return `
-      <div class="media-section">
-        <h2>Available On</h2>
-        <div class="streaming-providers">
-          ${this.mediaData.streaming.map(provider => `
-            <div class="streaming-provider">
-              <img src="${provider.logo_path}" alt="${provider.provider_name}" />
-              <span>${provider.provider_name}</span>
-            </div>
-          `).join('')}
+      <div class="accordion-item">
+        <div class="accordion-header" data-accordion="streaming">
+          <h3>Available On</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content" id="streaming-content" style="display: none;">
+          <div class="streaming-providers">
+            ${this.mediaData.streaming.map(provider => `
+              <div class="streaming-provider">
+                <img src="${provider.logo_path}" alt="${provider.provider_name}" />
+                <span>${provider.provider_name}</span>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     `;
@@ -185,6 +278,59 @@ export class MediaDetailsComponent {
    * Initialize event listeners
    */
   initEventListeners() {
-    // Event listeners will be added here when needed
+    // Accordion toggle listeners
+    const accordionHeaders = document.querySelectorAll('.accordion-header');
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', () => this.toggleAccordion(header));
+    });
+
+    // Similar item click listeners
+    const similarItems = document.querySelectorAll('.similar-item');
+    similarItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const mediaType = item.dataset.mediaType;
+        const mediaId = item.dataset.mediaId;
+        window.location.href = `media-details.html?type=${mediaType}&id=${mediaId}`;
+      });
+    });
+  }
+
+  /**
+   * Toggle accordion section
+   */
+  toggleAccordion(header) {
+    const accordionType = header.dataset.accordion;
+    const content = document.getElementById(`${accordionType}-content`);
+    const icon = header.querySelector('.accordion-icon');
+    
+    if (content.style.display === 'none' || !content.style.display) {
+      content.style.display = 'block';
+      icon.textContent = '▲';
+      header.classList.add('active');
+      
+      // Show full cast when cast accordion is opened
+      if (accordionType === 'cast') {
+        const preview = content.querySelector('.cast-preview');
+        const full = content.querySelector('.cast-full');
+        if (preview && full) {
+          preview.style.display = 'none';
+          full.style.display = 'block';
+        }
+      }
+    } else {
+      content.style.display = 'none';
+      icon.textContent = '▼';
+      header.classList.remove('active');
+      
+      // Show preview cast when cast accordion is closed
+      if (accordionType === 'cast') {
+        const preview = content.querySelector('.cast-preview');
+        const full = content.querySelector('.cast-full');
+        if (preview && full) {
+          preview.style.display = 'block';
+          full.style.display = 'none';
+        }
+      }
+    }
   }
 }

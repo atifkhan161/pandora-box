@@ -27,11 +27,13 @@ export class MoviesComponent {
           <h1>Movies</h1>
         </div>
         
-        <div class="category-filters">
-          <button class="category-btn active" data-category="popular">Popular</button>
-          <button class="category-btn" data-category="top_rated">Top Rated</button>
-          <button class="category-btn" data-category="now_playing">Now Playing</button>
-          <button class="category-btn" data-category="upcoming">Upcoming</button>
+        <div class="category-tabs">
+          <div class="category-filters">
+            <button class="category-btn active" data-category="popular">Popular</button>
+            <button class="category-btn" data-category="top_rated">Top Rated</button>
+            <button class="category-btn" data-category="now_playing">Now Playing</button>
+            <button class="category-btn" data-category="upcoming">Upcoming</button>
+          </div>
         </div>
         
         <div id="movies-grid" class="media-grid">

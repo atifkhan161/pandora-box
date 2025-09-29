@@ -104,7 +104,8 @@ export class MediaDetailsComponent {
             </div>
           ` : ''}
           
-          ${this.renderAccordionSections()}
+          ${this.mediaType === 'tv' ? this.renderTvInfo() : ''}
+        ${this.renderAccordionSections()}
         </div>
       </div>
     `;
@@ -114,11 +115,50 @@ export class MediaDetailsComponent {
   }
 
   /**
+   * Render TV show specific information
+   */
+  renderTvInfo() {
+    if (!this.mediaData.seasons) return '';
+
+    const totalEpisodes = this.mediaData.number_of_episodes || 0;
+    const totalSeasons = this.mediaData.number_of_seasons || 0;
+    const status = this.mediaData.status || 'Unknown';
+    const lastAirDate = this.mediaData.last_air_date;
+    const nextEpisode = this.mediaData.next_episode_to_air;
+
+    return `
+      <div class="tv-info-section">
+        <div class="tv-stats">
+          <div class="tv-stat">
+            <span class="stat-number">${totalSeasons}</span>
+            <span class="stat-label">Seasons</span>
+          </div>
+          <div class="tv-stat">
+            <span class="stat-number">${totalEpisodes}</span>
+            <span class="stat-label">Episodes</span>
+          </div>
+          <div class="tv-stat">
+            <span class="stat-status">${status}</span>
+            <span class="stat-label">Status</span>
+          </div>
+        </div>
+        ${nextEpisode ? `
+          <div class="next-episode">
+            <h4>Next Episode</h4>
+            <p>${nextEpisode.name} - ${new Date(nextEpisode.air_date).toLocaleDateString()}</p>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  /**
    * Render accordion sections
    */
   renderAccordionSections() {
     return `
       <div class="accordion-sections">
+        ${this.mediaType === 'tv' ? this.renderSeasonsAccordion() : ''}
         ${this.renderCastAccordion()}
         ${this.renderSimilarAccordion()}
         ${this.renderStreamingAccordion()}
@@ -228,6 +268,44 @@ export class MediaDetailsComponent {
         <div class="similar-info">
           <h5>${title}</h5>
           <span class="similar-rating">★ ${item.vote_average?.toFixed(1) || 'N/A'}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Render seasons accordion
+   */
+  renderSeasonsAccordion() {
+    if (!this.mediaData.seasons || !this.mediaData.seasons.length) {
+      return '';
+    }
+
+    const seasons = this.mediaData.seasons.filter(season => season.season_number > 0);
+    
+    return `
+      <div class="accordion-item">
+        <div class="accordion-header" data-accordion="seasons">
+          <h3>Seasons (${seasons.length})</h3>
+          <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content" id="seasons-content" style="display: none;">
+          <div class="seasons-grid">
+            ${seasons.map(season => `
+              <div class="season-item">
+                <div class="season-poster">
+                  <img src="${season.poster_path ? `https://image.tmdb.org/t/p/w300${season.poster_path}` : './assets/placeholder-poster.svg'}" 
+                       alt="${season.name}" loading="lazy" />
+                </div>
+                <div class="season-info">
+                  <h4>${season.name}</h4>
+                  <p class="season-episodes">${season.episode_count} episodes</p>
+                  ${season.air_date ? `<p class="season-date">${new Date(season.air_date).getFullYear()}</p>` : ''}
+                  ${season.overview ? `<p class="season-overview">${season.overview.substring(0, 100)}...</p>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     `;

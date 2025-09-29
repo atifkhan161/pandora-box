@@ -277,6 +277,125 @@
   color: var(--pb-text-secondary);
 }
 
+/* TV Show Specific Styles */
+.tv-info-section {
+  margin-bottom: var(--pb-spacing-xl);
+  padding: var(--pb-spacing-lg);
+  background-color: var(--pb-background-light);
+  border-radius: var(--pb-border-radius-lg);
+  border: 1px solid var(--pb-secondary-light);
+}
+
+.tv-stats {
+  display: flex;
+  gap: var(--pb-spacing-xl);
+  margin-bottom: var(--pb-spacing-lg);
+}
+
+.tv-stat {
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: var(--pb-font-size-xxl);
+  font-weight: var(--pb-font-weight-bold);
+  color: var(--pb-primary);
+  line-height: 1;
+}
+
+.stat-status {
+  display: block;
+  font-size: var(--pb-font-size-lg);
+  font-weight: var(--pb-font-weight-medium);
+  color: var(--pb-success);
+  line-height: 1;
+}
+
+.stat-label {
+  display: block;
+  font-size: var(--pb-font-size-sm);
+  color: var(--pb-text-secondary);
+  margin-top: var(--pb-spacing-xs);
+}
+
+.next-episode {
+  padding: var(--pb-spacing-md);
+  background-color: var(--pb-background);
+  border-radius: var(--pb-border-radius-md);
+  border-left: 4px solid var(--pb-primary);
+}
+
+.next-episode h4 {
+  color: var(--pb-primary);
+  margin-bottom: var(--pb-spacing-xs);
+  font-size: var(--pb-font-size-md);
+}
+
+.next-episode p {
+  color: var(--pb-text-secondary);
+  margin: 0;
+}
+
+/* Seasons Styles */
+.seasons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--pb-spacing-lg);
+}
+
+.season-item {
+  display: flex;
+  gap: var(--pb-spacing-md);
+  background-color: var(--pb-background);
+  border-radius: var(--pb-border-radius-md);
+  padding: var(--pb-spacing-md);
+  border: 1px solid var(--pb-secondary);
+}
+
+.season-poster {
+  flex-shrink: 0;
+  width: 80px;
+}
+
+.season-poster img {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: var(--pb-border-radius-sm);
+}
+
+.season-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.season-info h4 {
+  color: var(--pb-text-primary);
+  font-size: var(--pb-font-size-md);
+  margin-bottom: var(--pb-spacing-xs);
+}
+
+.season-episodes {
+  color: var(--pb-primary);
+  font-size: var(--pb-font-size-sm);
+  font-weight: var(--pb-font-weight-medium);
+  margin-bottom: var(--pb-spacing-xs);
+}
+
+.season-date {
+  color: var(--pb-text-secondary);
+  font-size: var(--pb-font-size-sm);
+  margin-bottom: var(--pb-spacing-xs);
+}
+
+.season-overview {
+  color: var(--pb-text-secondary);
+  font-size: var(--pb-font-size-sm);
+  line-height: 1.4;
+  margin: 0;
+}
+
 /* Accordion Sections */
 .accordion-sections {
   margin-top: var(--pb-spacing-xl);
@@ -530,31 +649,36 @@
 
 .category-filters {
   display: flex;
-  gap: var(--pb-spacing-md);
+  background-color: var(--pb-background-light);
+  border-radius: var(--pb-border-radius-lg);
+  padding: var(--pb-spacing-xs);
   margin-bottom: var(--pb-spacing-xl);
-  flex-wrap: wrap;
+  border: 1px solid var(--pb-secondary-light);
+  overflow-x: auto;
 }
 
 .category-btn {
-  padding: var(--pb-spacing-sm) var(--pb-spacing-lg);
-  background-color: var(--pb-background-light);
+  padding: var(--pb-spacing-md) var(--pb-spacing-lg);
+  background: transparent;
   color: var(--pb-text-secondary);
-  border: 1px solid var(--pb-secondary-light);
+  border: none;
   border-radius: var(--pb-border-radius-md);
   cursor: pointer;
   transition: all var(--pb-transition-fast);
   font-weight: var(--pb-font-weight-medium);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .category-btn:hover {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-secondary);
   color: var(--pb-text-primary);
 }
 
 .category-btn.active {
   background-color: var(--pb-primary);
   color: white;
-  border-color: var(--pb-primary);
+  box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
 }
 
 /* Search Styles */
@@ -803,6 +927,29 @@
   
   .accordion-content {
     padding: 0 var(--pb-spacing-md) var(--pb-spacing-md) var(--pb-spacing-md);
+  }
+  
+  .tv-stats {
+    flex-direction: column;
+    gap: var(--pb-spacing-md);
+  }
+  
+  .tv-info-section {
+    padding: var(--pb-spacing-md);
+  }
+  
+  .seasons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .season-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .season-poster {
+    width: 120px;
+    margin: 0 auto;
   }
   
   .search-input-container {

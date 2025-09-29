@@ -27,11 +27,13 @@ export class TvShowsComponent {
           <h1>TV Shows</h1>
         </div>
         
-        <div class="category-filters">
-          <button class="category-btn active" data-category="popular">Popular</button>
-          <button class="category-btn" data-category="top_rated">Top Rated</button>
-          <button class="category-btn" data-category="on_the_air">On The Air</button>
-          <button class="category-btn" data-category="airing_today">Airing Today</button>
+        <div class="category-tabs">
+          <div class="category-filters">
+            <button class="category-btn active" data-category="popular">Popular</button>
+            <button class="category-btn" data-category="top_rated">Top Rated</button>
+            <button class="category-btn" data-category="on_the_air">On The Air</button>
+            <button class="category-btn" data-category="airing_today">Airing Today</button>
+          </div>
         </div>
         
         <div id="tvshows-grid" class="media-grid">

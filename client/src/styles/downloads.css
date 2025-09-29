@@ -206,6 +206,12 @@
   color: var(--pb-text-secondary);
 }
 
+.status-stoppeddl,
+.status-stoppedup {
+  background-color: rgba(160, 174, 192, 0.2);
+  color: var(--pb-text-secondary);
+}
+
 .download-speed,
 .upload-speed {
   font-family: monospace;
@@ -236,6 +242,24 @@
 
 .download-actions .btn:hover {
   transform: translateY(-1px);
+}
+
+.download-actions .btn-primary {
+  background-color: var(--pb-primary);
+  color: white;
+}
+
+.download-actions .btn-primary:hover {
+  background-color: var(--pb-primary-dark);
+}
+
+.download-actions .btn-danger {
+  background-color: var(--pb-error);
+  color: white;
+}
+
+.download-actions .btn-danger:hover {
+  background-color: var(--pb-error-dark);
 }
 
 .no-downloads {

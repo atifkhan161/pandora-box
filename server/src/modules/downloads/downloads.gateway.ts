@@ -16,17 +16,20 @@ export class DownloadsGateway implements OnGatewayConnection, OnGatewayDisconnec
   server: Server;
 
   private updateInterval: NodeJS.Timeout;
+  private connectedClients = 0;
 
   constructor(private readonly qbittorrentService: QbittorrentService) {}
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
+    this.connectedClients++;
     this.startUpdates();
   }
 
   handleDisconnect(client: Socket) {
     console.log(`Client disconnected: ${client.id}`);
-    if (this.server.sockets.sockets.size === 0) {
+    this.connectedClients--;
+    if (this.connectedClients <= 0) {
       this.stopUpdates();
     }
   }

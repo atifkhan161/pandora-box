@@ -42,83 +42,107 @@ export class QbittorrentService {
       }
     );
 
+
     return response.data;
   }
 
   async pauseTorrent(hash: string): Promise<any> {
-    await this.ensureAuthenticated();
-    const config = await this.getQbittorrentConfig();
+    try {
+      this.sessionCookie = null;
+      await this.ensureAuthenticated();
+      const config = await this.getQbittorrentConfig();
 
-    await this.httpService.axiosRef.post(
-      `${config.url}/api/v2/torrents/pause`,
-      new URLSearchParams({ hashes: hash }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Cookie: this.sessionCookie,
-        },
-      }
-    );
+      const response = await this.httpService.axiosRef.post(
+        `${config.url}/api/v2/torrents/stop`,
+        new URLSearchParams({ hashes: hash }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: this.sessionCookie,
+          },
+        }
+      );
 
-    return { success: true };
+      return { success: response.status === 200 };
+    } catch (error) {
+      throw new Error(`Failed to pause torrent: ${error.message}`);
+    }
   }
 
   async resumeTorrent(hash: string): Promise<any> {
-    await this.ensureAuthenticated();
-    const config = await this.getQbittorrentConfig();
+    try {
+      this.sessionCookie = null;
+      await this.ensureAuthenticated();
+      const config = await this.getQbittorrentConfig();
 
-    await this.httpService.axiosRef.post(
-      `${config.url}/api/v2/torrents/resume`,
-      new URLSearchParams({ hashes: hash }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Cookie: this.sessionCookie,
-        },
-      }
-    );
+      const response = await this.httpService.axiosRef.post(
+        `${config.url}/api/v2/torrents/start`,
+        new URLSearchParams({ hashes: hash }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: this.sessionCookie,
+          },
+        }
+      );
 
-    return { success: true };
+      return { success: response.status === 200 };
+    } catch (error) {
+      throw new Error(`Failed to resume torrent: ${error.message}`);
+    }
   }
 
   async removeTorrent(hash: string): Promise<any> {
-    await this.ensureAuthenticated();
-    const config = await this.getQbittorrentConfig();
+    try {
+      this.sessionCookie = null; // Force re-authentication
+      await this.ensureAuthenticated();
+      const config = await this.getQbittorrentConfig();
 
-    await this.httpService.axiosRef.post(
-      `${config.url}/api/v2/torrents/delete`,
-      new URLSearchParams({ hashes: hash, deleteFiles: 'false' }),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Cookie: this.sessionCookie,
-        },
-      }
-    );
+      const response = await this.httpService.axiosRef.post(
+        `${config.url}/api/v2/torrents/delete`,
+        new URLSearchParams({ hashes: hash, deleteFiles: 'false' }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Cookie: this.sessionCookie,
+          },
+        }
+      );
 
-    return { success: true };
+      return { success: response.status === 200 };
+    } catch (error) {
+      console.error('Error removing torrent:', error.message);
+      throw new Error(`Failed to remove torrent: ${error.message}`);
+    }
   }
 
   private async ensureAuthenticated(): Promise<void> {
-    if (this.sessionCookie) return;
-
     const config = await this.getQbittorrentConfig();
     const baseUrl = config.url.replace(/\/$/, '');
     
-    const response = await this.httpService.axiosRef.post(
-      `${baseUrl}/api/v2/auth/login`,
-      `username=${encodeURIComponent(config.username)}&password=${encodeURIComponent(config.password)}`,
-      {
-        headers: { 
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Referer': baseUrl
-        },
-      }
-    );
+    try {
+      const response = await this.httpService.axiosRef.post(
+        `${baseUrl}/api/v2/auth/login`,
+        `username=${encodeURIComponent(config.username)}&password=${encodeURIComponent(config.password)}`,
+        {
+          headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Referer': baseUrl
+          },
+        }
+      );
 
-    const cookies = response.headers['set-cookie'];
-    if (cookies) {
-      this.sessionCookie = cookies.join('; ');
+      const cookies = response.headers['set-cookie'];
+      if (cookies) {
+        this.sessionCookie = cookies.join('; ');
+
+      } else {
+        throw new Error('No session cookie received from qBittorrent');
+      }
+    } catch (error) {
+      console.error('qBittorrent authentication failed:', error.message);
+      this.sessionCookie = null;
+      throw new Error(`qBittorrent authentication failed: ${error.message}`);
     }
   }
 

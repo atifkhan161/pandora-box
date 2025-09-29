@@ -101,10 +101,12 @@ function renderDownloadActions(download) {
   const state = download.state.toLowerCase();
   let actions = '';
 
-  if (state === 'pausedDL' || state === 'pausedUP') {
+  if (state === 'pauseddl' || state === 'pausedup') {
     actions += `<button class="btn btn-primary resume-btn" data-hash="${download.hash}">Resume</button>`;
-  } else if (state === 'downloading' || state === 'uploading' || state === 'queuedDL' || state === 'queuedUP') {
-    actions += `<button class="btn btn-secondary pause-btn" data-hash="${download.hash}">Pause</button>`;
+  } else if (state === 'downloading' || state === 'uploading' || state === 'queueddl' || state === 'queuedup') {
+    actions += `<button class="btn btn-primary pause-btn" data-hash="${download.hash}">Pause</button>`;
+  } else if (state === 'stoppeddl' || state === 'stoppedup' || state === 'error') {
+    actions += `<button class="btn btn-primary start-btn" data-hash="${download.hash}">Start</button>`;
   }
 
   actions += `<button class="btn btn-danger remove-btn" data-hash="${download.hash}">Remove</button>`;
@@ -120,6 +122,11 @@ function attachDownloadListeners() {
 
   // Resume buttons
   document.querySelectorAll('.resume-btn').forEach(btn => {
+    btn.addEventListener('click', () => resumeDownload(btn.dataset.hash));
+  });
+
+  // Start buttons
+  document.querySelectorAll('.start-btn').forEach(btn => {
     btn.addEventListener('click', () => resumeDownload(btn.dataset.hash));
   });
 
@@ -219,13 +226,14 @@ function formatStatus(state) {
   const statusMap = {
     'downloading': 'Downloading',
     'uploading': 'Seeding',
-    'pausedDL': 'Paused',
-    'pausedUP': 'Paused',
-    'queuedDL': 'Queued',
-    'queuedUP': 'Queued',
+    'pauseddl': 'Paused',
+    'pausedup': 'Paused',
+    'queueddl': 'Queued',
+    'queuedup': 'Queued',
+    'stoppeddl': 'Stopped',
+    'stoppedup': 'Stopped',
     'error': 'Error',
-    'missingFiles': 'Missing Files',
-    'uploading': 'Completed'
+    'missingfiles': 'Missing Files'
   };
   return statusMap[state.toLowerCase()] || state;
 }

@@ -40,6 +40,37 @@ export class SettingsService {
   }
 
   /**
+   * Update user password
+   * @param username Current username
+   * @param passwordData Password update data
+   * @returns Update result
+   */
+  async updatePassword(username: string, passwordData: any): Promise<any> {
+    const { currentPassword, newPassword } = passwordData;
+    
+    const usersCollection = this.databaseService.getUsersCollection();
+    const user = usersCollection.findOne({ username });
+
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    // In production, this should use proper password hashing (bcrypt)
+    if (user.password !== currentPassword) {
+      return { success: false, message: 'Current password is incorrect' };
+    }
+
+    // Update password
+    user.password = newPassword; // In production, this should be hashed
+    user.updatedAt = new Date();
+
+    // Save updated user
+    usersCollection.update(user);
+
+    return { success: true, message: 'Password updated successfully' };
+  }
+
+  /**
    * Update API keys
    * @param apiKeys API keys to update
    * @returns Updated configuration
@@ -150,6 +181,11 @@ export class SettingsService {
    * @returns Test result
    */
   async testConnection(serviceName: string, apiKey?: string): Promise<any> {
+    // qBittorrent uses username/password, not API key
+    if (serviceName === 'qbittorrent') {
+      return this.testQbittorrentConnection();
+    }
+
     // If no API key provided, get from database
     if (!apiKey) {
       const configCollection = this.databaseService.getConfigCollection();
@@ -180,6 +216,9 @@ export class SettingsService {
         return this.testJellyfinConnection(apiKey);
       case 'cloudCommander':
         return this.testCloudCommanderConnection(apiKey);
+      case 'qbittorrent':
+        // This case should not be reached due to early return above
+        return this.testQbittorrentConnection();
       default:
         return { success: false, message: 'Unknown service' };
     }
@@ -270,14 +309,15 @@ export class SettingsService {
 
     if (!config || !config.config) {
       return { 
-        config: {
+        success: true,
+        data: {
           serverPort: '',
           dbPath: ''
         } 
       };
     }
 
-    return { config: config.config };
+    return { success: true, data: config.config };
   }
 
   /**
@@ -304,5 +344,131 @@ export class SettingsService {
     }
 
     return { success: true, message: 'Environment configuration updated successfully' };
+  }
+
+  /**
+   * Update qBittorrent configuration
+   * @param qbittorrentConfig qBittorrent configuration to update
+   * @returns Updated configuration
+   */
+  async updateQbittorrentConfig(qbittorrentConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'qbittorrent-config' });
+
+    // Encrypt sensitive values
+    const encryptedConfig = {};
+    for (const [key, value] of Object.entries(qbittorrentConfig)) {
+      if (key === 'password') {
+        encryptedConfig[key] = this.encryptionService.encrypt(value as string);
+      } else {
+        encryptedConfig[key] = value;
+      }
+    }
+
+    if (config) {
+      // Update existing config
+      config.config = { ...config.config, ...encryptedConfig };
+      configCollection.update(config);
+    } else {
+      // Create new config
+      config = {
+        type: 'qbittorrent-config',
+        config: encryptedConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'qBittorrent configuration updated successfully' };
+  }
+
+  /**
+   * Get qBittorrent configuration
+   * @returns qBittorrent configuration
+   */
+  async getQbittorrentConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'qbittorrent-config' });
+
+    if (!config || !config.config) {
+      return { 
+        success: true,
+        data: {
+          url: '',
+          username: '',
+          password: ''
+        } 
+      };
+    }
+
+    // Decrypt password for client
+    const decryptedConfig = { ...config.config };
+    if (decryptedConfig.password) {
+      try {
+        decryptedConfig.password = this.encryptionService.decrypt(decryptedConfig.password as string);
+      } catch (error) {
+        decryptedConfig.password = ''; // Handle decryption errors
+      }
+    }
+
+    return { success: true, data: decryptedConfig };
+  }
+
+  /**
+   * Test qBittorrent connection
+   * @returns Test result
+   */
+  private async testQbittorrentConnection(): Promise<any> {
+    try {
+      // Get qBittorrent configuration
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'qbittorrent-config' });
+      
+      if (!config || !config.config) {
+        return { success: false, message: 'qBittorrent configuration not found' };
+      }
+
+      const { url, username, password: encryptedPassword } = config.config;
+      
+      if (!url || !username || !encryptedPassword) {
+        return { success: false, message: 'Incomplete qBittorrent configuration' };
+      }
+
+      let password;
+      try {
+        password = this.encryptionService.decrypt(encryptedPassword);
+      } catch (error) {
+        return { success: false, message: 'Failed to decrypt qBittorrent password' };
+      }
+
+      // Test connection to qBittorrent Web API
+      const baseUrl = url.replace(/\/$/, '');
+      
+      // First, try to login
+      const loginResponse = await this.httpService.axiosRef.post(
+        `${baseUrl}/api/v2/auth/login`,
+        new URLSearchParams({
+          username,
+          password
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          timeout: 5000
+        }
+      );
+
+      if (loginResponse.status === 200 && loginResponse.data === 'Ok.') {
+        return { success: true, message: 'Successfully connected to qBittorrent' };
+      } else {
+        return { success: false, message: 'Invalid qBittorrent credentials' };
+      }
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        return { success: false, message: 'Cannot connect to qBittorrent - service may be down' };
+      }
+      return { success: false, message: `Failed to connect to qBittorrent: ${error.message}` };
+    }
   }
 }

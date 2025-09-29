@@ -31,6 +31,8 @@ function initializeEventListeners() {
   const saveApiKeyButtons = document.querySelectorAll('.save-api-key-btn');
   const saveEnvConfigButtons = document.querySelectorAll('.save-env-config-btn');
   const testConnectionButtons = document.querySelectorAll('.test-connection-btn');
+  const saveQbittorrentButtons = document.querySelectorAll('.save-qbittorrent-btn');
+  const testQbittorrentButton = document.querySelector('.test-qbittorrent-btn');
   
   // Password form submission
   if (passwordForm) {
@@ -183,6 +185,72 @@ function initializeEventListeners() {
   
   // Load environment configuration
   loadEnvironmentConfig();
+  
+  // qBittorrent save button
+  if (saveQbittorrentButtons.length > 0) {
+    const saveButton = saveQbittorrentButtons[0];
+    saveButton.addEventListener('click', async () => {
+      const url = document.getElementById('qbittorrent-url').value.trim();
+      const username = document.getElementById('qbittorrent-username').value.trim();
+      const password = document.getElementById('qbittorrent-password').value.trim();
+      
+      if (!url || !username || !password) {
+        showNotification('error', 'All fields are required');
+        return;
+      }
+      
+      if (!url.match(/^https?:\/\/.+/)) {
+        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8080)');
+        return;
+      }
+      
+      saveButton.disabled = true;
+      saveButton.textContent = 'Saving...';
+      
+      try {
+        const response = await api.put('/settings/qbittorrent', { 
+          url, username, password
+        });
+        
+        if (response && response.success) {
+          showNotification('success', 'qBittorrent configuration saved successfully');
+        } else {
+          showNotification('error', `Failed to save qBittorrent configuration: ${response.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showNotification('error', `Error saving qBittorrent configuration: ${error.message}`);
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Save';
+      }
+    });
+  }
+  
+  // qBittorrent test connection button
+  if (testQbittorrentButton) {
+    testQbittorrentButton.addEventListener('click', async () => {
+      testQbittorrentButton.disabled = true;
+      testQbittorrentButton.textContent = 'Testing...';
+      
+      try {
+        const response = await api.get('/settings/test-connection/qbittorrent');
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Successfully connected to qBittorrent');
+        } else {
+          showNotification('error', response.message || 'Failed to connect to qBittorrent');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'qBittorrent connection test failed');
+      } finally {
+        testQbittorrentButton.disabled = false;
+        testQbittorrentButton.textContent = 'Test Connection';
+      }
+    });
+  }
+  
+  // Load qBittorrent configuration
+  loadQbittorrentConfig();
 }
 
 /**
@@ -237,6 +305,25 @@ function loadEnvironmentConfig() {
     })
     .catch(error => {
       console.error('Failed to load environment configuration:', error);
+    });
+}
+
+/**
+ * Load qBittorrent configuration from server
+ */
+function loadQbittorrentConfig() {
+  api.get('/settings/qbittorrent')
+    .then(response => {
+      if (response && response.success) {
+        const config = response.data;
+        
+        if (config.url) document.getElementById('qbittorrent-url').value = config.url;
+        if (config.username) document.getElementById('qbittorrent-username').value = config.username;
+        if (config.password) document.getElementById('qbittorrent-password').value = config.password;
+      }
+    })
+    .catch(error => {
+      console.error('Failed to load qBittorrent configuration:', error);
     });
 }
 

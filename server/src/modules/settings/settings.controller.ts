@@ -12,6 +12,13 @@ export class SettingsController {
     return this.settingsService.updateProfile(username, profileData);
   }
 
+  @Put('password')
+  async updatePassword(@Body() passwordData: any) {
+    // In a real app, get username from JWT token
+    const username = 'admin'; // Hardcoded for now
+    return this.settingsService.updatePassword(username, passwordData);
+  }
+
   @Put('api-keys')
   async updateApiKeys(@Body() apiKeys: any) {
     return this.settingsService.updateApiKeys(apiKeys);
@@ -45,5 +52,15 @@ export class SettingsController {
   @Get('test-connection/:serviceName')
   async testConnection(@Param('serviceName') serviceName: string) {
     return this.settingsService.testConnection(serviceName);
+  }
+
+  @Put('qbittorrent')
+  async updateQbittorrentConfig(@Body() qbittorrentConfig: any) {
+    return this.settingsService.updateQbittorrentConfig(qbittorrentConfig);
+  }
+
+  @Get('qbittorrent')
+  async getQbittorrentConfig() {
+    return this.settingsService.getQbittorrentConfig();
   }
 }

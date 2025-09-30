@@ -467,6 +467,9 @@ function initializeThemeSelector() {
   const themeSelector = document.getElementById('theme-selector');
   if (!themeSelector) return;
   
+  // Load custom themes into selector
+  updateThemeSelector();
+  
   // Set current theme in selector
   themeSelector.value = themeManager.getCurrentTheme();
   
@@ -476,6 +479,112 @@ function initializeThemeSelector() {
     themeManager.setTheme(selectedTheme);
     showNotification('success', `Theme changed to ${getThemeDisplayName(selectedTheme)}`);
   });
+  
+  // Initialize custom theme creator
+  initializeCustomThemeCreator();
+}
+
+/**
+ * Update theme selector with custom themes
+ */
+function updateThemeSelector() {
+  const themeSelector = document.getElementById('theme-selector');
+  const customThemes = themeManager.loadCustomThemes();
+  
+  // Remove existing custom options
+  Array.from(themeSelector.options).forEach(option => {
+    if (option.value.startsWith('custom-')) {
+      option.remove();
+    }
+  });
+  
+  // Add custom themes
+  Object.entries(customThemes).forEach(([key, theme]) => {
+    const option = document.createElement('option');
+    option.value = key;
+    option.textContent = theme.name;
+    themeSelector.appendChild(option);
+  });
+}
+
+/**
+ * Initialize custom theme creator
+ */
+function initializeCustomThemeCreator() {
+  const colorInputs = ['color1', 'color2', 'color3', 'color4'];
+  
+  // Sync color picker with hex input
+  colorInputs.forEach(id => {
+    const colorPicker = document.getElementById(id);
+    const hexInput = document.getElementById(`${id}-hex`);
+    
+    colorPicker.addEventListener('input', (e) => {
+      hexInput.value = e.target.value.toUpperCase();
+    });
+    
+    hexInput.addEventListener('input', (e) => {
+      const hex = e.target.value;
+      if (/^#[0-9A-F]{6}$/i.test(hex)) {
+        colorPicker.value = hex;
+      }
+    });
+  });
+  
+  // Create theme button
+  document.getElementById('create-theme-btn').addEventListener('click', createCustomTheme);
+  
+  // Preview theme button
+  document.getElementById('preview-theme-btn').addEventListener('click', previewCustomTheme);
+}
+
+/**
+ * Create custom theme
+ */
+function createCustomTheme() {
+  const themeName = document.getElementById('custom-theme-name').value.trim();
+  
+  if (!themeName) {
+    showNotification('error', 'Please enter a theme name');
+    return;
+  }
+  
+  const colors = {
+    primary: document.getElementById('color1').value,
+    secondary: document.getElementById('color2').value,
+    accent: document.getElementById('color3').value,
+    text: document.getElementById('color4').value
+  };
+  
+  try {
+    const themeKey = themeManager.createCustomTheme(themeName, colors);
+    updateThemeSelector();
+    document.getElementById('theme-selector').value = themeKey;
+    showNotification('success', `Custom theme "${themeName}" created and applied!`);
+  } catch (error) {
+    showNotification('error', 'Failed to create theme');
+  }
+}
+
+/**
+ * Preview custom theme
+ */
+function previewCustomTheme() {
+  const colors = {
+    primary: document.getElementById('color1').value,
+    secondary: document.getElementById('color2').value,
+    accent: document.getElementById('color3').value,
+    text: document.getElementById('color4').value
+  };
+  
+  themeManager.injectCustomThemeCSS('preview-theme', colors);
+  document.body.className = document.body.className.replace(/\b\w+-theme\b/g, '') + ' preview-theme';
+  
+  showNotification('info', 'Preview applied! Use "Create & Apply Theme" to save.');
+  
+  // Remove preview after 5 seconds
+  setTimeout(() => {
+    themeManager.applyTheme(themeManager.getCurrentTheme());
+  }, 5000);
 }
 
 /**
@@ -488,8 +597,16 @@ function getThemeDisplayName(themeName) {
     'default': 'Default Dark',
     'netflix': 'Netflix',
     'amazon-prime': 'Amazon Prime Video',
-    'disney': 'Disney+'
+    'disney': 'Disney+',
+    'nature': 'Nature'
   };
+  
+  // Check for custom themes
+  if (themeName.startsWith('custom-')) {
+    const customThemes = themeManager.loadCustomThemes();
+    return customThemes[themeName]?.name || themeName;
+  }
+  
   return displayNames[themeName] || themeName;
 }
 

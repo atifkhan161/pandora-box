@@ -210,7 +210,46 @@
                                 <option value="netflix">Netflix</option>
                                 <option value="amazon-prime">Amazon Prime Video</option>
                                 <option value="disney">Disney+</option>
+                                <option value="nature">Nature</option>
                             </select>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Custom Theme Creator Section -->
+                <section class="settings-section">
+                    <h2>Custom Theme Creator</h2>
+                    <p class="help-text">Create your own theme using a 4-color palette. Visit <a href="https://colorhunt.co/palettes/popular" target="_blank">ColorHunt</a> for color palette inspiration.</p>
+                    <form id="custom-theme-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="custom-theme-name">Theme Name</label>
+                            <input type="text" id="custom-theme-name" placeholder="My Custom Theme" maxlength="20">
+                        </div>
+                        <div class="color-palette-grid">
+                            <div class="color-input-group">
+                                <label for="color1">Primary Color</label>
+                                <input type="color" id="color1" value="#96A78D">
+                                <input type="text" id="color1-hex" placeholder="#96A78D" maxlength="7">
+                            </div>
+                            <div class="color-input-group">
+                                <label for="color2">Secondary Color</label>
+                                <input type="color" id="color2" value="#B6CEB4">
+                                <input type="text" id="color2-hex" placeholder="#B6CEB4" maxlength="7">
+                            </div>
+                            <div class="color-input-group">
+                                <label for="color3">Accent Color</label>
+                                <input type="color" id="color3" value="#D9E9CF">
+                                <input type="text" id="color3-hex" placeholder="#D9E9CF" maxlength="7">
+                            </div>
+                            <div class="color-input-group">
+                                <label for="color4">Text Color</label>
+                                <input type="color" id="color4" value="#F0F0F0">
+                                <input type="text" id="color4-hex" placeholder="#F0F0F0" maxlength="7">
+                            </div>
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary" id="create-theme-btn">Create & Apply Theme</button>
+                            <button type="button" class="btn btn-secondary" id="preview-theme-btn">Preview</button>
                         </div>
                     </form>
                 </section>

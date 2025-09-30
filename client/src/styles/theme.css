@@ -148,6 +148,31 @@ body.disney-theme {
     --pb-border-color: #2a2d3a;
 }
 
+/* Nature Theme */
+body.nature-theme {
+    --pb-primary: #96A78D;
+    --pb-primary-light: #B6CEB4;
+    --pb-primary-dark: #7a8a70;
+    --pb-primary-rgb: 150, 167, 141;
+    
+    --pb-secondary: #2a2f26;
+    --pb-secondary-light: #3a4035;
+    --pb-secondary-dark: #1a1f16;
+    
+    --pb-background: #1e2319;
+    --pb-background-light: #2a2f26;
+    --pb-background-dark: #141811;
+    
+    --pb-surface-primary: #2a2f26;
+    --pb-surface-secondary: #3a4035;
+    --pb-surface-hover: #4a5045;
+    
+    --pb-accent-primary: #D9E9CF;
+    --pb-border-color: #3a4035;
+    --pb-text-primary: #F0F0F0;
+    --pb-text-secondary: #D9E9CF;
+}
+
 /* Theme transition for smooth switching */
 body {
     transition: background-color var(--pb-transition-medium), color var(--pb-transition-medium);

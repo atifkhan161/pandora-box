@@ -2,6 +2,7 @@ import auth from '../services/auth.js';
 import api from '../services/api.js';
 import themeManager from '../services/theme.js';
 import { Navigation } from '../components/navigation.js';
+import toast from '../services/toast.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!auth.isAuthenticated()) {
@@ -213,20 +214,20 @@ function renderImages(images) {
 window.restartContainer = async function(containerId) {
   try {
     const result = await api.post(`/docker/restart-container/${containerId}`);
-    showNotification('success', 'Container restarted successfully');
+    toast.success('Container restarted successfully');
     setTimeout(loadContainers, 2000);
   } catch (error) {
-    showNotification('error', `Failed to restart container: ${error.message}`);
+    toast.error(`Failed to restart container: ${error.message}`);
   }
 };
 
 window.restartStack = async function(stackId) {
   try {
     const result = await api.post(`/docker/restart-stack/${stackId}`);
-    showNotification('success', 'Stack restarted successfully');
+    toast.success('Stack restarted successfully');
     setTimeout(loadStacks, 2000);
   } catch (error) {
-    showNotification('error', `Failed to restart stack: ${error.message}`);
+    toast.error(`Failed to restart stack: ${error.message}`);
   }
 };
 
@@ -364,10 +365,10 @@ window.saveStack = async function() {
   
   try {
     await api.put(`/docker/stacks/${stackId}/file`, { content });
-    showNotification('success', 'Stack file updated successfully');
+    toast.success('Stack file updated successfully');
     modal.classList.remove('show');
   } catch (error) {
-    showNotification('error', `Failed to update stack: ${error.message}`);
+    toast.error(`Failed to update stack: ${error.message}`);
   }
 };
 
@@ -385,34 +386,17 @@ window.applyCountryChange = async function() {
   const stackName = modal.dataset.stackName;
   
   if (!country) {
-    showNotification('error', 'Please select a country');
+    toast.error('Please select a country');
     return;
   }
   
   try {
     await api.post(`/docker/change-country/${stackId}`, { country });
-    showNotification('success', `Country changed to ${country} for ${stackName}`);
+    toast.success(`Country changed to ${country} for ${stackName}`);
     modal.classList.remove('show');
     setTimeout(loadStacks, 2000);
   } catch (error) {
-    showNotification('error', `Failed to change country: ${error.message}`);
+    toast.error(`Failed to change country: ${error.message}`);
   }
 };
 
-function showNotification(type, message) {
-  const notificationContainer = document.getElementById('notification-container');
-  if (!notificationContainer) return;
-  
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  
-  notificationContainer.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      notificationContainer.removeChild(notification);
-    }, 500);
-  }, 5000);
-}

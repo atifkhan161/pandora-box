@@ -7,6 +7,7 @@ import auth from '../services/auth.js';
 import api from '../services/api.js';
 import { Navigation } from '../components/navigation.js';
 import themeManager from '../services/theme.js';
+import toast from '../services/toast.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Check if user is authenticated
@@ -61,12 +62,12 @@ function initializeEventListeners() {
       
       // Validate passwords match
       if (!currentPassword || !newPassword) {
-        showNotification('error', 'All password fields are required');
+        toast.error('All password fields are required');
         return;
       }
       
       if (newPassword !== confirmPassword) {
-        showNotification('error', 'New passwords do not match');
+        toast.error('New passwords do not match');
         return;
       }
       
@@ -77,13 +78,13 @@ function initializeEventListeners() {
         });
         
         if (response && response.success) {
-          showNotification('success', 'Password updated successfully');
+          toast.success('Password updated successfully');
           passwordForm.reset();
         } else {
-          showNotification('error', response.message || 'Failed to update password');
+          toast.error(response.message || 'Failed to update password');
         }
       } catch (error) {
-        showNotification('error', error.message || 'An error occurred');
+        toast.error(error.message || 'An error occurred');
       }
     });
   }
@@ -98,7 +99,7 @@ function initializeEventListeners() {
         const apiKey = document.getElementById(inputId).value.trim();
         
         if (!apiKey) {
-          showNotification('error', 'API key cannot be empty');
+          toast.error('API key cannot be empty');
           return;
         }
         
@@ -111,12 +112,12 @@ function initializeEventListeners() {
           });
           
           if (response && response.success) {
-            showNotification('success', `${service} API key saved successfully`);
+            toast.success(`${service} API key saved successfully`);
           } else {
-            showNotification('error', `Failed to save ${service} API key: ${response.message || 'Unknown error'}`);
+            toast.error(`Failed to save ${service} API key: ${response.message || 'Unknown error'}`);
           }
         } catch (error) {
-          showNotification('error', `Error saving ${service} API key: ${error.message}`);
+          toast.error(`Error saving ${service} API key: ${error.message}`);
         } finally {
           button.disabled = false;
           button.textContent = 'Save';
@@ -135,13 +136,13 @@ function initializeEventListeners() {
         if (configType === 'serverPort') {
           configValue = document.getElementById('server-port').value.trim();
           if (!configValue || isNaN(configValue) || configValue < 1 || configValue > 65535) {
-            showNotification('error', 'Please enter a valid port number (1-65535)');
+            toast.error('Please enter a valid port number (1-65535)');
             return;
           }
         } else if (configType === 'dbPath') {
           configValue = document.getElementById('db-path').value.trim();
           if (!configValue) {
-            showNotification('error', 'Database path cannot be empty');
+            toast.error('Database path cannot be empty');
             return;
           }
         }
@@ -155,12 +156,12 @@ function initializeEventListeners() {
           });
           
           if (response && response.success) {
-            showNotification('success', `${configType} updated successfully`);
+            toast.success(`${configType} updated successfully`);
           } else {
-            showNotification('error', `Failed to update ${configType}: ${response.message || 'Unknown error'}`);
+            toast.error(`Failed to update ${configType}: ${response.message || 'Unknown error'}`);
           }
         } catch (error) {
-          showNotification('error', `Error updating ${configType}: ${error.message}`);
+          toast.error(`Error updating ${configType}: ${error.message}`);
         } finally {
           button.disabled = false;
           button.textContent = 'Save';
@@ -182,12 +183,12 @@ function initializeEventListeners() {
           const response = await api.get(`/settings/test-connection/${service}`);
           
           if (response && response.success) {
-            showNotification('success', response.message || `Successfully connected to ${service}`);
+            toast.success(response.message || `Successfully connected to ${service}`);
           } else {
-            showNotification('error', response.message || `Failed to connect to ${service}`);
+            toast.error(response.message || `Failed to connect to ${service}`);
           }
         } catch (error) {
-          showNotification('error', error.message || 'Connection test failed');
+          toast.error(error.message || 'Connection test failed');
         } finally {
           button.disabled = false;
           button.textContent = 'Test Connection';
@@ -211,12 +212,12 @@ function initializeEventListeners() {
       const password = document.getElementById('qbittorrent-password').value.trim();
       
       if (!url || !username || !password) {
-        showNotification('error', 'All fields are required');
+        toast.error('All fields are required');
         return;
       }
       
       if (!url.match(/^https?:\/\/.+/)) {
-        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8080)');
+        toast.error('Please enter a valid URL (e.g., http://192.168.1.100:8080)');
         return;
       }
       
@@ -229,12 +230,12 @@ function initializeEventListeners() {
         });
         
         if (response && response.success) {
-          showNotification('success', 'qBittorrent configuration saved successfully');
+          toast.success('qBittorrent configuration saved successfully');
         } else {
-          showNotification('error', `Failed to save qBittorrent configuration: ${response.message || 'Unknown error'}`);
+          toast.error(`Failed to save qBittorrent configuration: ${response.message || 'Unknown error'}`);
         }
       } catch (error) {
-        showNotification('error', `Error saving qBittorrent configuration: ${error.message}`);
+        toast.error(`Error saving qBittorrent configuration: ${error.message}`);
       } finally {
         saveButton.disabled = false;
         saveButton.textContent = 'Save';
@@ -252,12 +253,12 @@ function initializeEventListeners() {
         const response = await api.get('/settings/test-connection/qbittorrent');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Successfully connected to qBittorrent');
+          toast.success(response.message || 'Successfully connected to qBittorrent');
         } else {
-          showNotification('error', response.message || 'Failed to connect to qBittorrent');
+          toast.error(response.message || 'Failed to connect to qBittorrent');
         }
       } catch (error) {
-        showNotification('error', error.message || 'qBittorrent connection test failed');
+        toast.error(error.message || 'qBittorrent connection test failed');
       } finally {
         testQbittorrentButton.disabled = false;
         testQbittorrentButton.textContent = 'Test Connection';
@@ -275,12 +276,12 @@ function initializeEventListeners() {
       const apiKey = document.getElementById('jackett-api-key').value.trim();
       
       if (!url || !apiKey) {
-        showNotification('error', 'All fields are required');
+        toast.error('All fields are required');
         return;
       }
       
       if (!url.match(/^https?:\/\/.+/)) {
-        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:9117)');
+        toast.error('Please enter a valid URL (e.g., http://192.168.1.100:9117)');
         return;
       }
       
@@ -291,12 +292,12 @@ function initializeEventListeners() {
         const response = await api.put('/settings/jackett', { url, apiKey });
         
         if (response && response.success) {
-          showNotification('success', 'Jackett configuration saved successfully');
+          toast.success('Jackett configuration saved successfully');
         } else {
-          showNotification('error', `Failed to save Jackett configuration: ${response.message || 'Unknown error'}`);
+          toast.error(`Failed to save Jackett configuration: ${response.message || 'Unknown error'}`);
         }
       } catch (error) {
-        showNotification('error', `Error saving Jackett configuration: ${error.message}`);
+        toast.error(`Error saving Jackett configuration: ${error.message}`);
       } finally {
         saveJackettButton.disabled = false;
         saveJackettButton.textContent = 'Save';
@@ -314,12 +315,12 @@ function initializeEventListeners() {
         const response = await api.get('/settings/test-connection/jackett-config');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Successfully connected to Jackett');
+          toast.success(response.message || 'Successfully connected to Jackett');
         } else {
-          showNotification('error', response.message || 'Failed to connect to Jackett');
+          toast.error(response.message || 'Failed to connect to Jackett');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Jackett connection test failed');
+        toast.error(error.message || 'Jackett connection test failed');
       } finally {
         testJackettButton.disabled = false;
         testJackettButton.textContent = 'Test Connection';
@@ -338,12 +339,12 @@ function initializeEventListeners() {
       const password = document.getElementById('filebrowser-password').value.trim();
       
       if (!url || !username || !password) {
-        showNotification('error', 'All fields are required');
+        toast.error('All fields are required');
         return;
       }
       
       if (!url.match(/^https?:\/\/.+/)) {
-        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8080)');
+        toast.error('Please enter a valid URL (e.g., http://192.168.1.100:8080)');
         return;
       }
       
@@ -359,12 +360,12 @@ function initializeEventListeners() {
         });
         
         if (response && response.success) {
-          showNotification('success', 'Filebrowser configuration saved successfully');
+          toast.success('Filebrowser configuration saved successfully');
         } else {
-          showNotification('error', `Failed to save filebrowser configuration: ${response.message || 'Unknown error'}`);
+          toast.error(`Failed to save filebrowser configuration: ${response.message || 'Unknown error'}`);
         }
       } catch (error) {
-        showNotification('error', `Error saving filebrowser configuration: ${error.message}`);
+        toast.error(`Error saving filebrowser configuration: ${error.message}`);
       } finally {
         saveFilebrowserButton.disabled = false;
         saveFilebrowserButton.textContent = 'Save';
@@ -382,12 +383,12 @@ function initializeEventListeners() {
         const response = await api.get('/settings/test-connection/filebrowser');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Successfully connected to filebrowser');
+          toast.success(response.message || 'Successfully connected to filebrowser');
         } else {
-          showNotification('error', response.message || 'Failed to connect to filebrowser');
+          toast.error(response.message || 'Failed to connect to filebrowser');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Filebrowser connection test failed');
+        toast.error(error.message || 'Filebrowser connection test failed');
       } finally {
         testFilebrowserButton.disabled = false;
         testFilebrowserButton.textContent = 'Test Connection';
@@ -406,12 +407,12 @@ function initializeEventListeners() {
       const endpointId = document.getElementById('portainer-endpoint-id').value.trim() || '2';
       
       if (!url || !apiKey) {
-        showNotification('error', 'URL and API Key are required');
+        toast.error('URL and API Key are required');
         return;
       }
       
       if (!url.match(/^https?:\/\/.+/)) {
-        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:9000)');
+        toast.error('Please enter a valid URL (e.g., http://192.168.1.100:9000)');
         return;
       }
       
@@ -422,12 +423,12 @@ function initializeEventListeners() {
         const response = await api.put('/settings/portainer', { url, apiKey, endpointId });
         
         if (response && response.success) {
-          showNotification('success', 'Portainer configuration saved successfully');
+          toast.success('Portainer configuration saved successfully');
         } else {
-          showNotification('error', `Failed to save Portainer configuration: ${response.message || 'Unknown error'}`);
+          toast.error(`Failed to save Portainer configuration: ${response.message || 'Unknown error'}`);
         }
       } catch (error) {
-        showNotification('error', `Error saving Portainer configuration: ${error.message}`);
+        toast.error(`Error saving Portainer configuration: ${error.message}`);
       } finally {
         savePortainerButton.disabled = false;
         savePortainerButton.textContent = 'Save';
@@ -445,12 +446,12 @@ function initializeEventListeners() {
         const response = await api.get('/settings/test-connection/portainer');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Successfully connected to Portainer');
+          toast.success(response.message || 'Successfully connected to Portainer');
         } else {
-          showNotification('error', response.message || 'Failed to connect to Portainer');
+          toast.error(response.message || 'Failed to connect to Portainer');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Portainer connection test failed');
+        toast.error(error.message || 'Portainer connection test failed');
       } finally {
         testPortainerButton.disabled = false;
         testPortainerButton.textContent = 'Test Connection';
@@ -468,12 +469,12 @@ function initializeEventListeners() {
       const apiKey = document.getElementById('jellyfin-api-key').value.trim();
       
       if (!url || !apiKey) {
-        showNotification('error', 'All fields are required');
+        toast.error('All fields are required');
         return;
       }
       
       if (!url.match(/^https?:\/\/.+/)) {
-        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8096)');
+        toast.error('Please enter a valid URL (e.g., http://192.168.1.100:8096)');
         return;
       }
       
@@ -484,12 +485,12 @@ function initializeEventListeners() {
         const response = await api.put('/settings/jellyfin', { url, apiKey });
         
         if (response && response.success) {
-          showNotification('success', 'Jellyfin configuration saved successfully');
+          toast.success('Jellyfin configuration saved successfully');
         } else {
-          showNotification('error', `Failed to save Jellyfin configuration: ${response.message || 'Unknown error'}`);
+          toast.error(`Failed to save Jellyfin configuration: ${response.message || 'Unknown error'}`);
         }
       } catch (error) {
-        showNotification('error', `Error saving Jellyfin configuration: ${error.message}`);
+        toast.error(`Error saving Jellyfin configuration: ${error.message}`);
       } finally {
         saveJellyfinButton.disabled = false;
         saveJellyfinButton.textContent = 'Save';
@@ -507,12 +508,12 @@ function initializeEventListeners() {
         const response = await api.get('/settings/test-connection/jellyfin-config');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Successfully connected to Jellyfin');
+          toast.success(response.message || 'Successfully connected to Jellyfin');
         } else {
-          showNotification('error', response.message || 'Failed to connect to Jellyfin');
+          toast.error(response.message || 'Failed to connect to Jellyfin');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Jellyfin connection test failed');
+        toast.error(error.message || 'Jellyfin connection test failed');
       } finally {
         testJellyfinButton.disabled = false;
         testJellyfinButton.textContent = 'Test Connection';
@@ -541,7 +542,7 @@ function initializeThemeSelector() {
   themeSelector.addEventListener('change', (e) => {
     const selectedTheme = e.target.value;
     themeManager.setTheme(selectedTheme);
-    showNotification('success', `Theme changed to ${getThemeDisplayName(selectedTheme)}`);
+    toast.success(`Theme changed to ${getThemeDisplayName(selectedTheme)}`);
   });
   
   // Initialize custom theme creator
@@ -622,7 +623,7 @@ function createCustomTheme() {
   const themeName = document.getElementById('custom-theme-name').value.trim();
   
   if (!themeName) {
-    showNotification('error', 'Please enter a theme name');
+    toast.error('Please enter a theme name');
     return;
   }
   
@@ -637,9 +638,9 @@ function createCustomTheme() {
     const themeKey = themeManager.createCustomTheme(themeName, colors);
     updateThemeSelector();
     document.getElementById('theme-selector').value = themeKey;
-    showNotification('success', `Custom theme "${themeName}" created and applied!`);
+    toast.success(`Custom theme "${themeName}" created and applied!`);
   } catch (error) {
-    showNotification('error', 'Failed to create theme');
+    toast.error('Failed to create theme');
   }
 }
 
@@ -669,7 +670,7 @@ function previewCustomTheme() {
   isPreviewActive = true;
   updatePreviewButtons(true);
   
-  showNotification('info', 'Preview active for 10 seconds. Click "Stop Preview" to cancel.');
+  toast.info('Preview active for 10 seconds. Click "Stop Preview" to cancel.');
   
   // Auto-remove preview after 10 seconds
   previewTimeout = setTimeout(() => {
@@ -690,7 +691,7 @@ function stopPreview() {
     themeManager.applyTheme(themeManager.getCurrentTheme());
     isPreviewActive = false;
     updatePreviewButtons(false);
-    showNotification('success', 'Preview stopped, returned to current theme.');
+    toast.success('Preview stopped, returned to current theme.');
   }
 }
 
@@ -701,7 +702,7 @@ function importColorHuntPalette() {
   const url = document.getElementById('colorhunt-url').value.trim();
   
   if (!url) {
-    showNotification('error', 'Please enter a ColorHunt URL');
+    toast.error('Please enter a ColorHunt URL');
     return;
   }
   
@@ -709,7 +710,7 @@ function importColorHuntPalette() {
   const colors = parseColorHuntUrl(url);
   
   if (!colors) {
-    showNotification('error', 'Invalid ColorHunt URL format');
+    toast.error('Invalid ColorHunt URL format');
     return;
   }
   
@@ -723,7 +724,7 @@ function importColorHuntPalette() {
   document.getElementById('color4').value = colors[3];
   document.getElementById('color4-hex').value = colors[3];
   
-  showNotification('success', 'Color palette imported successfully!');
+  toast.success('Color palette imported successfully!');
 }
 
 /**
@@ -954,26 +955,4 @@ function loadJellyfinConfig() {
 
 
 
-/**
- * Show notification
- * @param {string} type - Notification type ('success' or 'error')
- * @param {string} message - Notification message
- */
-function showNotification(type, message) {
-  const notificationContainer = document.getElementById('notification-container');
-  if (!notificationContainer) return;
-  
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  
-  notificationContainer.appendChild(notification);
-  
-  // Auto-remove notification after 5 seconds
-  setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      notificationContainer.removeChild(notification);
-    }, 500);
-  }, 5000);
-}
+

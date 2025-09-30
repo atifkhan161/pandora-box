@@ -7,6 +7,7 @@ import auth from '../services/auth.js';
 import api from '../services/api.js';
 import themeManager from '../services/theme.js';
 import { Navigation } from '../components/navigation.js';
+import toast from '../services/toast.js';
 
 let currentFilter = 'all';
 let downloads = [];
@@ -144,13 +145,13 @@ async function pauseDownload(hash) {
   try {
     const response = await api.put(`/downloads/${hash}/pause`);
     if (response && response.success) {
-      showNotification('success', 'Download paused');
+      toast.success('Download paused');
       loadDownloads();
     } else {
-      showNotification('error', 'Failed to pause download');
+      toast.error('Failed to pause download');
     }
   } catch (error) {
-    showNotification('error', 'Failed to pause download');
+    toast.error('Failed to pause download');
   }
 }
 
@@ -158,13 +159,13 @@ async function resumeDownload(hash) {
   try {
     const response = await api.put(`/downloads/${hash}/resume`);
     if (response && response.success) {
-      showNotification('success', 'Download resumed');
+      toast.success('Download resumed');
       loadDownloads();
     } else {
-      showNotification('error', 'Failed to resume download');
+      toast.error('Failed to resume download');
     }
   } catch (error) {
-    showNotification('error', 'Failed to resume download');
+    toast.error('Failed to resume download');
   }
 }
 
@@ -176,13 +177,13 @@ async function removeDownload(hash) {
   try {
     const response = await api.delete(`/downloads/${hash}`);
     if (response && response.success) {
-      showNotification('success', 'Download removed');
+      toast.success('Download removed');
       loadDownloads();
     } else {
-      showNotification('error', 'Failed to remove download');
+      toast.error('Failed to remove download');
     }
   } catch (error) {
-    showNotification('error', 'Failed to remove download');
+    toast.error('Failed to remove download');
   }
 }
 
@@ -294,23 +295,7 @@ function showError(message) {
   listEl.innerHTML = `<div class="downloads-error">${message}</div>`;
 }
 
-function showNotification(type, message) {
-  const container = document.getElementById('notification-container');
-  if (!container) return;
-  
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  
-  container.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      container.removeChild(notification);
-    }, 500);
-  }, 3000);
-}
+
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {

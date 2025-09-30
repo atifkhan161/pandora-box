@@ -35,6 +35,8 @@ function initializeEventListeners() {
   const testQbittorrentButton = document.querySelector('.test-qbittorrent-btn');
   const saveJackettButton = document.querySelector('.save-jackett-btn');
   const testJackettButton = document.querySelector('.test-jackett-btn');
+  const saveFilebrowserButton = document.querySelector('.save-filebrowser-btn');
+  const testFilebrowserButton = document.querySelector('.test-filebrowser-btn');
   
   // Password form submission
   if (passwordForm) {
@@ -315,6 +317,69 @@ function initializeEventListeners() {
   
   // Load Jackett configuration
   loadJackettConfig();
+  
+  // Filebrowser save button
+  if (saveFilebrowserButton) {
+    saveFilebrowserButton.addEventListener('click', async () => {
+      const url = document.getElementById('filebrowser-url').value.trim();
+      const username = document.getElementById('filebrowser-username').value.trim();
+      const password = document.getElementById('filebrowser-password').value.trim();
+      
+      if (!url || !username || !password) {
+        showNotification('error', 'All fields are required');
+        return;
+      }
+      
+      if (!url.match(/^https?:\/\/.+/)) {
+        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8080)');
+        return;
+      }
+      
+      saveFilebrowserButton.disabled = true;
+      saveFilebrowserButton.textContent = 'Saving...';
+      
+      try {
+        const response = await api.put('/settings/filebrowser', { url, username, password });
+        
+        if (response && response.success) {
+          showNotification('success', 'Filebrowser configuration saved successfully');
+        } else {
+          showNotification('error', `Failed to save filebrowser configuration: ${response.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showNotification('error', `Error saving filebrowser configuration: ${error.message}`);
+      } finally {
+        saveFilebrowserButton.disabled = false;
+        saveFilebrowserButton.textContent = 'Save';
+      }
+    });
+  }
+  
+  // Filebrowser test connection button
+  if (testFilebrowserButton) {
+    testFilebrowserButton.addEventListener('click', async () => {
+      testFilebrowserButton.disabled = true;
+      testFilebrowserButton.textContent = 'Testing...';
+      
+      try {
+        const response = await api.get('/settings/test-connection/filebrowser');
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Successfully connected to filebrowser');
+        } else {
+          showNotification('error', response.message || 'Failed to connect to filebrowser');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'Filebrowser connection test failed');
+      } finally {
+        testFilebrowserButton.disabled = false;
+        testFilebrowserButton.textContent = 'Test Connection';
+      }
+    });
+  }
+  
+  // Load filebrowser configuration
+  loadFilebrowserConfig();
 }
 
 /**
@@ -406,6 +471,25 @@ function loadQbittorrentConfig() {
     })
     .catch(error => {
       console.error('Failed to load qBittorrent configuration:', error);
+    });
+}
+
+/**
+ * Load filebrowser configuration from server
+ */
+function loadFilebrowserConfig() {
+  api.get('/settings/filebrowser')
+    .then(response => {
+      if (response && response.success) {
+        const config = response.data;
+        
+        if (config.url) document.getElementById('filebrowser-url').value = config.url;
+        if (config.username) document.getElementById('filebrowser-username').value = config.username;
+        if (config.password) document.getElementById('filebrowser-password').value = config.password;
+      }
+    })
+    .catch(error => {
+      console.error('Failed to load filebrowser configuration:', error);
     });
 }
 

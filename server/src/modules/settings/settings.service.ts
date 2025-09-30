@@ -191,6 +191,11 @@ export class SettingsService {
       return this.testJackettConfigConnection();
     }
 
+    // Filebrowser uses dedicated configuration, not API key collection
+    if (serviceName === 'filebrowser') {
+      return this.testFilebrowserConnection();
+    }
+
     // If no API key provided, get from database
     if (!apiKey) {
       const configCollection = this.databaseService.getConfigCollection();
@@ -226,6 +231,8 @@ export class SettingsService {
         return this.testQbittorrentConnection();
       case 'jackett-config':
         return this.testJackettConfigConnection();
+      case 'filebrowser':
+        return this.testFilebrowserConnection();
       default:
         return { success: false, message: 'Unknown service' };
     }
@@ -581,6 +588,113 @@ export class SettingsService {
         return { success: false, message: 'Cannot connect to Jackett - service may be down' };
       }
       return { success: false, message: `Failed to connect to Jackett: ${error.message}` };
+    }
+  }
+
+  /**
+   * Update filebrowser configuration
+   * @param filebrowserConfig Filebrowser configuration to update
+   * @returns Updated configuration
+   */
+  async updateFilebrowserConfig(filebrowserConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'filebrowser-config' });
+
+    // Encrypt sensitive values
+    const encryptedConfig = {
+      url: filebrowserConfig.url,
+      username: filebrowserConfig.username,
+      password: this.encryptionService.encrypt(filebrowserConfig.password),
+    };
+
+    if (config) {
+      config.config = { ...config.config, ...encryptedConfig };
+      configCollection.update(config);
+    } else {
+      config = {
+        type: 'filebrowser-config',
+        config: encryptedConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'Filebrowser configuration updated successfully' };
+  }
+
+  /**
+   * Get filebrowser configuration
+   * @returns Filebrowser configuration
+   */
+  async getFilebrowserConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'filebrowser-config' });
+
+    if (!config || !config.config) {
+      return { 
+        success: true,
+        data: {
+          url: '',
+          username: '',
+          password: ''
+        } 
+      };
+    }
+
+    // Decrypt password for client
+    const decryptedConfig = {
+      url: config.config.url,
+      username: config.config.username,
+      password: this.encryptionService.decrypt(config.config.password),
+    };
+
+    return { success: true, data: decryptedConfig };
+  }
+
+  /**
+   * Test filebrowser connection
+   * @returns Test result
+   */
+  private async testFilebrowserConnection(): Promise<any> {
+    try {
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'filebrowser-config' });
+      
+      if (!config || !config.config) {
+        return { success: false, message: 'Filebrowser configuration not found' };
+      }
+
+      const { url, username, password: encryptedPassword } = config.config;
+      
+      if (!url || !username || !encryptedPassword) {
+        return { success: false, message: 'Incomplete filebrowser configuration' };
+      }
+
+      let password;
+      try {
+        password = this.encryptionService.decrypt(encryptedPassword);
+      } catch (error) {
+        return { success: false, message: 'Failed to decrypt filebrowser password' };
+      }
+
+      // Test connection to filebrowser API
+      const baseUrl = url.replace(/\/$/, '');
+      const response = await this.httpService.axiosRef.post(
+        `${baseUrl}/api/login`,
+        { username, password },
+        { timeout: 5000 }
+      );
+
+      if (response.status === 200) {
+        return { success: true, message: 'Successfully connected to filebrowser' };
+      } else {
+        return { success: false, message: 'Invalid filebrowser credentials' };
+      }
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        return { success: false, message: 'Cannot connect to filebrowser - service may be down' };
+      }
+      return { success: false, message: `Failed to connect to filebrowser: ${error.message}` };
     }
   }
 }

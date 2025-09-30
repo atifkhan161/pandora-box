@@ -73,4 +73,14 @@ export class SettingsController {
   async getJackettConfig() {
     return this.settingsService.getJackettConfig();
   }
+
+  @Put('filebrowser')
+  async updateFilebrowserConfig(@Body() filebrowserConfig: any) {
+    return this.settingsService.updateFilebrowserConfig(filebrowserConfig);
+  }
+
+  @Get('filebrowser')
+  async getFilebrowserConfig() {
+    return this.settingsService.getFilebrowserConfig();
+  }
 }

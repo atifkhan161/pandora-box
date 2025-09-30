@@ -14,16 +14,16 @@ export class FilebrowserService {
    * Get filebrowser configuration from encrypted settings
    */
   private async getFilebrowserConfig(): Promise<{ url: string; username: string; password: string }> {
-    const apiKeys = await this.settingsService.getApiKeys();
+    const config = await this.settingsService.getFilebrowserConfig();
     
-    if (!apiKeys.keys.filebrowser_url || !apiKeys.keys.filebrowser_username || !apiKeys.keys.filebrowser_password) {
-      throw new HttpException('Filebrowser configuration not found. Please configure filebrowser_url, filebrowser_username, and filebrowser_password in API keys.', HttpStatus.BAD_REQUEST);
+    if (!config.success || !config.data.url || !config.data.username || !config.data.password) {
+      throw new HttpException('Filebrowser configuration not found. Please configure filebrowser in settings.', HttpStatus.BAD_REQUEST);
     }
 
     return {
-      url: apiKeys.keys.filebrowser_url,
-      username: apiKeys.keys.filebrowser_username,
-      password: apiKeys.keys.filebrowser_password,
+      url: config.data.url,
+      username: config.data.username,
+      password: config.data.password,
     };
   }
 

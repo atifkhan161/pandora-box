@@ -10,7 +10,7 @@ export class PortainerService {
     private readonly settingsService: SettingsService,
   ) {}
 
-  private async getPortainerConfig(): Promise<{ url: string; apiKey: string }> {
+  private async getPortainerConfig(): Promise<{ url: string; apiKey: string; endpointId: string }> {
     const config = await this.settingsService.getPortainerConfig();
     
     if (!config.success || !config.data.url || !config.data.apiKey) {
@@ -20,6 +20,7 @@ export class PortainerService {
     return {
       url: config.data.url,
       apiKey: config.data.apiKey,
+      endpointId: config.data.endpointId || '2',
     };
   }
 
@@ -29,7 +30,7 @@ export class PortainerService {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${baseUrl}/api/endpoints/1/docker/containers/json?all=true`, {
+        this.httpService.get(`${baseUrl}/api/endpoints/${config.endpointId}/docker/containers/json?all=true`, {
           headers: {
             'X-API-Key': config.apiKey,
           },
@@ -38,6 +39,7 @@ export class PortainerService {
 
       return response.data;
     } catch (error) {
+      console.error('Portainer API error:', error.response?.data || error.message);
       throw new HttpException('Failed to fetch containers from Portainer', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -67,7 +69,7 @@ export class PortainerService {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${baseUrl}/api/endpoints/1/docker/images/json`, {
+        this.httpService.get(`${baseUrl}/api/endpoints/${config.endpointId}/docker/images/json`, {
           headers: {
             'X-API-Key': config.apiKey,
           },
@@ -76,6 +78,7 @@ export class PortainerService {
 
       return response.data;
     } catch (error) {
+      console.error('Portainer API error:', error.response?.data || error.message);
       throw new HttpException('Failed to fetch images from Portainer', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -86,7 +89,7 @@ export class PortainerService {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.post(`${baseUrl}/api/endpoints/1/docker/containers/${containerId}/restart`, {}, {
+        this.httpService.post(`${baseUrl}/api/endpoints/${config.endpointId}/docker/containers/${containerId}/restart`, {}, {
           headers: {
             'X-API-Key': config.apiKey,
           },
@@ -95,6 +98,7 @@ export class PortainerService {
 
       return { success: true, message: 'Container restarted successfully' };
     } catch (error) {
+      console.error('Portainer API error:', error.response?.data || error.message);
       throw new HttpException('Failed to restart container', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -132,7 +136,7 @@ export class PortainerService {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get(`${baseUrl}/api/endpoints/1/docker/containers/${containerId}/logs?stdout=true&stderr=true&tail=${lines}`, {
+        this.httpService.get(`${baseUrl}/api/endpoints/${config.endpointId}/docker/containers/${containerId}/logs?stdout=true&stderr=true&tail=${lines}`, {
           headers: {
             'X-API-Key': config.apiKey,
           },
@@ -141,6 +145,7 @@ export class PortainerService {
 
       return { logs: response.data };
     } catch (error) {
+      console.error('Portainer API error:', error.response?.data || error.message);
       throw new HttpException('Failed to fetch container logs', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

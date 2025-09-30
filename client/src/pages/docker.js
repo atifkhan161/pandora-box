@@ -109,7 +109,7 @@ function renderContainers(containers) {
     <div class="docker-item">
       <div class="docker-item-header">
         <div class="docker-item-name">${container.Names[0].replace('/', '')}</div>
-        <div class="docker-item-status status-${container.State.toLowerCase()}">${container.State}</div>
+        <div class="docker-item-status status-${container.State.toLowerCase()}">${container.State} - ${container.Status}</div>
       </div>
       <div class="docker-item-info">
         <div><strong>Image:</strong> ${container.Image}</div>

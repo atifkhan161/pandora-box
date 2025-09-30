@@ -679,6 +679,7 @@ export class SettingsService {
     const encryptedConfig = {
       url: portainerConfig.url,
       apiKey: this.encryptionService.encrypt(portainerConfig.apiKey),
+      endpointId: portainerConfig.endpointId || '2',
     };
 
     if (config) {
@@ -709,7 +710,8 @@ export class SettingsService {
         success: true,
         data: {
           url: '',
-          apiKey: ''
+          apiKey: '',
+          endpointId: '2'
         } 
       };
     }
@@ -718,6 +720,7 @@ export class SettingsService {
     const decryptedConfig = {
       url: config.config.url,
       apiKey: this.encryptionService.decrypt(config.config.apiKey),
+      endpointId: config.config.endpointId || '2',
     };
 
     return { success: true, data: decryptedConfig };

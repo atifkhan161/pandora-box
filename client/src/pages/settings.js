@@ -394,9 +394,10 @@ function initializeEventListeners() {
     savePortainerButton.addEventListener('click', async () => {
       const url = document.getElementById('portainer-url').value.trim();
       const apiKey = document.getElementById('portainer-api-key').value.trim();
+      const endpointId = document.getElementById('portainer-endpoint-id').value.trim() || '2';
       
       if (!url || !apiKey) {
-        showNotification('error', 'All fields are required');
+        showNotification('error', 'URL and API Key are required');
         return;
       }
       
@@ -409,7 +410,7 @@ function initializeEventListeners() {
       savePortainerButton.textContent = 'Saving...';
       
       try {
-        const response = await api.put('/settings/portainer', { url, apiKey });
+        const response = await api.put('/settings/portainer', { url, apiKey, endpointId });
         
         if (response && response.success) {
           showNotification('success', 'Portainer configuration saved successfully');
@@ -577,6 +578,7 @@ function loadPortainerConfig() {
         
         if (config.url) document.getElementById('portainer-url').value = config.url;
         if (config.apiKey) document.getElementById('portainer-api-key').value = config.apiKey;
+        if (config.endpointId) document.getElementById('portainer-endpoint-id').value = config.endpointId;
       }
     })
     .catch(error => {

@@ -37,6 +37,7 @@ export class Navigation {
       { href: 'tvshows.html', text: 'TV Shows' },
       { href: 'search.html', text: 'Search' },
       { href: 'downloads.html', text: 'Downloads' },
+      { href: 'files.html', text: 'File Management' },
       { href: 'settings.html', text: 'Settings' }
     ];
 
@@ -94,6 +95,8 @@ export class Navigation {
       activeLink = 'search';
     } else if (currentPath.includes('downloads.html')) {
       activeLink = 'downloads';
+    } else if (currentPath.includes('files.html')) {
+      activeLink = 'files';
     } else if (currentPath.includes('settings.html')) {
       activeLink = 'settings';
     }

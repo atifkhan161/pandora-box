@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>File Management - Pandora Box</title>
+    <link rel="stylesheet" href="./styles/theme.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/files.css">
+    <link rel="stylesheet" href="./styles/navigation.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <main class="main-content">
+            <header class="content-header">
+                <h1>File Management</h1>
+                <button id="refresh-btn" class="btn btn-primary">Refresh</button>
+            </header>
+
+            <div id="notification-container"></div>
+
+            <div class="files-container">
+                <div id="files-loading" class="files-loading">
+                    <div class="loading-spinner">Loading files...</div>
+                </div>
+
+                <div id="files-list" class="files-list"></div>
+            </div>
+        </main>
+    </div>
+
+    <script type=\"module\" src=\"./main.js\"></script>
+    <script type=\"module\" src=\"./components/file-management.js\"></script>
+</body>
+</html>

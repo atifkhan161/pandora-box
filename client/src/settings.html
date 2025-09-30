@@ -222,6 +222,13 @@
                     <p class="help-text">Create your own theme using a 4-color palette. Visit <a href="https://colorhunt.co/palettes/popular" target="_blank">ColorHunt</a> for color palette inspiration.</p>
                     <form id="custom-theme-form" class="settings-form">
                         <div class="form-group">
+                            <label for="colorhunt-url">ColorHunt Palette URL (Optional)</label>
+                            <div class="input-with-buttons">
+                                <input type="text" id="colorhunt-url" placeholder="https://colorhunt.co/palette/1b3c53234c6a456882d2c1b6">
+                                <button type="button" class="btn btn-secondary" id="import-palette-btn">Import</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="custom-theme-name">Theme Name</label>
                             <input type="text" id="custom-theme-name" placeholder="My Custom Theme" maxlength="20">
                         </div>

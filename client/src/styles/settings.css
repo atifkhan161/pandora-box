@@ -255,6 +255,18 @@
     text-transform: uppercase;
 }
 
+/* Preview button warning state */
+.btn-warning {
+    background-color: var(--pb-warning);
+    color: var(--pb-text-primary);
+    border-color: var(--pb-warning);
+}
+
+.btn-warning:hover {
+    background-color: var(--pb-warning-text);
+    border-color: var(--pb-warning-text);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .app-container {

@@ -531,10 +531,24 @@ function initializeCustomThemeCreator() {
   });
   
   // Create theme button
-  document.getElementById('create-theme-btn').addEventListener('click', createCustomTheme);
+  document.getElementById('create-theme-btn').addEventListener('click', () => {
+    if (isPreviewActive) {
+      stopPreview();
+    }
+    createCustomTheme();
+  });
   
   // Preview theme button
-  document.getElementById('preview-theme-btn').addEventListener('click', previewCustomTheme);
+  document.getElementById('preview-theme-btn').addEventListener('click', () => {
+    if (isPreviewActive) {
+      stopPreview();
+    } else {
+      previewCustomTheme();
+    }
+  });
+  
+  // Import palette button
+  document.getElementById('import-palette-btn').addEventListener('click', importColorHuntPalette);
 }
 
 /**
@@ -565,6 +579,9 @@ function createCustomTheme() {
   }
 }
 
+let previewTimeout;
+let isPreviewActive = false;
+
 /**
  * Preview custom theme
  */
@@ -576,15 +593,126 @@ function previewCustomTheme() {
     text: document.getElementById('color4').value
   };
   
+  // Clear existing preview
+  if (previewTimeout) {
+    clearTimeout(previewTimeout);
+  }
+  
+  // Apply preview theme
   themeManager.injectCustomThemeCSS('preview-theme', colors);
   document.body.className = document.body.className.replace(/\b\w+-theme\b/g, '') + ' preview-theme';
   
-  showNotification('info', 'Preview applied! Use "Create & Apply Theme" to save.');
+  isPreviewActive = true;
+  updatePreviewButtons(true);
   
-  // Remove preview after 5 seconds
-  setTimeout(() => {
+  showNotification('info', 'Preview active for 10 seconds. Click "Stop Preview" to cancel.');
+  
+  // Auto-remove preview after 10 seconds
+  previewTimeout = setTimeout(() => {
+    stopPreview();
+  }, 10000);
+}
+
+/**
+ * Stop preview and return to current theme
+ */
+function stopPreview() {
+  if (previewTimeout) {
+    clearTimeout(previewTimeout);
+    previewTimeout = null;
+  }
+  
+  if (isPreviewActive) {
     themeManager.applyTheme(themeManager.getCurrentTheme());
-  }, 5000);
+    isPreviewActive = false;
+    updatePreviewButtons(false);
+    showNotification('success', 'Preview stopped, returned to current theme.');
+  }
+}
+
+/**
+ * Import ColorHunt palette from URL
+ */
+function importColorHuntPalette() {
+  const url = document.getElementById('colorhunt-url').value.trim();
+  
+  if (!url) {
+    showNotification('error', 'Please enter a ColorHunt URL');
+    return;
+  }
+  
+  // Extract colors from ColorHunt URL
+  const colors = parseColorHuntUrl(url);
+  
+  if (!colors) {
+    showNotification('error', 'Invalid ColorHunt URL format');
+    return;
+  }
+  
+  // Populate color inputs
+  document.getElementById('color1').value = colors[0];
+  document.getElementById('color1-hex').value = colors[0];
+  document.getElementById('color2').value = colors[1];
+  document.getElementById('color2-hex').value = colors[1];
+  document.getElementById('color3').value = colors[2];
+  document.getElementById('color3-hex').value = colors[2];
+  document.getElementById('color4').value = colors[3];
+  document.getElementById('color4-hex').value = colors[3];
+  
+  showNotification('success', 'Color palette imported successfully!');
+}
+
+/**
+ * Parse ColorHunt URL to extract colors
+ * @param {string} url - ColorHunt URL
+ * @returns {Array|null} Array of 4 hex colors or null if invalid
+ */
+function parseColorHuntUrl(url) {
+  try {
+    // Match ColorHunt palette URL pattern
+    const match = url.match(/colorhunt\.co\/palette\/([a-fA-F0-9]{24})/);
+    
+    if (!match) {
+      return null;
+    }
+    
+    const colorString = match[1];
+    
+    // Split into 4 colors (6 characters each)
+    if (colorString.length !== 24) {
+      return null;
+    }
+    
+    const colors = [];
+    for (let i = 0; i < 4; i++) {
+      const hex = '#' + colorString.substr(i * 6, 6);
+      colors.push(hex.toUpperCase());
+    }
+    
+    return colors;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * Update preview button states
+ */
+function updatePreviewButtons(previewing) {
+  const previewBtn = document.getElementById('preview-theme-btn');
+  const createBtn = document.getElementById('create-theme-btn');
+  
+  if (previewing) {
+    previewBtn.textContent = 'Stop Preview';
+    previewBtn.classList.add('btn-warning');
+    previewBtn.classList.remove('btn-secondary');
+    createBtn.style.opacity = '0.7';
+  } else {
+    previewBtn.textContent = 'Preview';
+    previewBtn.classList.remove('btn-warning');
+    previewBtn.classList.add('btn-secondary');
+    createBtn.style.opacity = '1';
+  }
 }
 
 /**

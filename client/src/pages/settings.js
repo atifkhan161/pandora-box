@@ -37,6 +37,8 @@ function initializeEventListeners() {
   const testJackettButton = document.querySelector('.test-jackett-btn');
   const saveFilebrowserButton = document.querySelector('.save-filebrowser-btn');
   const testFilebrowserButton = document.querySelector('.test-filebrowser-btn');
+  const savePortainerButton = document.querySelector('.save-portainer-btn');
+  const testPortainerButton = document.querySelector('.test-portainer-btn');
 
   
   // Password form submission
@@ -387,6 +389,67 @@ function initializeEventListeners() {
   // Load filebrowser configuration
   loadFilebrowserConfig();
   
+  // Portainer save button
+  if (savePortainerButton) {
+    savePortainerButton.addEventListener('click', async () => {
+      const url = document.getElementById('portainer-url').value.trim();
+      const apiKey = document.getElementById('portainer-api-key').value.trim();
+      
+      if (!url || !apiKey) {
+        showNotification('error', 'All fields are required');
+        return;
+      }
+      
+      if (!url.match(/^https?:\/\/.+/)) {
+        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:9000)');
+        return;
+      }
+      
+      savePortainerButton.disabled = true;
+      savePortainerButton.textContent = 'Saving...';
+      
+      try {
+        const response = await api.put('/settings/portainer', { url, apiKey });
+        
+        if (response && response.success) {
+          showNotification('success', 'Portainer configuration saved successfully');
+        } else {
+          showNotification('error', `Failed to save Portainer configuration: ${response.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showNotification('error', `Error saving Portainer configuration: ${error.message}`);
+      } finally {
+        savePortainerButton.disabled = false;
+        savePortainerButton.textContent = 'Save';
+      }
+    });
+  }
+  
+  // Portainer test connection button
+  if (testPortainerButton) {
+    testPortainerButton.addEventListener('click', async () => {
+      testPortainerButton.disabled = true;
+      testPortainerButton.textContent = 'Testing...';
+      
+      try {
+        const response = await api.get('/settings/test-connection/portainer');
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Successfully connected to Portainer');
+        } else {
+          showNotification('error', response.message || 'Failed to connect to Portainer');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'Portainer connection test failed');
+      } finally {
+        testPortainerButton.disabled = false;
+        testPortainerButton.textContent = 'Test Connection';
+      }
+    });
+  }
+  
+  // Load Portainer configuration
+  loadPortainerConfig();
 
 }
 
@@ -500,6 +563,24 @@ function loadFilebrowserConfig() {
     })
     .catch(error => {
       console.error('Failed to load filebrowser configuration:', error);
+    });
+}
+
+/**
+ * Load Portainer configuration from server
+ */
+function loadPortainerConfig() {
+  api.get('/settings/portainer')
+    .then(response => {
+      if (response && response.success) {
+        const config = response.data;
+        
+        if (config.url) document.getElementById('portainer-url').value = config.url;
+        if (config.apiKey) document.getElementById('portainer-api-key').value = config.apiKey;
+      }
+    })
+    .catch(error => {
+      console.error('Failed to load Portainer configuration:', error);
     });
 }
 

@@ -153,6 +153,11 @@ export class SettingsService {
       return this.testFilebrowserConnection();
     }
 
+    // Portainer uses dedicated configuration, not API key collection
+    if (serviceName === 'portainer') {
+      return this.testPortainerConnection();
+    }
+
     // If no API key provided, get from database
     if (!apiKey) {
       const configCollection = this.databaseService.getConfigCollection();
@@ -190,6 +195,8 @@ export class SettingsService {
         return this.testJackettConfigConnection();
       case 'filebrowser':
         return this.testFilebrowserConnection();
+      case 'portainer':
+        return this.testPortainerConnection();
       default:
         return { success: false, message: 'Unknown service' };
     }
@@ -656,6 +663,114 @@ export class SettingsService {
         return { success: false, message: 'Cannot connect to filebrowser - service may be down' };
       }
       return { success: false, message: `Failed to connect to filebrowser: ${error.message}` };
+    }
+  }
+
+  /**
+   * Update Portainer configuration
+   * @param portainerConfig Portainer configuration to update
+   * @returns Updated configuration
+   */
+  async updatePortainerConfig(portainerConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'portainer-config' });
+
+    // Encrypt API key
+    const encryptedConfig = {
+      url: portainerConfig.url,
+      apiKey: this.encryptionService.encrypt(portainerConfig.apiKey),
+    };
+
+    if (config) {
+      config.config = { ...config.config, ...encryptedConfig };
+      configCollection.update(config);
+    } else {
+      config = {
+        type: 'portainer-config',
+        config: encryptedConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'Portainer configuration updated successfully' };
+  }
+
+  /**
+   * Get Portainer configuration
+   * @returns Portainer configuration
+   */
+  async getPortainerConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'portainer-config' });
+
+    if (!config || !config.config) {
+      return { 
+        success: true,
+        data: {
+          url: '',
+          apiKey: ''
+        } 
+      };
+    }
+
+    // Decrypt API key for client
+    const decryptedConfig = {
+      url: config.config.url,
+      apiKey: this.encryptionService.decrypt(config.config.apiKey),
+    };
+
+    return { success: true, data: decryptedConfig };
+  }
+
+  /**
+   * Test Portainer connection
+   * @returns Test result
+   */
+  private async testPortainerConnection(): Promise<any> {
+    try {
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'portainer-config' });
+      
+      if (!config || !config.config) {
+        return { success: false, message: 'Portainer configuration not found' };
+      }
+
+      const { url, apiKey: encryptedApiKey } = config.config;
+      
+      if (!url || !encryptedApiKey) {
+        return { success: false, message: 'Incomplete Portainer configuration' };
+      }
+
+      let apiKey;
+      try {
+        apiKey = this.encryptionService.decrypt(encryptedApiKey);
+      } catch (error) {
+        return { success: false, message: 'Failed to decrypt Portainer API key' };
+      }
+
+      // Test connection to Portainer API
+      const baseUrl = url.replace(/\/$/, '');
+      const response = await this.httpService.axiosRef.get(
+        `${baseUrl}/api/status`,
+        {
+          headers: {
+            'X-API-Key': apiKey
+          },
+          timeout: 5000
+        }
+      );
+
+      if (response.status === 200) {
+        return { success: true, message: 'Successfully connected to Portainer' };
+      } else {
+        return { success: false, message: 'Invalid Portainer API key or URL' };
+      }
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        return { success: false, message: 'Cannot connect to Portainer - service may be down' };
+      }
+      return { success: false, message: `Failed to connect to Portainer: ${error.message}` };
     }
   }
 }

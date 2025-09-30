@@ -73,4 +73,14 @@ export class SettingsController {
   async getFilebrowserConfig() {
     return this.settingsService.getFilebrowserConfig();
   }
+
+  @Put('portainer')
+  async updatePortainerConfig(@Body() portainerConfig: any) {
+    return this.settingsService.updatePortainerConfig(portainerConfig);
+  }
+
+  @Get('portainer')
+  async getPortainerConfig() {
+    return this.settingsService.getPortainerConfig();
+  }
 }

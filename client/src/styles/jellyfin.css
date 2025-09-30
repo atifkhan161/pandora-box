@@ -36,6 +36,51 @@
   min-width: 150px;
 }
 
+.library-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--pb-surface-bg, #2a2a2a);
+  border-radius: 6px;
+  border: 1px solid var(--pb-border-color, #444);
+}
+
+.library-info h3 {
+  color: var(--pb-text-primary, #ffffff);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.library-type {
+  color: var(--pb-accent-color, #007bff);
+  font-weight: 500;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.library-locations {
+  color: var(--pb-text-secondary, #cccccc);
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.library-actions .btn {
+  min-width: 120px;
+}
+
+.loading-message, .error-message, .no-libraries {
+  text-align: center;
+  padding: 2rem;
+  color: var(--pb-text-secondary, #cccccc);
+  font-style: italic;
+}
+
+.error-message {
+  color: var(--pb-error-color, #dc3545);
+}
+
 @media (max-width: 768px) {
   .jellyfin-container {
     padding: 1rem;
@@ -50,6 +95,20 @@
   }
   
   .jellyfin-actions .btn {
+    width: 100%;
+  }
+  
+  .library-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .library-actions {
+    width: 100%;
+  }
+  
+  .library-actions .btn {
     width: 100%;
   }
 }

@@ -63,6 +63,85 @@ function initializeEventListeners() {
 }
 
 /**
+ * Load libraries from Jellyfin
+ */
+async function loadLibraries() {
+  const container = document.getElementById('libraries-container');
+  if (!container) return;
+
+  container.innerHTML = '<div class="loading-message">Loading libraries...</div>';
+
+  try {
+    const response = await api.get('/jellyfin/libraries');
+    
+    if (response && response.success && response.data) {
+      displayLibraries(response.data);
+    } else {
+      container.innerHTML = '<div class="error-message">Failed to load libraries. Please check your Jellyfin configuration.</div>';
+    }
+  } catch (error) {
+    container.innerHTML = '<div class="error-message">Error loading libraries. Please try again.</div>';
+  }
+}
+
+/**
+ * Display libraries in the UI
+ * @param {Array} libraries - Array of library objects
+ */
+function displayLibraries(libraries) {
+  const container = document.getElementById('libraries-container');
+  if (!container) return;
+
+  if (!libraries || libraries.length === 0) {
+    container.innerHTML = '<div class="no-libraries">No libraries found.</div>';
+    return;
+  }
+
+  const librariesHtml = libraries.map(library => `
+    <div class="library-item">
+      <div class="library-info">
+        <h3>${library.Name}</h3>
+        <p class="library-type">${library.CollectionType || 'Mixed Content'}</p>
+        <p class="library-locations">${library.Locations ? library.Locations.join(', ') : 'No locations'}</p>
+      </div>
+      <div class="library-actions">
+        <button class="btn btn-primary update-library-btn" data-id="${library.ItemId}">
+          Update Library
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  container.innerHTML = librariesHtml;
+
+  // Add event listeners to update buttons
+  container.querySelectorAll('.update-library-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const libraryId = e.target.dataset.id;
+      const originalText = e.target.textContent;
+      
+      e.target.disabled = true;
+      e.target.textContent = 'Updating...';
+      
+      try {
+        const response = await api.post(`/jellyfin/update-library/${libraryId}`);
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Library update initiated');
+        } else {
+          showNotification('error', response.message || 'Failed to update library');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'Library update failed');
+      } finally {
+        e.target.disabled = false;
+        e.target.textContent = originalText;
+      }
+    });
+  });
+}
+
+/**
  * Show notification
  * @param {string} type - Notification type ('success' or 'error')
  * @param {string} message - Notification message

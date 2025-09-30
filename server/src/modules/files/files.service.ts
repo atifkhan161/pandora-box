@@ -14,16 +14,12 @@ export class FilesService {
    * Get configured folder paths from settings
    */
   private async getFolderPaths(): Promise<{ downloads: string; movies: string; tvShows: string }> {
-    const pathsConfig = await this.settingsService.getFilePaths();
+    const filebrowserConfig = await this.settingsService.getFilebrowserConfig();
     
-    if (!pathsConfig.paths.downloads || !pathsConfig.paths.movies || !pathsConfig.paths.tvShows) {
-      throw new HttpException('File paths not configured', HttpStatus.BAD_REQUEST);
-    }
-
     return {
-      downloads: pathsConfig.paths.downloads,
-      movies: pathsConfig.paths.movies,
-      tvShows: pathsConfig.paths.tvShows,
+      downloads: '/',
+      movies: filebrowserConfig.data.moviesPath || '/',
+      tvShows: filebrowserConfig.data.showsPath || '/',
     };
   }
 
@@ -55,25 +51,26 @@ export class FilesService {
   /**
    * Move a file from downloads folder to movies folder
    */
-  async moveToMovies(filename: string): Promise<MoveFileResponse> {
+  async moveToMovies(filename: string, sourcePath?: string): Promise<MoveFileResponse> {
     try {
       const paths = await this.getFolderPaths();
       
-      const sourcePath = `${paths.downloads}/${filename}`;
-      const destinationPath = `${paths.movies}/${filename}`;
+      const source = sourcePath ? `${sourcePath}/${filename}`.replace('//', '/') : `${paths.downloads}/${filename}`;
+      const destination = `${paths.movies}/${filename}`.replace('//', '/');
 
-      await this.filebrowserService.moveFile(sourcePath, destinationPath);
+      await this.filebrowserService.moveFile(source, destination);
 
       return {
         success: true,
         message: `File moved to movies folder successfully`,
-        source: sourcePath,
-        destination: destinationPath,
+        source,
+        destination,
       };
     } catch (error) {
+      console.error('Move to movies error:', error);
       throw new HttpException(
-        error.message || 'Failed to move file to movies folder',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+        'Failed to move file',
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -81,25 +78,26 @@ export class FilesService {
   /**
    * Move a file from downloads folder to TV shows folder
    */
-  async moveToTvShows(filename: string): Promise<MoveFileResponse> {
+  async moveToTvShows(filename: string, sourcePath?: string): Promise<MoveFileResponse> {
     try {
       const paths = await this.getFolderPaths();
       
-      const sourcePath = `${paths.downloads}/${filename}`;
-      const destinationPath = `${paths.tvShows}/${filename}`;
+      const source = sourcePath ? `${sourcePath}/${filename}`.replace('//', '/') : `${paths.downloads}/${filename}`;
+      const destination = `${paths.tvShows}/${filename}`.replace('//', '/');
 
-      await this.filebrowserService.moveFile(sourcePath, destinationPath);
+      await this.filebrowserService.moveFile(source, destination);
 
       return {
         success: true,
         message: `File moved to TV shows folder successfully`,
-        source: sourcePath,
-        destination: destinationPath,
+        source,
+        destination,
       };
     } catch (error) {
+      console.error('Move to TV shows error:', error);
       throw new HttpException(
-        error.message || 'Failed to move file to TV shows folder',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+        'Failed to move file',
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }

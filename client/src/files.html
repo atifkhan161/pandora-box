@@ -17,22 +17,33 @@
         <main class="main-content">
             <header class="content-header">
                 <h1>File Management</h1>
-                <button id="refresh-btn" class="btn btn-primary">Refresh</button>
             </header>
 
             <div id="notification-container"></div>
 
             <div class="files-container">
+                <div id="breadcrumb" class="breadcrumb"></div>
+                
                 <div id="files-loading" class="files-loading">
                     <div class="loading-spinner">Loading files...</div>
                 </div>
 
                 <div id="files-list" class="files-list"></div>
             </div>
+
+            <div id="context-menu" class="context-menu">
+                <div class="context-item" data-action="open">Open</div>
+                <div class="context-item" data-action="rename">Rename</div>
+                <div class="context-item" data-action="copy">Copy</div>
+                <div class="context-item" data-action="cut">Cut</div>
+                <div class="context-item" data-action="delete">Delete</div>
+                <div class="context-item" data-action="move-movies">Move to Movies</div>
+                <div class="context-item" data-action="move-tvshows">Move to TV Shows</div>
+            </div>
         </main>
     </div>
 
-    <script type=\"module\" src=\"./main.js\"></script>
-    <script type=\"module\" src=\"./components/file-management.js\"></script>
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./components/file-management.js"></script>
 </body>
 </html>

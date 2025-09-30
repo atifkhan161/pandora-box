@@ -24,19 +24,9 @@ export class SettingsController {
     return this.settingsService.updateApiKeys(apiKeys);
   }
 
-  @Put('file-paths')
-  async updateFilePaths(@Body() paths: any) {
-    return this.settingsService.updateFilePaths(paths);
-  }
-
   @Get('api-keys')
   async getApiKeys() {
     return this.settingsService.getApiKeys();
-  }
-
-  @Get('file-paths')
-  async getFilePaths() {
-    return this.settingsService.getFilePaths();
   }
 
   @Get('env-config')

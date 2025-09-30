@@ -37,6 +37,7 @@ function initializeEventListeners() {
   const testJackettButton = document.querySelector('.test-jackett-btn');
   const saveFilebrowserButton = document.querySelector('.save-filebrowser-btn');
   const testFilebrowserButton = document.querySelector('.test-filebrowser-btn');
+
   
   // Password form submission
   if (passwordForm) {
@@ -339,7 +340,12 @@ function initializeEventListeners() {
       saveFilebrowserButton.textContent = 'Saving...';
       
       try {
-        const response = await api.put('/settings/filebrowser', { url, username, password });
+        const moviesPath = document.getElementById('movies-path').value.trim();
+        const showsPath = document.getElementById('shows-path').value.trim();
+        
+        const response = await api.put('/settings/filebrowser', { 
+          url, username, password, moviesPath, showsPath 
+        });
         
         if (response && response.success) {
           showNotification('success', 'Filebrowser configuration saved successfully');
@@ -380,6 +386,8 @@ function initializeEventListeners() {
   
   // Load filebrowser configuration
   loadFilebrowserConfig();
+  
+
 }
 
 /**
@@ -486,12 +494,16 @@ function loadFilebrowserConfig() {
         if (config.url) document.getElementById('filebrowser-url').value = config.url;
         if (config.username) document.getElementById('filebrowser-username').value = config.username;
         if (config.password) document.getElementById('filebrowser-password').value = config.password;
+        if (config.moviesPath) document.getElementById('movies-path').value = config.moviesPath;
+        if (config.showsPath) document.getElementById('shows-path').value = config.showsPath;
       }
     })
     .catch(error => {
       console.error('Failed to load filebrowser configuration:', error);
     });
 }
+
+
 
 /**
  * Show notification

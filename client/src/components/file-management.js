@@ -8,6 +8,7 @@ import api from '../services/api.js';
 import { Navigation } from './navigation.js';
 
 let files = [];
+let currentPath = '/';
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!auth.isAuthenticated()) {
@@ -21,20 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initializeEventListeners() {
-  const refreshBtn = document.getElementById('refresh-btn');
-  refreshBtn.addEventListener('click', loadFiles);
+  document.addEventListener('click', hideContextMenu);
+  document.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
-async function loadFiles() {
+async function loadFiles(path = currentPath) {
   const loadingEl = document.getElementById('files-loading');
-  const listEl = document.getElementById('files-list');
   
   try {
     loadingEl.style.display = 'block';
-    const response = await api.get('/files/browse');
+    const response = await api.get(`/files/browse?path=${encodeURIComponent(path)}`);
     
     if (response && response.success && response.data) {
+      currentPath = path;
       files = response.data.items || [];
+      renderBreadcrumb();
       renderFiles();
     } else {
       showError('Failed to load files');
@@ -55,30 +57,16 @@ function renderFiles() {
     return;
   }
 
-  const mediaFiles = files.filter(file => !file.isDir && isMediaFile(file.name));
-  
-  if (!mediaFiles.length) {
-    listEl.innerHTML = '<div class="no-files">No media files found in downloads folder</div>';
-    return;
-  }
-
-  const filesHTML = mediaFiles.map(file => `
-    <div class="file-item" data-filename="${file.name}">
+  const filesHTML = files.map(file => `
+    <div class="file-item" data-filename="${file.name}" data-is-dir="${file.isDir}">
       <div class="file-info">
-        <div class="file-icon">📁</div>
+        <div class="file-icon">${file.isDir ? '📁' : '📄'}</div>
         <div class="file-details">
           <h3 class="file-name">${file.name}</h3>
-          <span class="file-size">${formatBytes(file.size || 0)}</span>
+          <span class="file-size">${file.isDir ? 'Directory' : formatBytes(file.size || 0)}</span>
         </div>
       </div>
-      <div class="file-actions">
-        <button class="btn btn-primary move-movies-btn" data-filename="${file.name}">
-          Move to Movies
-        </button>
-        <button class="btn btn-secondary move-tvshows-btn" data-filename="${file.name}">
-          Move to TV Shows
-        </button>
-      </div>
+      <div class="file-menu" data-filename="${file.name}" data-is-dir="${file.isDir}">⋮</div>
     </div>
   `).join('');
 
@@ -87,62 +75,77 @@ function renderFiles() {
 }
 
 function attachFileListeners() {
-  document.querySelectorAll('.move-movies-btn').forEach(btn => {
-    btn.addEventListener('click', () => moveToMovies(btn.dataset.filename));
+  document.querySelectorAll('.file-item').forEach(item => {
+    const isDir = item.dataset.isDir === 'true';
+    const filename = item.dataset.filename;
+    
+    // Touch and double click to navigate directories
+    if (isDir) {
+      let touchTime = 0;
+      
+      item.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - touchTime;
+        if (tapLength < 500 && tapLength > 0) {
+          const newPath = currentPath === '/' ? `/${filename}` : `${currentPath}/${filename}`;
+          loadFiles(newPath);
+        }
+        touchTime = currentTime;
+      });
+      
+      item.addEventListener('dblclick', () => {
+        const newPath = currentPath === '/' ? `/${filename}` : `${currentPath}/${filename}`;
+        loadFiles(newPath);
+      });
+    }
   });
-
-  document.querySelectorAll('.move-tvshows-btn').forEach(btn => {
-    btn.addEventListener('click', () => moveToTvShows(btn.dataset.filename));
+  
+  // Dot menu click handlers
+  document.querySelectorAll('.file-menu').forEach(menu => {
+    menu.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const filename = menu.dataset.filename;
+      const isDir = menu.dataset.isDir === 'true';
+      showContextMenu(e, filename, isDir);
+    });
   });
 }
 
 async function moveToMovies(filename) {
-  const btn = document.querySelector(`[data-filename="${filename}"].move-movies-btn`);
-  const originalText = btn.textContent;
-  
   try {
-    btn.textContent = 'Moving...';
-    btn.disabled = true;
-    
-    const response = await api.post('/files/move-to-movies', { filename });
+    const response = await api.post('/files/move-to-movies', { 
+      filename,
+      sourcePath: currentPath
+    });
     
     if (response && response.success) {
       showNotification('success', `${filename} moved to movies folder`);
-      loadFiles(); // Refresh the file list
+      loadFiles();
     } else {
       showNotification('error', 'Failed to move file to movies folder');
     }
   } catch (error) {
     console.error('Error moving file:', error);
     showNotification('error', 'Failed to move file to movies folder');
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
   }
 }
 
 async function moveToTvShows(filename) {
-  const btn = document.querySelector(`[data-filename="${filename}"].move-tvshows-btn`);
-  const originalText = btn.textContent;
-  
   try {
-    btn.textContent = 'Moving...';
-    btn.disabled = true;
-    
-    const response = await api.post('/files/move-to-tvshows', { filename });
+    const response = await api.post('/files/move-to-tvshows', { 
+      filename,
+      sourcePath: currentPath
+    });
     
     if (response && response.success) {
       showNotification('success', `${filename} moved to TV shows folder`);
-      loadFiles(); // Refresh the file list
+      loadFiles();
     } else {
       showNotification('error', 'Failed to move file to TV shows folder');
     }
   } catch (error) {
     console.error('Error moving file:', error);
     showNotification('error', 'Failed to move file to TV shows folder');
-  } finally {
-    btn.textContent = originalText;
-    btn.disabled = false;
   }
 }
 
@@ -161,6 +164,51 @@ function formatBytes(bytes) {
 function showError(message) {
   const listEl = document.getElementById('files-list');
   listEl.innerHTML = `<div class="files-error">${message}</div>`;
+}
+
+function renderBreadcrumb() {
+  const breadcrumbEl = document.getElementById('breadcrumb');
+  const parts = currentPath.split('/').filter(part => part);
+  
+  let breadcrumbHTML = '<span class="breadcrumb-item" data-path="/">Root</span>';
+  
+  let path = '';
+  parts.forEach(part => {
+    path += `/${part}`;
+    breadcrumbHTML += ` / <span class="breadcrumb-item" data-path="${path}">${part}</span>`;
+  });
+  
+  breadcrumbEl.innerHTML = breadcrumbHTML;
+  
+  document.querySelectorAll('.breadcrumb-item').forEach(item => {
+    item.addEventListener('click', () => loadFiles(item.dataset.path));
+  });
+}
+
+function showContextMenu(e, filename, isDir) {
+  const contextMenu = document.getElementById('context-menu');
+  contextMenu.style.display = 'block';
+  contextMenu.style.left = `${e.pageX - 120}px`;
+  contextMenu.style.top = `${e.pageY}px`;
+  
+  // Show all menu items for both files and folders
+  document.querySelectorAll('.context-item').forEach(item => {
+    item.style.display = 'block';
+    
+    item.onclick = () => {
+      const action = item.dataset.action;
+      if (action === 'open' && isDir) {
+        const newPath = currentPath === '/' ? `/${filename}` : `${currentPath}/${filename}`;
+        loadFiles(newPath);
+      } else if (action === 'move-movies') moveToMovies(filename);
+      else if (action === 'move-tvshows') moveToTvShows(filename);
+      hideContextMenu();
+    };
+  });
+}
+
+function hideContextMenu() {
+  document.getElementById('context-menu').style.display = 'none';
 }
 
 function showNotification(type, message) {

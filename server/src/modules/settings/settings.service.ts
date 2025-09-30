@@ -102,31 +102,7 @@ export class SettingsService {
     return { success: true, message: 'API keys updated successfully' };
   }
 
-  /**
-   * Update file paths
-   * @param paths File paths to update
-   * @returns Updated configuration
-   */
-  async updateFilePaths(paths: any): Promise<any> {
-    const configCollection = this.databaseService.getConfigCollection();
-    let config = configCollection.findOne({ type: 'file-paths' });
 
-    if (config) {
-      // Update existing config
-      config.paths = { ...config.paths, ...paths };
-      configCollection.update(config);
-    } else {
-      // Create new config
-      config = {
-        type: 'file-paths',
-        paths,
-        updatedAt: new Date(),
-      };
-      configCollection.insert(config);
-    }
-
-    return { success: true, message: 'File paths updated successfully' };
-  }
 
   /**
    * Get API keys
@@ -153,26 +129,7 @@ export class SettingsService {
     return { keys: decryptedKeys };
   }
 
-  /**
-   * Get file paths
-   * @returns File paths
-   */
-  async getFilePaths(): Promise<any> {
-    const configCollection = this.databaseService.getConfigCollection();
-    const config = configCollection.findOne({ type: 'file-paths' });
 
-    if (!config || !config.paths) {
-      return { 
-        paths: {
-          downloads: '',
-          movies: '',
-          tvShows: ''
-        } 
-      };
-    }
-
-    return { paths: config.paths };
-  }
 
   /**
    * Test connection to a service
@@ -605,6 +562,8 @@ export class SettingsService {
       url: filebrowserConfig.url,
       username: filebrowserConfig.username,
       password: this.encryptionService.encrypt(filebrowserConfig.password),
+      moviesPath: filebrowserConfig.moviesPath || '',
+      showsPath: filebrowserConfig.showsPath || '',
     };
 
     if (config) {
@@ -646,6 +605,8 @@ export class SettingsService {
       url: config.config.url,
       username: config.config.username,
       password: this.encryptionService.decrypt(config.config.password),
+      moviesPath: config.config.moviesPath || '',
+      showsPath: config.config.showsPath || '',
     };
 
     return { success: true, data: decryptedConfig };

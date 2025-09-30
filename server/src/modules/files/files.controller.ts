@@ -2,7 +2,7 @@ import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { MoveFileDto, BrowseFilesResponse, MoveFileResponse } from './dto/files.dto';
 
-@Controller('api/v1/files')
+@Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
@@ -19,15 +19,15 @@ export class FilesController {
    * Move a file from downloads folder to movies folder
    */
   @Post('move-to-movies')
-  async moveToMovies(@Body() body: MoveFileDto): Promise<MoveFileResponse> {
-    return this.filesService.moveToMovies(body.filename);
+  async moveToMovies(@Body() body: { filename: string; sourcePath?: string }): Promise<MoveFileResponse> {
+    return this.filesService.moveToMovies(body.filename, body.sourcePath);
   }
 
   /**
    * Move a file from downloads folder to TV shows folder
    */
   @Post('move-to-tvshows')
-  async moveToTvShows(@Body() body: MoveFileDto): Promise<MoveFileResponse> {
-    return this.filesService.moveToTvShows(body.filename);
+  async moveToTvShows(@Body() body: { filename: string; sourcePath?: string }): Promise<MoveFileResponse> {
+    return this.filesService.moveToTvShows(body.filename, body.sourcePath);
   }
 }

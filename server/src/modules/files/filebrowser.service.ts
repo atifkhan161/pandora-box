@@ -82,12 +82,9 @@ export class FilebrowserService {
     const token = await this.authenticate();
     const baseUrl = config.url.replace(/\/$/, '');
 
-    try {
+    try {      
       const response = await firstValueFrom(
-        this.httpService.patch(`${baseUrl}/api/resources${sourcePath}`, {
-          action: 'rename',
-          destination: destinationPath,
-        }, {
+        this.httpService.patch(`${baseUrl}/api/resources${sourcePath}?action=rename&destination=${encodeURIComponent(destinationPath)}`, {}, {
           headers: {
             'X-Auth': token,
           },
@@ -96,6 +93,7 @@ export class FilebrowserService {
 
       return { success: true, message: 'File moved successfully' };
     } catch (error) {
+      console.error('Filebrowser move error:', error.response?.data || error.message);
       throw new HttpException('Failed to move file', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

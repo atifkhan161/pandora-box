@@ -144,12 +144,12 @@ This document outlines the implementation tasks for the Pandora PWA project, bas
 
 **Goal**: Implement robust file browsing, operations, and media server library management.
 
-### Task 6.1: Cloud Commander File Management Backend
-* **Description**: Implement a backend module to handle file operations using the Cloud Commander service. This task relies on configurable paths from the settings.
+### Task 6.1: filebrowser File Management Backend
+* **Description**: Implement a backend module to handle file operations using the filebrowser service (https://github.com/filebrowser/filebrowser). This task relies on configurable paths from the settings.
 * **Refer to:** 3.2.4 and 5.1.4 in design document.
 * **Requirements**:
     * Create a `FilesModule` in the backend.
-    * Implement a `CloudCommanderService` to handle file operations via its RESTful API.
+    * Implement a `FilebrowserService` to handle file operations via its RESTful API.
     * Create a `FilesController` with endpoints to:
         * `GET /api/v1/files/browse`: List files and folders in a specified directory. The initial path should be the configurable `downloads` folder.
         * `POST /api/v1/files/move-to-movies`: Move a file from the `downloads` folder to the configurable `movies` folder.
@@ -157,7 +157,7 @@ This document outlines the implementation tasks for the Pandora PWA project, bas
     * All endpoints must retrieve the respective folder paths and Cloud Commander credentials from the encrypted configuration.
 * **Acceptance Criteria**: The backend can list files and move them between the designated folders as configured in the settings.
 
-### Task 6.2: Cloud Commander File Management Frontend
+### Task 6.2: filebrowser File Management Frontend
 * **Description**: Develop a frontend component to browse files and perform move operations from the designated downloads folder.
 * **Refer to:** 3.1.5 in design document.
 * **Requirements**:

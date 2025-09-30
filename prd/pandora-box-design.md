@@ -75,7 +75,7 @@ The system follows a **modular monolith** architecture with clear separation of 
 │  │   TMDB   │ │Watchmode │ │  Jackett  │ │qBittorrent│   │
 │  └──────────┘ └──────────┘ └───────────┘ └──────────┘   │
 │  ┌──────────┐ ┌──────────┐ ┌───────────┐                │
-│  │CloudCmd  │ │Portainer │ │  Jellyfin │                │
+│  filebrowser  │ │Portainer │ │  Jellyfin │                │
 │  └──────────┘ └──────────┘ └───────────┘                │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -260,7 +260,7 @@ export class DownloadsModule {}
 **Components**:
 - **FilesController**: File operation endpoints
 - **FilesService**: Samba integration and file management
-- **CloudCommanderService**: CloudCmd API proxy
+- **FilebrowserService**: filebrowser API proxy
 
 #### 3.2.5 Docker Module
 
@@ -971,7 +971,7 @@ export class HealthController {
 | Watchmode | Streaming availability | v1 | https://api.watchmode.com/ |
 | Jackett | Torrent indexing | API | https://github.com/Jackett/Jackett |
 | qBittorrent | Torrent client | Web API v2 | https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API |
-| Cloud Commander | File management | RESTful API | https://cloudcmd.io/ |
+| filebrowser | File management | RESTful API | https://github.com/filebrowser/filebrowser/ |
 | Portainer | Docker management | API 2.0 | https://documentation.portainer.io/api/ |
 | Jellyfin | Media server | API v1 | https://api.jellyfin.org/ |
 

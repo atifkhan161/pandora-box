@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="./styles/docker.css">
     <link rel="stylesheet" href="./styles/navigation.css">
+
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
 </head>
@@ -75,6 +76,94 @@
         </div>
     </div>
 
+    <div id="country-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Country</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="country-select">Select Country:</label>
+                    <select id="country-select">
+                        <option value="">Select a country...</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Brazil">Brazil</option>
+                        <option value="Bulgaria">Bulgaria</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Czech Republic">Czech Republic</option>
+                        <option value="Denmark">Denmark</option>
+                        <option value="Finland">Finland</option>
+                        <option value="France">France</option>
+                        <option value="Germany">Germany</option>
+                        <option value="Greece">Greece</option>
+                        <option value="Hong Kong">Hong Kong</option>
+                        <option value="Hungary">Hungary</option>
+                        <option value="India">India</option>
+                        <option value="Ireland">Ireland</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Japan">Japan</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Mexico">Mexico</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Norway">Norway</option>
+                        <option value="Poland">Poland</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="Romania">Romania</option>
+                        <option value="Russia">Russia</option>
+                        <option value="Serbia">Serbia</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Slovakia">Slovakia</option>
+                        <option value="South Africa">South Africa</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="UAE">UAE</option>
+                        <option value="Ukraine">Ukraine</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="USA">USA</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button id="apply-country" class="btn btn-primary">Apply</button>
+                    <button class="btn btn-secondary modal-close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3>Edit Stack</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="editor-header">
+                    <span class="editor-title">Docker Compose File</span>
+                    <div id="yaml-status" class="yaml-status valid">✓ Valid YAML</div>
+                </div>
+                <div id="ace-editor" class="ace-editor"></div>
+                <div id="yaml-error" class="yaml-error"></div>
+                <div class="modal-actions">
+                    <button onclick="formatYaml()" class="btn btn-info">Format YAML</button>
+                    <button id="save-stack" class="btn btn-primary">Save</button>
+                    <button class="btn btn-secondary modal-close">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-yaml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/theme-monokai.js"></script>
     <script type="module" src="./main.js"></script>
     <script type="module" src="./pages/docker.js"></script>
 </body>

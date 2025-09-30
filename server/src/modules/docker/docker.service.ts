@@ -13,6 +13,10 @@ export class DockerService {
     return this.portainerService.getStacks();
   }
 
+  async getStackDetails(stackId: string): Promise<any> {
+    return this.portainerService.getStackDetails(stackId);
+  }
+
   async getImages(): Promise<any> {
     return this.portainerService.getImages();
   }
@@ -27,5 +31,21 @@ export class DockerService {
 
   async getContainerLogs(containerId: string, lines?: number): Promise<any> {
     return this.portainerService.getContainerLogs(containerId, lines);
+  }
+
+  async changeCountry(stackId: string, country: string): Promise<any> {
+    return this.portainerService.changeCountry(stackId, country);
+  }
+
+  async getStackFile(stackId: string): Promise<any> {
+    return this.portainerService.getStackFile(stackId);
+  }
+
+  async updateStackFile(stackId: string, content: string): Promise<any> {
+    return this.portainerService.updateStackFile(stackId, content);
+  }
+
+  async getStackLogs(stackId: string): Promise<any> {
+    return this.portainerService.getStackLogs(stackId);
   }
 }

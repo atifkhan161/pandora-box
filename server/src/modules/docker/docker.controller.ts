@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Query, Body } from '@nestjs/common';
 import { DockerService } from './docker.service';
 
-@Controller('api/v1/docker')
+@Controller('docker')
 export class DockerController {
   constructor(private readonly dockerService: DockerService) {}
 
@@ -13,6 +13,11 @@ export class DockerController {
   @Get('stacks')
   async getStacks() {
     return this.dockerService.getStacks();
+  }
+
+  @Get('stack/:id')
+  async getStackDetails(@Param('id') stackId: string) {
+    return this.dockerService.getStackDetails(stackId);
   }
 
   @Get('images')
@@ -28,6 +33,26 @@ export class DockerController {
   @Post('restart-stack/:id')
   async restartStack(@Param('id') stackId: string) {
     return this.dockerService.restartStack(stackId);
+  }
+
+  @Post('change-country/:id')
+  async changeCountry(@Param('id') stackId: string, @Body() body: { country: string }) {
+    return this.dockerService.changeCountry(stackId, body.country);
+  }
+
+  @Get('stacks/:id/file')
+  async getStackFile(@Param('id') stackId: string) {
+    return this.dockerService.getStackFile(stackId);
+  }
+
+  @Put('stacks/:id/file')
+  async updateStackFile(@Param('id') stackId: string, @Body() body: { content: string }) {
+    return this.dockerService.updateStackFile(stackId, body.content);
+  }
+
+  @Get('stacks/:id/logs')
+  async getStackLogs(@Param('id') stackId: string) {
+    return this.dockerService.getStackLogs(stackId);
   }
 
   @Get('container-logs/:id')

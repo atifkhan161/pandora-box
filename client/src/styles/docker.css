@@ -1,23 +1,26 @@
 .docker-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: var(--pb-spacing-lg);
 }
 
 .docker-tabs {
   display: flex;
   border-bottom: 2px solid var(--pb-border-color);
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--pb-spacing-xl);
+  background-color: var(--pb-surface-primary);
+  border-radius: var(--pb-border-radius-md) var(--pb-border-radius-md) 0 0;
 }
 
 .tab-button {
   background: none;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: var(--pb-spacing-md) var(--pb-spacing-lg);
   color: var(--pb-text-secondary);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
+  transition: all var(--pb-transition-fast);
+  font-weight: var(--pb-font-weight-medium);
 }
 
 .tab-button:hover {
@@ -26,8 +29,9 @@
 }
 
 .tab-button.active {
-  color: var(--pb-accent-primary);
-  border-bottom-color: var(--pb-accent-primary);
+  color: var(--pb-primary);
+  border-bottom-color: var(--pb-primary);
+  background-color: var(--pb-surface-secondary);
 }
 
 .tab-panel {
@@ -51,16 +55,18 @@
 }
 
 .docker-item {
-  background: var(--pb-surface-secondary);
+  background: var(--pb-surface-primary);
   border: 1px solid var(--pb-border-color);
-  border-radius: 8px;
-  padding: 1rem;
-  transition: all 0.3s ease;
+  border-radius: var(--pb-border-radius-md);
+  padding: var(--pb-spacing-lg);
+  transition: all var(--pb-transition-fast);
 }
 
 .docker-item:hover {
   background: var(--pb-surface-hover);
-  border-color: var(--pb-accent-primary);
+  border-color: var(--pb-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--pb-shadow-medium);
 }
 
 .docker-item-header {
@@ -120,21 +126,28 @@
 .stack-containers {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.5rem;
-  margin: 1rem 0;
-  padding: 0.5rem;
-  background: var(--pb-background);
-  border-radius: 4px;
+  gap: var(--pb-spacing-sm);
+  margin: var(--pb-spacing-lg) 0;
+  padding: var(--pb-spacing-sm);
+  background: var(--pb-background-light);
+  border-radius: var(--pb-border-radius-sm);
+  border: 1px solid var(--pb-border-color);
 }
 
 .stack-container-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem;
-  background: var(--pb-surface-secondary);
-  border-radius: 4px;
+  padding: var(--pb-spacing-sm);
+  background: var(--pb-surface-primary);
+  border-radius: var(--pb-border-radius-sm);
   border: 1px solid var(--pb-border-color);
+  transition: all var(--pb-transition-fast);
+}
+
+.stack-container-card:hover {
+  border-color: var(--pb-primary);
+  background: var(--pb-surface-hover);
 }
 
 .container-name {

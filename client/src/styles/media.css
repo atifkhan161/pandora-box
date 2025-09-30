@@ -38,12 +38,12 @@
 
 /* Media Cards */
 .media-card {
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   overflow: hidden;
   transition: all var(--pb-transition-medium);
   cursor: pointer;
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
 }
 
 .media-card:hover {
@@ -256,13 +256,13 @@
 }
 
 .genre-tag {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
   color: var(--pb-text-secondary);
   padding: var(--pb-spacing-xs) var(--pb-spacing-md);
   border-radius: var(--pb-border-radius-md);
   font-size: var(--pb-font-size-sm);
   font-weight: var(--pb-font-weight-medium);
-  border: 1px solid var(--pb-secondary);
+  border: 1px solid var(--pb-border-color);
 }
 
 .media-actions {
@@ -281,9 +281,9 @@
 .tv-info-section {
   margin-bottom: var(--pb-spacing-xl);
   padding: var(--pb-spacing-lg);
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
 }
 
 .tv-stats {
@@ -347,10 +347,16 @@
 .season-item {
   display: flex;
   gap: var(--pb-spacing-md);
-  background-color: var(--pb-background);
+  background-color: var(--pb-surface-secondary);
   border-radius: var(--pb-border-radius-md);
   padding: var(--pb-spacing-md);
-  border: 1px solid var(--pb-secondary);
+  border: 1px solid var(--pb-border-color);
+  transition: all var(--pb-transition-fast);
+}
+
+.season-item:hover {
+  border-color: var(--pb-primary);
+  background-color: var(--pb-surface-hover);
 }
 
 .season-poster {
@@ -403,9 +409,9 @@
 
 .accordion-item {
   margin-bottom: var(--pb-spacing-lg);
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
   overflow: hidden;
 }
 
@@ -419,11 +425,11 @@
 }
 
 .accordion-header:hover {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-hover);
 }
 
 .accordion-header.active {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
 }
 
 .accordion-header h3 {
@@ -453,16 +459,18 @@
   display: flex;
   align-items: center;
   gap: var(--pb-spacing-sm);
-  background-color: var(--pb-background);
+  background-color: var(--pb-surface-secondary);
   padding: var(--pb-spacing-sm);
   border-radius: var(--pb-border-radius-md);
   cursor: pointer;
   transition: all var(--pb-transition-fast);
+  border: 1px solid var(--pb-border-color);
 }
 
 .cast-member-inline:hover {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-hover);
   transform: translateX(4px);
+  border-color: var(--pb-primary);
 }
 
 .cast-member-inline::after {
@@ -536,7 +544,7 @@
   border-radius: var(--pb-border-radius-md);
   overflow: hidden;
   margin-bottom: var(--pb-spacing-sm);
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
 }
 
 .cast-photo img {
@@ -576,10 +584,16 @@
 
 .similar-item {
   cursor: pointer;
-  transition: transform var(--pb-transition-fast);
+  transition: all var(--pb-transition-fast);
   border-radius: var(--pb-border-radius-md);
   overflow: hidden;
-  background-color: var(--pb-background);
+  background-color: var(--pb-surface-secondary);
+  border: 1px solid var(--pb-border-color);
+}
+
+.similar-item:hover {
+  border-color: var(--pb-primary);
+  background-color: var(--pb-surface-hover);
 }
 
 .similar-item:hover {
@@ -640,10 +654,16 @@
   display: flex;
   align-items: center;
   gap: var(--pb-spacing-sm);
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   padding: var(--pb-spacing-sm) var(--pb-spacing-md);
   border-radius: var(--pb-border-radius-md);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
+  transition: all var(--pb-transition-fast);
+}
+
+.streaming-provider:hover {
+  border-color: var(--pb-primary);
+  background-color: var(--pb-surface-hover);
 }
 
 .streaming-provider img {
@@ -654,10 +674,10 @@
 
 /* Torrent Section */
 .torrent-section {
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   padding: var(--pb-spacing-lg);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
   margin-bottom: var(--pb-spacing-xl);
 }
 
@@ -693,9 +713,9 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--pb-spacing-md);
-  background-color: var(--pb-background);
+  background-color: var(--pb-surface-secondary);
   border-radius: var(--pb-border-radius-md);
-  border: 1px solid var(--pb-secondary);
+  border: 1px solid var(--pb-border-color);
   transition: all var(--pb-transition-fast);
 }
 
@@ -740,10 +760,11 @@
 }
 
 .torrent-category {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
   padding: var(--pb-spacing-xs) var(--pb-spacing-sm);
   border-radius: var(--pb-border-radius-sm);
   font-size: var(--pb-font-size-xs);
+  border: 1px solid var(--pb-border-color);
 }
 
 .torrent-actions {
@@ -766,9 +787,9 @@
 
 .torrent-error {
   text-align: center;
-  color: var(--pb-error);
+  color: var(--pb-error-text);
   padding: var(--pb-spacing-xl);
-  background-color: rgba(220, 53, 69, 0.1);
+  background-color: var(--pb-error-bg);
   border-radius: var(--pb-border-radius-md);
   border: 1px solid var(--pb-error);
 }
@@ -781,10 +802,11 @@
 .tab-buttons {
   display: flex;
   gap: var(--pb-spacing-xs);
-  background-color: var(--pb-background);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-md);
   padding: var(--pb-spacing-xs);
   overflow-x: auto;
+  border: 1px solid var(--pb-border-color);
 }
 
 .tab-btn {
@@ -802,7 +824,7 @@
 }
 
 .tab-btn:hover {
-  background-color: var(--pb-secondary);
+  background-color: var(--pb-surface-hover);
   color: var(--pb-text-primary);
 }
 
@@ -813,12 +835,13 @@
 }
 
 .torrent-indexer {
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
   padding: var(--pb-spacing-xs) var(--pb-spacing-sm);
   border-radius: var(--pb-border-radius-sm);
   font-size: var(--pb-font-size-xs);
   color: var(--pb-primary);
   font-weight: var(--pb-font-weight-medium);
+  border: 1px solid var(--pb-border-color);
 }
 
 /* Movies and TV Shows Styles */
@@ -829,11 +852,11 @@
 
 .category-filters {
   display: flex;
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   padding: var(--pb-spacing-xs);
   margin-bottom: var(--pb-spacing-xl);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
   overflow-x: auto;
 }
 
@@ -851,7 +874,7 @@
 }
 
 .category-btn:hover {
-  background-color: var(--pb-secondary);
+  background-color: var(--pb-surface-hover);
   color: var(--pb-text-primary);
 }
 
@@ -947,12 +970,12 @@
 
 .result-item {
   display: flex;
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   overflow: hidden;
   cursor: pointer;
   transition: all var(--pb-transition-medium);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
 }
 
 .result-item:hover {
@@ -969,7 +992,7 @@
 .result-photo {
   flex-shrink: 0;
   width: 100px;
-  background-color: var(--pb-secondary-light);
+  background-color: var(--pb-surface-secondary);
 }
 
 .result-poster img,

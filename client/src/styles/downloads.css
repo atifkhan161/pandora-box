@@ -2,7 +2,7 @@
 
 .downloads-container {
   padding: var(--pb-spacing-md);
-  background-color: var(--pb-background-dark);
+  background-color: var(--pb-background);
   min-height: 100vh;
 }
 
@@ -38,10 +38,11 @@
   display: flex;
   gap: var(--pb-spacing-xs);
   margin-bottom: var(--pb-spacing-lg);
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   padding: var(--pb-spacing-xs);
   overflow-x: auto;
+  border: 1px solid var(--pb-border-color);
 }
 
 .filter-btn {
@@ -59,7 +60,7 @@
 }
 
 .filter-btn:hover {
-  background-color: var(--pb-secondary);
+  background-color: var(--pb-surface-hover);
   color: var(--pb-text-primary);
 }
 
@@ -84,10 +85,10 @@
 }
 
 .download-item {
-  background-color: var(--pb-background-light);
+  background-color: var(--pb-surface-primary);
   border-radius: var(--pb-border-radius-lg);
   padding: var(--pb-spacing-lg);
-  border: 1px solid var(--pb-secondary-light);
+  border: 1px solid var(--pb-border-color);
   transition: all var(--pb-transition-fast);
   position: relative;
 }
@@ -120,7 +121,7 @@
 .progress-bar {
   width: 100%;
   height: 6px;
-  background-color: var(--pb-secondary);
+  background-color: var(--pb-surface-secondary);
   border-radius: var(--pb-border-radius-sm);
   overflow: hidden;
   margin-bottom: var(--pb-spacing-sm);
@@ -202,7 +203,7 @@
 }
 
 .status-queueddl {
-  background-color: var(--pb-secondary);
+  background-color: var(--pb-surface-secondary);
   color: var(--pb-text-secondary);
 }
 
@@ -272,8 +273,8 @@
 .downloads-error {
   text-align: center;
   padding: var(--pb-spacing-xl);
-  color: var(--pb-error);
-  background-color: var(--pb-background-light);
+  color: var(--pb-error-text);
+  background-color: var(--pb-error-bg);
   border-radius: var(--pb-border-radius-md);
   border: 1px solid var(--pb-error);
 }

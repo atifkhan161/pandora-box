@@ -9,24 +9,26 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
-  box-shadow: var(--shadow-right);
+  background-color: var(--pb-surface-primary);
+  color: var(--pb-text-secondary);
+  box-shadow: var(--pb-shadow-medium);
   display: flex;
   flex-direction: column;
   z-index: 100;
+  border-right: 1px solid var(--pb-border-color);
 }
 
 /* Navigation Header */
 .nav-header {
-  padding: 20px;
-  border-bottom: 1px solid var(--border-color);
+  padding: var(--pb-spacing-lg);
+  border-bottom: 1px solid var(--pb-border-color);
 }
 
 .nav-header h1 {
   margin: 0;
-  font-size: 1.5rem;
-  color: var(--primary-color);
+  font-size: var(--pb-font-size-xl);
+  color: var(--pb-primary);
+  font-weight: var(--pb-font-weight-bold);
 }
 
 /* Navigation Links */
@@ -45,27 +47,29 @@
 .nav-links a {
   display: flex;
   align-items: center;
-  padding: 15px 20px;
-  color: var(--sidebar-text);
+  padding: var(--pb-spacing-md) var(--pb-spacing-lg);
+  color: var(--pb-text-secondary);
   text-decoration: none;
-  transition: background-color 0.2s, color 0.2s;
+  transition: all var(--pb-transition-fast);
+  font-weight: var(--pb-font-weight-medium);
 }
 
 .nav-links a:hover {
-  background-color: var(--sidebar-hover);
-  color: var(--primary-color);
+  background-color: var(--pb-surface-hover);
+  color: var(--pb-primary);
+  transform: translateX(4px);
 }
 
 .nav-links a.active {
-  background-color: var(--sidebar-active);
-  color: var(--primary-color);
-  border-left: 4px solid var(--primary-color);
+  background-color: var(--pb-primary);
+  color: var(--pb-background);
+  border-left: 4px solid var(--pb-accent-primary);
 }
 
 /* Navigation Icons */
 .nav-icon {
-  margin-right: 10px;
-  font-size: 1.2rem;
+  margin-right: var(--pb-spacing-sm);
+  font-size: var(--pb-font-size-lg);
   width: 24px;
   text-align: center;
 }
@@ -73,13 +77,13 @@
 /* Logout Button */
 #logout-btn {
   margin-top: auto;
-  border-top: 1px solid var(--border-color);
-  color: var(--danger-color);
+  border-top: 1px solid var(--pb-border-color);
+  color: var(--pb-error);
 }
 
 #logout-btn:hover {
-  background-color: var(--danger-color);
-  color: white;
+  background-color: var(--pb-error);
+  color: var(--pb-text-primary);
 }
 
 /* Main Content Adjustment */
@@ -119,7 +123,7 @@
   
   .nav-icon {
     margin-right: 0;
-    font-size: 1.5rem;
+    font-size: var(--pb-font-size-xl);
   }
   
   .app-with-nav > *:not(.side-nav) {

@@ -227,4 +227,20 @@ export class MediaService {
       mediaCacheCollection.remove(entry);
     });
   }
+
+  async getAutocompleteSuggestions(query: string): Promise<any[]> {
+    const cacheKey = `autocomplete_${query.toLowerCase()}`;
+    let cached = await this.getCachedData('watchmode', cacheKey);
+    
+    if (cached) {
+      return cached;
+    }
+    
+    const suggestions = await this.watchmodeService.getAutocompleteSuggestions(query);
+    
+    // Cache for 1 hour since autocomplete data changes frequently
+    await this.setCachedData('watchmode', cacheKey, suggestions, 'autocomplete', 1);
+    
+    return suggestions;
+  }
 }

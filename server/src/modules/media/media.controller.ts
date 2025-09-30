@@ -278,4 +278,32 @@ export class MediaController {
       );
     }
   }
+
+  @Get('autocomplete')
+  async getAutocompleteSuggestions(@Query('query') query: string) {
+    try {
+      if (!query || query.trim().length < 2) {
+        return {
+          success: true,
+          data: []
+        };
+      }
+      
+      const suggestions = await this.mediaService.getAutocompleteSuggestions(query.trim());
+      
+      return {
+        success: true,
+        data: suggestions
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: error.message || 'Failed to fetch autocomplete suggestions',
+          error: error.message
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }

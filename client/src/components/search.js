@@ -9,6 +9,8 @@ export class SearchComponent {
   constructor() {
     this.container = null;
     this.searchTimeout = null;
+    this.autocompleteTimeout = null;
+    this.autocompleteVisible = false;
   }
 
   /**
@@ -34,7 +36,8 @@ export class SearchComponent {
         
         <div class="search-form">
           <div class="search-input-container">
-            <input type="text" id="search-input" placeholder="Search for movies, TV shows, or people..." value="${initialQuery}" />
+            <input type="text" id="search-input" placeholder="Search for movies, TV shows, or people..." value="${initialQuery}" autocomplete="off" />
+            <div id="autocomplete-dropdown" class="autocomplete-dropdown" style="display: none;"></div>
             <button id="search-btn" class="btn btn-primary">Search</button>
           </div>
           
@@ -85,17 +88,27 @@ export class SearchComponent {
     const searchBtn = document.getElementById('search-btn');
     const searchTypeRadios = document.querySelectorAll('input[name="search-type"]');
     
-    // Search on input with debounce
+    // Search on input with debounce and autocomplete
     searchInput.addEventListener('input', (e) => {
       clearTimeout(this.searchTimeout);
+      clearTimeout(this.autocompleteTimeout);
       const query = e.target.value.trim();
       
       if (query.length >= 2) {
+        // Show autocomplete suggestions
+        this.autocompleteTimeout = setTimeout(() => {
+          this.fetchAutocompleteSuggestions(query);
+        }, 200);
+        
+        // Perform full search with longer delay
         this.searchTimeout = setTimeout(() => {
           this.performSearch(query);
         }, 500);
       } else if (query.length === 0) {
+        this.hideAutocomplete();
         this.showPlaceholder();
+      } else {
+        this.hideAutocomplete();
       }
     });
     
@@ -107,13 +120,27 @@ export class SearchComponent {
       }
     });
     
-    // Search on Enter key
-    searchInput.addEventListener('keypress', (e) => {
+    // Handle keyboard navigation and search
+    searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
+        e.preventDefault();
         const query = searchInput.value.trim();
         if (query) {
+          this.hideAutocomplete();
           this.performSearch(query);
         }
+      } else if (e.key === 'Escape') {
+        this.hideAutocomplete();
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.navigateAutocomplete(e.key === 'ArrowDown' ? 1 : -1);
+      }
+    });
+    
+    // Hide autocomplete when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-input-container')) {
+        this.hideAutocomplete();
       }
     });
     
@@ -126,6 +153,109 @@ export class SearchComponent {
         }
       });
     });
+  }
+
+  /**
+   * Fetch autocomplete suggestions from Watchmode API
+   * @param {string} query - Search query
+   */
+  async fetchAutocompleteSuggestions(query) {
+    try {
+      const response = await api.get(`/media/autocomplete?query=${encodeURIComponent(query)}`);
+      
+      if (response.success && response.data && response.data.length > 0) {
+        this.showAutocompleteSuggestions(response.data);
+      } else {
+        this.hideAutocomplete();
+      }
+    } catch (error) {
+      console.error('Autocomplete error:', error);
+      this.hideAutocomplete();
+    }
+  }
+
+  /**
+   * Show autocomplete suggestions
+   * @param {Array} suggestions - Array of suggestions
+   */
+  showAutocompleteSuggestions(suggestions) {
+    const dropdown = document.getElementById('autocomplete-dropdown');
+    
+    const suggestionsHTML = suggestions.slice(0, 8).map((item, index) => {
+      const title = item.name || item.title;
+      const year = item.year ? ` (${item.year})` : '';
+      const type = item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1) : '';
+      
+      return `
+        <div class="autocomplete-item" data-index="${index}" data-title="${title}">
+          <div class="autocomplete-content">
+            <span class="autocomplete-title">${title}${year}</span>
+            ${type ? `<span class="autocomplete-type">${type}</span>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    dropdown.innerHTML = suggestionsHTML;
+    dropdown.style.display = 'block';
+    this.autocompleteVisible = true;
+    
+    // Add click listeners to suggestions
+    dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const title = item.dataset.title;
+        document.getElementById('search-input').value = title;
+        this.hideAutocomplete();
+        this.performSearch(title);
+      });
+    });
+  }
+
+  /**
+   * Hide autocomplete dropdown
+   */
+  hideAutocomplete() {
+    const dropdown = document.getElementById('autocomplete-dropdown');
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+    this.autocompleteVisible = false;
+    
+    // Remove active state from all items
+    dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+      item.classList.remove('active');
+    });
+  }
+
+  /**
+   * Navigate autocomplete suggestions with keyboard
+   * @param {number} direction - 1 for down, -1 for up
+   */
+  navigateAutocomplete(direction) {
+    if (!this.autocompleteVisible) return;
+    
+    const dropdown = document.getElementById('autocomplete-dropdown');
+    const items = dropdown.querySelectorAll('.autocomplete-item');
+    const activeItem = dropdown.querySelector('.autocomplete-item.active');
+    
+    let newIndex = 0;
+    
+    if (activeItem) {
+      const currentIndex = parseInt(activeItem.dataset.index);
+      newIndex = currentIndex + direction;
+      activeItem.classList.remove('active');
+    } else {
+      newIndex = direction > 0 ? 0 : items.length - 1;
+    }
+    
+    // Wrap around
+    if (newIndex >= items.length) newIndex = 0;
+    if (newIndex < 0) newIndex = items.length - 1;
+    
+    if (items[newIndex]) {
+      items[newIndex].classList.add('active');
+      const title = items[newIndex].dataset.title;
+      document.getElementById('search-input').value = title;
+    }
   }
 
   /**

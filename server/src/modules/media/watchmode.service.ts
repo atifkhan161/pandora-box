@@ -85,4 +85,24 @@ export class WatchmodeService {
       return null;
     }
   }
+
+  async getAutocompleteSuggestions(query: string): Promise<any[]> {
+    try {
+      const apiKey = await this.getApiKey();
+      const url = `${this.baseUrl}/autocomplete-search/`;
+      
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          params: { 
+            apiKey,
+            search_value: query
+          }
+        })
+      );
+      
+      return response.data?.results || [];
+    } catch (error) {
+      return [];
+    }
+  }
 }

@@ -1,0 +1,55 @@
+/* Jellyfin Page Styles */
+
+.jellyfin-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.jellyfin-section {
+  background: var(--pb-card-bg, #1a1a1a);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--pb-border-color, #333);
+}
+
+.jellyfin-section h2 {
+  color: var(--pb-text-primary, #ffffff);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.jellyfin-section p {
+  color: var(--pb-text-secondary, #cccccc);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.jellyfin-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.jellyfin-actions .btn {
+  min-width: 150px;
+}
+
+@media (max-width: 768px) {
+  .jellyfin-container {
+    padding: 1rem;
+  }
+  
+  .jellyfin-section {
+    padding: 1.5rem;
+  }
+  
+  .jellyfin-actions {
+    flex-direction: column;
+  }
+  
+  .jellyfin-actions .btn {
+    width: 100%;
+  }
+}

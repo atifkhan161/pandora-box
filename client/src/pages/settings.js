@@ -46,6 +46,8 @@ function initializeEventListeners() {
   const testFilebrowserButton = document.querySelector('.test-filebrowser-btn');
   const savePortainerButton = document.querySelector('.save-portainer-btn');
   const testPortainerButton = document.querySelector('.test-portainer-btn');
+  const saveJellyfinButton = document.querySelector('.save-jellyfin-btn');
+  const testJellyfinButton = document.querySelector('.test-jellyfin-btn');
 
   
   // Password form submission
@@ -458,6 +460,68 @@ function initializeEventListeners() {
   
   // Load Portainer configuration
   loadPortainerConfig();
+  
+  // Jellyfin save button
+  if (saveJellyfinButton) {
+    saveJellyfinButton.addEventListener('click', async () => {
+      const url = document.getElementById('jellyfin-url').value.trim();
+      const apiKey = document.getElementById('jellyfin-api-key').value.trim();
+      
+      if (!url || !apiKey) {
+        showNotification('error', 'All fields are required');
+        return;
+      }
+      
+      if (!url.match(/^https?:\/\/.+/)) {
+        showNotification('error', 'Please enter a valid URL (e.g., http://192.168.1.100:8096)');
+        return;
+      }
+      
+      saveJellyfinButton.disabled = true;
+      saveJellyfinButton.textContent = 'Saving...';
+      
+      try {
+        const response = await api.put('/settings/jellyfin', { url, apiKey });
+        
+        if (response && response.success) {
+          showNotification('success', 'Jellyfin configuration saved successfully');
+        } else {
+          showNotification('error', `Failed to save Jellyfin configuration: ${response.message || 'Unknown error'}`);
+        }
+      } catch (error) {
+        showNotification('error', `Error saving Jellyfin configuration: ${error.message}`);
+      } finally {
+        saveJellyfinButton.disabled = false;
+        saveJellyfinButton.textContent = 'Save';
+      }
+    });
+  }
+  
+  // Jellyfin test connection button
+  if (testJellyfinButton) {
+    testJellyfinButton.addEventListener('click', async () => {
+      testJellyfinButton.disabled = true;
+      testJellyfinButton.textContent = 'Testing...';
+      
+      try {
+        const response = await api.get('/settings/test-connection/jellyfin-config');
+        
+        if (response && response.success) {
+          showNotification('success', response.message || 'Successfully connected to Jellyfin');
+        } else {
+          showNotification('error', response.message || 'Failed to connect to Jellyfin');
+        }
+      } catch (error) {
+        showNotification('error', error.message || 'Jellyfin connection test failed');
+      } finally {
+        testJellyfinButton.disabled = false;
+        testJellyfinButton.textContent = 'Test Connection';
+      }
+    });
+  }
+  
+  // Load Jellyfin configuration
+  loadJellyfinConfig();
 }
 
 /**
@@ -867,6 +931,24 @@ function loadPortainerConfig() {
     })
     .catch(error => {
       console.error('Failed to load Portainer configuration:', error);
+    });
+}
+
+/**
+ * Load Jellyfin configuration from server
+ */
+function loadJellyfinConfig() {
+  api.get('/settings/jellyfin')
+    .then(response => {
+      if (response && response.success) {
+        const config = response.data;
+        
+        if (config.url) document.getElementById('jellyfin-url').value = config.url;
+        if (config.apiKey) document.getElementById('jellyfin-api-key').value = config.apiKey;
+      }
+    })
+    .catch(error => {
+      console.error('Failed to load Jellyfin configuration:', error);
     });
 }
 

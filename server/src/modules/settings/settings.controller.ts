@@ -83,4 +83,14 @@ export class SettingsController {
   async getPortainerConfig() {
     return this.settingsService.getPortainerConfig();
   }
+
+  @Put('jellyfin')
+  async updateJellyfinConfig(@Body() jellyfinConfig: any) {
+    return this.settingsService.updateJellyfinConfig(jellyfinConfig);
+  }
+
+  @Get('jellyfin')
+  async getJellyfinConfig() {
+    return this.settingsService.getJellyfinConfig();
+  }
 }

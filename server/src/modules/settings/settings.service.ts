@@ -158,6 +158,11 @@ export class SettingsService {
       return this.testPortainerConnection();
     }
 
+    // Jellyfin uses dedicated configuration, not API key collection
+    if (serviceName === 'jellyfin-config') {
+      return this.testJellyfinConfigConnection();
+    }
+
     // If no API key provided, get from database
     if (!apiKey) {
       const configCollection = this.databaseService.getConfigCollection();
@@ -197,6 +202,8 @@ export class SettingsService {
         return this.testFilebrowserConnection();
       case 'portainer':
         return this.testPortainerConnection();
+      case 'jellyfin-config':
+        return this.testJellyfinConfigConnection();
       default:
         return { success: false, message: 'Unknown service' };
     }
@@ -774,6 +781,114 @@ export class SettingsService {
         return { success: false, message: 'Cannot connect to Portainer - service may be down' };
       }
       return { success: false, message: `Failed to connect to Portainer: ${error.message}` };
+    }
+  }
+
+  /**
+   * Update Jellyfin configuration
+   * @param jellyfinConfig Jellyfin configuration to update
+   * @returns Updated configuration
+   */
+  async updateJellyfinConfig(jellyfinConfig: any): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    let config = configCollection.findOne({ type: 'jellyfin-config' });
+
+    // Encrypt API key
+    const encryptedConfig = {
+      url: jellyfinConfig.url,
+      apiKey: this.encryptionService.encrypt(jellyfinConfig.apiKey),
+    };
+
+    if (config) {
+      config.config = { ...config.config, ...encryptedConfig };
+      configCollection.update(config);
+    } else {
+      config = {
+        type: 'jellyfin-config',
+        config: encryptedConfig,
+        updatedAt: new Date(),
+      };
+      configCollection.insert(config);
+    }
+
+    return { success: true, message: 'Jellyfin configuration updated successfully' };
+  }
+
+  /**
+   * Get Jellyfin configuration
+   * @returns Jellyfin configuration
+   */
+  async getJellyfinConfig(): Promise<any> {
+    const configCollection = this.databaseService.getConfigCollection();
+    const config = configCollection.findOne({ type: 'jellyfin-config' });
+
+    if (!config || !config.config) {
+      return { 
+        success: true,
+        data: {
+          url: '',
+          apiKey: ''
+        } 
+      };
+    }
+
+    // Decrypt API key for client
+    const decryptedConfig = {
+      url: config.config.url,
+      apiKey: this.encryptionService.decrypt(config.config.apiKey),
+    };
+
+    return { success: true, data: decryptedConfig };
+  }
+
+  /**
+   * Test Jellyfin configuration connection
+   * @returns Test result
+   */
+  private async testJellyfinConfigConnection(): Promise<any> {
+    try {
+      const configCollection = this.databaseService.getConfigCollection();
+      const config = configCollection.findOne({ type: 'jellyfin-config' });
+      
+      if (!config || !config.config) {
+        return { success: false, message: 'Jellyfin configuration not found' };
+      }
+
+      const { url, apiKey: encryptedApiKey } = config.config;
+      
+      if (!url || !encryptedApiKey) {
+        return { success: false, message: 'Incomplete Jellyfin configuration' };
+      }
+
+      let apiKey;
+      try {
+        apiKey = this.encryptionService.decrypt(encryptedApiKey);
+      } catch (error) {
+        return { success: false, message: 'Failed to decrypt Jellyfin API key' };
+      }
+
+      // Test connection to Jellyfin API
+      const baseUrl = url.replace(/\/$/, '');
+      const response = await this.httpService.axiosRef.get(
+        `${baseUrl}/System/Info`,
+        {
+          headers: {
+            'X-Emby-Token': apiKey
+          },
+          timeout: 5000
+        }
+      );
+
+      if (response.status === 200) {
+        return { success: true, message: 'Successfully connected to Jellyfin' };
+      } else {
+        return { success: false, message: 'Invalid Jellyfin API key or URL' };
+      }
+    } catch (error) {
+      if (error.code === 'ECONNREFUSED') {
+        return { success: false, message: 'Cannot connect to Jellyfin - service may be down' };
+      }
+      return { success: false, message: `Failed to connect to Jellyfin: ${error.message}` };
     }
   }
 }

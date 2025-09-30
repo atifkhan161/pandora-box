@@ -197,6 +197,25 @@
                     </form>
                 </section>
 
+                <!-- Jellyfin Configuration Section -->
+                <section class="settings-section">
+                    <h2>Jellyfin Configuration</h2>
+                    <form id="jellyfin-form" class="settings-form">
+                        <div class="form-group">
+                            <label for="jellyfin-url">URL</label>
+                            <input type="text" id="jellyfin-url" name="jellyfin-url" placeholder="http://192.168.1.100:8096">
+                        </div>
+                        <div class="form-group">
+                            <label for="jellyfin-api-key">API Key</label>
+                            <input type="password" id="jellyfin-api-key" name="jellyfin-api-key">
+                        </div>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary save-jellyfin-btn">Save</button>
+                            <button type="button" class="btn btn-secondary test-jellyfin-btn">Test Connection</button>
+                        </div>
+                    </form>
+                </section>
+
 
 
                 <!-- Theming Section -->

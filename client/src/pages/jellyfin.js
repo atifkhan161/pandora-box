@@ -7,6 +7,7 @@ import auth from '../services/auth.js';
 import api from '../services/api.js';
 import { Navigation } from '../components/navigation.js';
 import themeManager from '../services/theme.js';
+import toast from '../services/toast.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Check if user is authenticated
@@ -41,12 +42,12 @@ function initializeEventListeners() {
         const response = await api.post('/jellyfin/update-library');
         
         if (response && response.success) {
-          showNotification('success', response.message || 'All libraries update initiated');
+          toast.success(response.message || 'All libraries update initiated');
         } else {
-          showNotification('error', response.message || 'Failed to update libraries');
+          toast.error(response.message || 'Failed to update libraries');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Library update failed');
+        toast.error(error.message || 'Library update failed');
       } finally {
         updateAllBtn.disabled = false;
         updateAllBtn.textContent = 'Update All Libraries';
@@ -127,12 +128,12 @@ function displayLibraries(libraries) {
         const response = await api.post(`/jellyfin/update-library/${libraryId}`);
         
         if (response && response.success) {
-          showNotification('success', response.message || 'Library update initiated');
+          toast.success(response.message || 'Library update initiated');
         } else {
-          showNotification('error', response.message || 'Failed to update library');
+          toast.error(response.message || 'Failed to update library');
         }
       } catch (error) {
-        showNotification('error', error.message || 'Library update failed');
+        toast.error(error.message || 'Library update failed');
       } finally {
         e.target.disabled = false;
         e.target.textContent = originalText;
@@ -141,26 +142,3 @@ function displayLibraries(libraries) {
   });
 }
 
-/**
- * Show notification
- * @param {string} type - Notification type ('success' or 'error')
- * @param {string} message - Notification message
- */
-function showNotification(type, message) {
-  const notificationContainer = document.getElementById('notification-container');
-  if (!notificationContainer) return;
-  
-  const notification = document.createElement('div');
-  notification.className = `notification ${type}`;
-  notification.textContent = message;
-  
-  notificationContainer.appendChild(notification);
-  
-  // Auto-remove notification after 5 seconds
-  setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      notificationContainer.removeChild(notification);
-    }, 500);
-  }, 5000);
-}

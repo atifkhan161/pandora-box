@@ -1,6 +1,7 @@
 // Dashboard page functionality
 
 import auth from './services/auth.js';
+import themeManager from './services/theme.js';
 import { Navigation } from './components/navigation.js';
 import { DashboardComponent } from './components/dashboard.js';
 
@@ -12,6 +13,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Initialize theme manager
+  themeManager.init();
+  
   // Initialize navigation
   Navigation.init('app');
   

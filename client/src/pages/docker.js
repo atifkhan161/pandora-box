@@ -1,5 +1,6 @@
 import auth from '../services/auth.js';
 import api from '../services/api.js';
+import themeManager from '../services/theme.js';
 import { Navigation } from '../components/navigation.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Initialize theme manager
+  themeManager.init();
+  
   Navigation.init('app');
   initializeDockerManager();
 });

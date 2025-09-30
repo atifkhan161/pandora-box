@@ -8,14 +8,17 @@ import './styles/media.css';
 // Import services
 import './services/api.js';
 import './services/auth.js';
-
-
+import themeManager from './services/theme.js';
 
 import { Navigation } from './components/navigation.js';
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM fully loaded and parsed');
+  
+  // Initialize theme manager first
+  themeManager.init();
+  
   Navigation.init();
 
   const hamburgerBtn = document.getElementById('hamburger-btn');

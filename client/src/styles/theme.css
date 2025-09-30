@@ -1,76 +1,63 @@
 :root {
-    /* Primary Colors - Crunchyroll Orange */
+    /* Default Dark Theme */
     --pb-primary: #ff6600;
     --pb-primary-light: #ff8533;
     --pb-primary-dark: #cc5200;
-    --pb-primary-rgb: 255, 102, 0; /* Added RGB for primary color */
+    --pb-primary-rgb: 255, 102, 0;
     
-    /* Secondary Colors - Dark Theme */
     --pb-secondary: #1a1a1a;
     --pb-secondary-light: #2d2d2d;
     --pb-secondary-dark: #0d0d0d;
     
-    /* Text Colors */
     --pb-text-primary: #ffffff;
     --pb-text-secondary: #cccccc;
     --pb-text-disabled: #666666;
     
-    /* Background Colors */
     --pb-background: #0f0f0f;
     --pb-background-light: #1a1a1a;
     --pb-background-dark: #000000;
     
-    /* Status Colors */
     --pb-success: #4caf50;
     --pb-warning: #ff9800;
     --pb-error: #f44336;
     --pb-info: #2196f3;
     
-    /* Status Background Colors */
     --pb-success-bg: rgba(76, 175, 80, 0.1);
     --pb-warning-bg: rgba(255, 152, 0, 0.1);
     --pb-error-bg: rgba(244, 67, 54, 0.1);
     --pb-info-bg: rgba(33, 150, 243, 0.1);
     
-    /* Status Text Colors */
     --pb-success-text: #4caf50;
     --pb-warning-text: #ff9800;
     --pb-error-text: #f44336;
     --pb-info-text: #2196f3;
     
-    /* Border Colors */
     --pb-border: #e0e0e0;
     --pb-border-light: #f0f0f0;
     --pb-border-dark: #bdbdbd;
     --pb-border-color: #333333;
     
-    /* Surface Colors */
     --pb-surface-primary: #1a1a1a;
     --pb-surface-secondary: #2d2d2d;
     --pb-surface-hover: #404040;
     
-    /* Accent Colors */
     --pb-accent-primary: #ff6600;
     
-    /* Shadow */
     --pb-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     --pb-shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
     --pb-shadow-large: 0 8px 16px rgba(0, 0, 0, 0.1);
     
-    /* Spacing */
     --pb-spacing-xs: 4px;
     --pb-spacing-sm: 8px;
     --pb-spacing-md: 16px;
     --pb-spacing-lg: 24px;
     --pb-spacing-xl: 32px;
     
-    /* Border Radius */
     --pb-border-radius-sm: 4px;
     --pb-border-radius-md: 8px;
     --pb-border-radius-lg: 16px;
     --pb-border-radius-circle: 50%;
     
-    /* Font Sizes */
     --pb-font-size-xs: 12px;
     --pb-font-size-sm: 14px;
     --pb-font-size-md: 16px;
@@ -78,19 +65,94 @@
     --pb-font-size-xl: 24px;
     --pb-font-size-xxl: 32px;
     
-    /* Font Weights */
     --pb-font-weight-light: 300;
     --pb-font-weight-regular: 400;
     --pb-font-weight-medium: 500;
     --pb-font-weight-bold: 700;
     
-    /* Transitions */
     --pb-transition-fast: 0.2s;
     --pb-transition-medium: 0.3s;
     --pb-transition-slow: 0.5s;
     
-    /* Z-index */
     --pb-z-index-dropdown: 1000;
     --pb-z-index-modal: 2000;
     --pb-z-index-tooltip: 3000;
+}
+
+/* Netflix Theme */
+body.netflix-theme {
+    --pb-primary: #e50914;
+    --pb-primary-light: #f40612;
+    --pb-primary-dark: #b20710;
+    --pb-primary-rgb: 229, 9, 20;
+    
+    --pb-secondary: #221f1f;
+    --pb-secondary-light: #2f2f2f;
+    --pb-secondary-dark: #141414;
+    
+    --pb-background: #000000;
+    --pb-background-light: #141414;
+    --pb-background-dark: #000000;
+    
+    --pb-surface-primary: #141414;
+    --pb-surface-secondary: #221f1f;
+    --pb-surface-hover: #333333;
+    
+    --pb-accent-primary: #e50914;
+    --pb-border-color: #333333;
+}
+
+/* Amazon Prime Video Theme */
+body.amazon-prime-theme {
+    --pb-primary: #00a8e1;
+    --pb-primary-light: #1ab7ea;
+    --pb-primary-dark: #0085b3;
+    --pb-primary-rgb: 0, 168, 225;
+    
+    --pb-secondary: #232f3e;
+    --pb-secondary-light: #37475a;
+    --pb-secondary-dark: #131a22;
+    
+    --pb-background: #0f171e;
+    --pb-background-light: #232f3e;
+    --pb-background-dark: #0f171e;
+    
+    --pb-surface-primary: #232f3e;
+    --pb-surface-secondary: #37475a;
+    --pb-surface-hover: #485769;
+    
+    --pb-accent-primary: #ff9900;
+    --pb-border-color: #37475a;
+}
+
+/* Disney+ Theme */
+body.disney-theme {
+    --pb-primary: #006bb3;
+    --pb-primary-light: #1a7bc4;
+    --pb-primary-dark: #005590;
+    --pb-primary-rgb: 0, 107, 179;
+    
+    --pb-secondary: #1a1d29;
+    --pb-secondary-light: #2a2d3a;
+    --pb-secondary-dark: #0e1116;
+    
+    --pb-background: #040814;
+    --pb-background-light: #1a1d29;
+    --pb-background-dark: #040814;
+    
+    --pb-surface-primary: #1a1d29;
+    --pb-surface-secondary: #2a2d3a;
+    --pb-surface-hover: #3a3d4a;
+    
+    --pb-accent-primary: #00d4aa;
+    --pb-border-color: #2a2d3a;
+}
+
+/* Theme transition for smooth switching */
+body {
+    transition: background-color var(--pb-transition-medium), color var(--pb-transition-medium);
+}
+
+* {
+    transition: background-color var(--pb-transition-medium), border-color var(--pb-transition-medium);
 }

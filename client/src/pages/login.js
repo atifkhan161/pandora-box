@@ -4,8 +4,12 @@
  */
 
 import auth from '../services/auth.js';
+import themeManager from '../services/theme.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme manager
+  themeManager.init();
+  
   // Get form elements
   const loginForm = document.getElementById('login-form');
   const usernameInput = document.getElementById('username');

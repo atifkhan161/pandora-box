@@ -6,6 +6,7 @@
 import auth from '../services/auth.js';
 import api from '../services/api.js';
 import { Navigation } from '../components/navigation.js';
+import themeManager from '../services/theme.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   // Check if user is authenticated
@@ -15,11 +16,17 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Initialize theme manager
+  themeManager.init();
+  
   // Initialize navigation
   Navigation.init('app');
 
   // Initialize event listeners
   initializeEventListeners();
+  
+  // Initialize theme selector
+  initializeThemeSelector();
 });
 
 /**
@@ -451,7 +458,39 @@ function initializeEventListeners() {
   
   // Load Portainer configuration
   loadPortainerConfig();
+}
 
+/**
+ * Initialize theme selector
+ */
+function initializeThemeSelector() {
+  const themeSelector = document.getElementById('theme-selector');
+  if (!themeSelector) return;
+  
+  // Set current theme in selector
+  themeSelector.value = themeManager.getCurrentTheme();
+  
+  // Add change event listener
+  themeSelector.addEventListener('change', (e) => {
+    const selectedTheme = e.target.value;
+    themeManager.setTheme(selectedTheme);
+    showNotification('success', `Theme changed to ${getThemeDisplayName(selectedTheme)}`);
+  });
+}
+
+/**
+ * Get display name for theme
+ * @param {string} themeName - Theme name
+ * @returns {string} Display name
+ */
+function getThemeDisplayName(themeName) {
+  const displayNames = {
+    'default': 'Default Dark',
+    'netflix': 'Netflix',
+    'amazon-prime': 'Amazon Prime Video',
+    'disney': 'Disney+'
+  };
+  return displayNames[themeName] || themeName;
 }
 
 /**

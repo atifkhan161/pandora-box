@@ -1,6 +1,7 @@
 // Movies page functionality
 
 import auth from './services/auth.js';
+import themeManager from './services/theme.js';
 import { Navigation } from './components/navigation.js';
 import { MoviesComponent } from './components/movies.js';
 
@@ -11,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  // Initialize theme manager
+  themeManager.init();
+  
   // Initialize navigation
   Navigation.init('app');
   

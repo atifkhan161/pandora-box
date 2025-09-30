@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Docker Manager - Pandora Box</title>
+    <link rel="stylesheet" href="./styles/theme.css">
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/docker.css">
+    <link rel="stylesheet" href="./styles/navigation.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Docker Manager</h1>
+            </header>
+
+            <div id="notification-container"></div>
+
+            <div class="docker-container">
+                <div class="docker-tabs">
+                    <button class="tab-button active" data-tab="containers">Containers</button>
+                    <button class="tab-button" data-tab="stacks">Stacks</button>
+                    <button class="tab-button" data-tab="images">Images</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="containers-tab" class="tab-panel active">
+                        <div class="section-header">
+                            <h2>Containers</h2>
+                            <button id="refresh-containers" class="btn btn-secondary">Refresh</button>
+                        </div>
+                        <div id="containers-list" class="docker-list">
+                            <div class="loading">Loading containers...</div>
+                        </div>
+                    </div>
+
+                    <div id="stacks-tab" class="tab-panel">
+                        <div class="section-header">
+                            <h2>Stacks</h2>
+                            <button id="refresh-stacks" class="btn btn-secondary">Refresh</button>
+                        </div>
+                        <div id="stacks-list" class="docker-list">
+                            <div class="loading">Loading stacks...</div>
+                        </div>
+                    </div>
+
+                    <div id="images-tab" class="tab-panel">
+                        <div class="section-header">
+                            <h2>Images</h2>
+                            <button id="refresh-images" class="btn btn-secondary">Refresh</button>
+                        </div>
+                        <div id="images-list" class="docker-list">
+                            <div class="loading">Loading images...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="logs-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Container Logs</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <pre id="logs-content"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./main.js"></script>
+    <script type="module" src="./pages/docker.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { MediaModule } from './modules/media/media.module';
 import { DownloadsModule } from './modules/downloads/downloads.module';
 import { FilesModule } from './modules/files/files.module';
+import { DockerModule } from './modules/docker/docker.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FilesModule } from './modules/files/files.module';
     MediaModule,
     DownloadsModule,
     FilesModule,
+    DockerModule,
   ],
 })
 export class AppModule {}

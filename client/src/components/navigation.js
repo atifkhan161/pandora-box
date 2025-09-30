@@ -38,6 +38,7 @@ export class Navigation {
       { href: 'search.html', text: 'Search' },
       { href: 'downloads.html', text: 'Downloads' },
       { href: 'files.html', text: 'File Management' },
+      { href: 'docker.html', text: 'Docker Manager' },
       { href: 'settings.html', text: 'Settings' }
     ];
 
@@ -97,6 +98,8 @@ export class Navigation {
       activeLink = 'downloads';
     } else if (currentPath.includes('files.html')) {
       activeLink = 'files';
+    } else if (currentPath.includes('docker.html')) {
+      activeLink = 'docker';
     } else if (currentPath.includes('settings.html')) {
       activeLink = 'settings';
     }

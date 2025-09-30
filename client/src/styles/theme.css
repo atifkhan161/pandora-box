@@ -26,10 +26,31 @@
     --pb-error: #f44336;
     --pb-info: #2196f3;
     
+    /* Status Background Colors */
+    --pb-success-bg: rgba(76, 175, 80, 0.1);
+    --pb-warning-bg: rgba(255, 152, 0, 0.1);
+    --pb-error-bg: rgba(244, 67, 54, 0.1);
+    --pb-info-bg: rgba(33, 150, 243, 0.1);
+    
+    /* Status Text Colors */
+    --pb-success-text: #4caf50;
+    --pb-warning-text: #ff9800;
+    --pb-error-text: #f44336;
+    --pb-info-text: #2196f3;
+    
     /* Border Colors */
     --pb-border: #e0e0e0;
     --pb-border-light: #f0f0f0;
     --pb-border-dark: #bdbdbd;
+    --pb-border-color: #333333;
+    
+    /* Surface Colors */
+    --pb-surface-primary: #1a1a1a;
+    --pb-surface-secondary: #2d2d2d;
+    --pb-surface-hover: #404040;
+    
+    /* Accent Colors */
+    --pb-accent-primary: #ff6600;
     
     /* Shadow */
     --pb-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
